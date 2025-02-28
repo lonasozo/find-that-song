@@ -10,6 +10,11 @@ const client_id = process.env.SPOTIFY_CLIENT_ID;
 const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 const redirect_uri = process.env.SPOTIFY_REDIRECT_URI;
 
+app.get('/', (req, res) => {
+  res.send('Server is running');
+});
+
+
 app.get('/login', (req, res) => {
   const scope = 'user-read-recently-played';
   res.redirect('https://accounts.spotify.com/authorize?' +
@@ -47,7 +52,25 @@ app.get('/songs', (req, res) => {
       'Authorization': 'Bearer ' + access_token
     }
   }).then(response => {
-    res.send(response.data);
+    const items = response.data.items;
+    let html = '<html><head><title>Recently Played Songs</title></head><body>';
+    html += '<h1>Recently Played Songs</h1><ul>';
+    
+    items.forEach(item => {
+      const track = item.track;
+      const album = track.album;
+      html += `<li>
+        <img src="${album.images[1].url}" alt="${album.name}" style="width:100px;height:100px;"/>
+        <p><strong>Track:</strong> ${track.name}</p>
+        <p><strong>Album:</strong> ${album.name}</p>
+        <p><strong>Artist:</strong> ${track.artists.map(artist => artist.name).join(', ')}</p>
+        <p><strong>Played at:</strong> ${new Date(item.played_at).toLocaleString()}</p>
+        <p><a href="${track.external_urls.spotify}">Listen on Spotify</a></p>
+      </li>`;
+    });
+    
+    html += '</ul></body></html>';
+    res.send(html);
   }).catch(error => {
     res.send(error);
   });
