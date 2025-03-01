@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
         <h1>Find That Song</h1>
         <a href="/login" class="login-button">LOGIN with Spotify</a>
         <div class="description">
-          <p>Trova facilmente le canzoni che hai ascoltato di recente su Spotify, ma di cui non ti ricordi il nome o che non hai fatto in tempo a salvare.</p>
+          <p>Missed the moment and didn't save your favorite song? Check your recent listens on Spotify</p>
         </div>
       </body>
     </html>
@@ -63,13 +63,13 @@ app.get('/callback', (req, res) => {
     }
   }).then(response => {
     const access_token = response.data.access_token;
-    res.redirect('/songs?access_token=' + access_token);
+    res.redirect('/recently-played?access_token=' + access_token);
   }).catch(error => {
     res.send(error);
   });
 });
 
-app.get('/songs', (req, res) => {
+app.get('/recently-played', (req, res) => {
   const access_token = req.query.access_token;
   axios.get('https://api.spotify.com/v1/me/player/recently-played', {
     headers: {
@@ -101,11 +101,19 @@ app.get('/songs', (req, res) => {
 
       html += `
         <div class="track-item">
-          <img src="${album.images[2]?.url || album.images[0].url}" alt="${album.name}" class="album-img" />
+          <a href="${track.external_urls.spotify}" target="_blank" title="Play ${track.name} on Spotify">
+            <img src="${album.images[2]?.url || album.images[0].url}" alt="${album.name}" class="album-img" />
+          </a>
           <div class="track-info">
             <div class="track-name">${track.name}</div>
-            <div class="artist-name">${track.artists.map(artist => artist.name).join(', ')}</div>
-            <div class="album-name">${album.name}</div>
+            <div class="artist-name">
+              ${track.artists.map(artist =>
+        `<a href="${artist.external_urls.spotify}" target="_blank" class="artist-link">${artist.name}</a>`
+      ).join(', ')}
+            </div>
+            <div class="album-name">
+              <a href="${album.external_urls.spotify}" target="_blank" class="album-link">${album.name}</a>
+            </div>
           </div>
           <div class="track-meta">
             <div>${formattedDate}</div>

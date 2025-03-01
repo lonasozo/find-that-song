@@ -8,20 +8,20 @@ body {
   font-family: 'Circular', Helvetica, Arial, sans-serif;
   background-color: #121212;
   color: #ffffff;
-  padding: 20px;
+  padding: 30px;
 }
 
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 40px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #282828;
+  margin-bottom: 50px;
+  padding-bottom: 25px;
+  border-bottom: 2px solid #282828;
 }
 
 h1 {
-  font-size: 2rem;
+  font-size: 3rem;
   font-weight: 700;
 }
 
@@ -29,24 +29,24 @@ h1 {
   background-color: #333;
   color: white;
   border: none;
-  border-radius: 20px;
-  padding: 8px 16px;
+  border-radius: 25px;
+  padding: 12px 24px;
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 1.1rem;
 }
 
 .tracks-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
 .track-item {
   display: grid;
-  grid-template-columns: 60px 1fr auto;
-  gap: 16px;
-  padding: 12px;
-  margin-bottom: 8px;
-  border-radius: 4px;
+  grid-template-columns: 80px 1fr auto;
+  gap: 24px;
+  padding: 18px;
+  margin-bottom: 16px;
+  border-radius: 8px;
   transition: background-color 0.2s;
   align-items: center;
 }
@@ -56,11 +56,16 @@ h1 {
 }
 
 .album-img {
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: 80px;
   object-fit: cover;
-  border-radius: 4px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  border-radius: 6px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+  transition: opacity 0.2s;
+}
+
+.album-img:hover {
+  opacity: 0.8;
 }
 
 .track-info {
@@ -71,36 +76,60 @@ h1 {
 
 .track-name {
   font-weight: 700;
-  margin-bottom: 4px;
+  font-size: 1.3rem;
+  margin-bottom: 8px;
   color: #fff;
 }
 
 .artist-name {
-  font-size: 0.9rem;
+  font-size: 1.1rem;
   color: #b3b3b3;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+}
+
+.artist-link {
+  color: #b3b3b3;
+  text-decoration: none;
+  transition: color 0.2s, text-decoration 0.2s;
+}
+
+.artist-link:hover {
+  color: #1DB954;
+  text-decoration: underline;
+}
+
+.album-link {
+  color: #b3b3b3;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.2s, text-decoration 0.2s;
+}
+
+.album-link:hover {
+  color: #1DB954;
+  text-decoration: underline;
 }
 
 .album-name {
-  font-size: 0.8rem;
+  font-size: 1rem;
   color: #b3b3b3;
 }
 
 .track-meta {
   text-align: right;
   color: #b3b3b3;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
 }
 
 .spotify-link {
   display: inline-block;
   background-color: #1DB954;
   color: white;
-  border-radius: 20px;
-  padding: 8px 16px;
+  border-radius: 25px;
+  padding: 10px 20px;
   text-decoration: none;
-  margin-top: 8px;
-  font-size: 0.8rem;
+  margin-top: 12px;
+  font-size: 1rem;
   font-weight: 600;
   text-transform: uppercase;
   transition: background-color 0.3s;
@@ -112,17 +141,40 @@ h1 {
 
 @media (max-width: 768px) {
   .track-item {
-    grid-template-columns: 50px 1fr;
+    grid-template-columns: 70px 1fr;
   }
   
   .album-img {
-    width: 50px;
-    height: 50px;
+    width: 70px;
+    height: 70px;
   }
   
   .track-meta {
     grid-column: 1 / -1;
     text-align: left;
-    margin-top: 8px;
+    margin-top: 12px;
+  }
+  
+  .track-name {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 15px;
+  }
+  
+  h1 {
+    font-size: 2.2rem;
+  }
+  
+  .track-item {
+    padding: 15px;
+    gap: 16px;
+  }
+  
+  .track-name {
+    font-size: 1.1rem;
   }
 }
