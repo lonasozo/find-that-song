@@ -33,6 +33,7 @@ app.get('/', (req, res) => {
         <a href="/login" class="login-button">LOGIN with Spotify</a>
         <div class="description">
           <p>Missed the moment and didn't save your favorite song? Check your recent listens on Spotify</p>
+          <p>Also discover your top tracks and artists over different time periods!</p>
         </div>
       </body>
     </html>
@@ -40,7 +41,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  const scope = 'user-read-recently-played';
+  const scope = 'user-read-recently-played user-top-read';
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
@@ -88,7 +89,11 @@ app.get('/recently-played', (req, res) => {
         <div class="tracks-container">
           <header>
             <h1>Recently Played Tracks</h1>
-            <a href="/" class="home-link">Home</a>
+            <div class="nav-links">
+              <a href="/" class="home-link">Home</a>
+              <a href="/top-tracks?access_token=${access_token}" class="nav-link">Top Tracks</a>
+              <a href="/top-artists?access_token=${access_token}" class="nav-link">Top Artists</a>
+            </div>
           </header>
           <div class="tracks-list">
     `;
@@ -142,6 +147,178 @@ app.get('/recently-played', (req, res) => {
           <div class="error-container">
             <h1>Error Retrieving Tracks</h1>
             <p>Something went wrong when trying to fetch your recently played tracks.</p>
+            <p>Error details: ${error.message}</p>
+            <a href="/" class="home-link">Return to Home</a>
+          </div>
+        </body>
+      </html>
+    `);
+  });
+});
+
+// Add Top Tracks endpoint
+app.get('/top-tracks', (req, res) => {
+  const access_token = req.query.access_token;
+  const time_range = req.query.time_range || 'medium_term'; // default to 6 months
+
+  axios.get(`https://api.spotify.com/v1/me/top/tracks?time_range=${time_range}&limit=50`, {
+    headers: {
+      'Authorization': 'Bearer ' + access_token
+    }
+  }).then(response => {
+    const tracks = response.data.items;
+    let html = `
+    <html>
+      <head>
+        <title>Your Top Tracks</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="/css/tracks.css">
+      </head>
+      <body>
+        <div class="tracks-container">
+          <header>
+            <h1>Your Top Tracks</h1>
+            <div class="nav-links">
+              <a href="/" class="home-link">Home</a>
+              <a href="/recently-played?access_token=${access_token}" class="nav-link">Recently Played</a>
+              <a href="/top-artists?access_token=${access_token}" class="nav-link">Top Artists</a>
+            </div>
+          </header>
+          
+          <div class="time-filter">
+            <a href="/top-tracks?access_token=${access_token}&time_range=short_term" class="${time_range === 'short_term' ? 'active' : ''}">Last 4 Weeks</a>
+            <a href="/top-tracks?access_token=${access_token}&time_range=medium_term" class="${time_range === 'medium_term' ? 'active' : ''}">Last 6 Months</a>
+            <a href="/top-tracks?access_token=${access_token}&time_range=long_term" class="${time_range === 'long_term' ? 'active' : ''}">All Time</a>
+          </div>
+          
+          <div class="tracks-list">
+    `;
+
+    tracks.forEach((track, index) => {
+      const album = track.album;
+
+      html += `
+        <div class="track-item">
+          <div class="track-rank">${index + 1}</div>
+          <a href="${track.external_urls.spotify}" target="_blank" title="Play ${track.name} on Spotify">
+            <img src="${album.images[2]?.url || album.images[0].url}" alt="${album.name}" class="album-img" />
+          </a>
+          <div class="track-info">
+            <div class="track-name">${track.name}</div>
+            <div class="artist-name">
+              ${track.artists.map(artist =>
+        `<a href="${artist.external_urls.spotify}" target="_blank" class="artist-link">${artist.name}</a>`
+      ).join(', ')}
+            </div>
+            <div class="album-name">
+              <a href="${album.external_urls.spotify}" target="_blank" class="album-link">${album.name}</a>
+            </div>
+          </div>
+          <div class="track-meta">
+            <a href="${track.external_urls.spotify}" class="spotify-link" target="_blank">Play</a>
+          </div>
+        </div>
+      `;
+    });
+
+    html += `
+          </div>
+        </div>
+      </body>
+    </html>
+    `;
+
+    res.send(html);
+  }).catch(error => {
+    res.send(`
+      <html>
+        <head>
+          <title>Error</title>
+          <link rel="stylesheet" href="/css/error.css">
+        </head>
+        <body>
+          <div class="error-container">
+            <h1>Error Retrieving Top Tracks</h1>
+            <p>Something went wrong when trying to fetch your top tracks.</p>
+            <p>Error details: ${error.message}</p>
+            <a href="/" class="home-link">Return to Home</a>
+          </div>
+        </body>
+      </html>
+    `);
+  });
+});
+
+// Add Top Artists endpoint
+app.get('/top-artists', (req, res) => {
+  const access_token = req.query.access_token;
+  const time_range = req.query.time_range || 'medium_term'; // default to 6 months
+
+  axios.get(`https://api.spotify.com/v1/me/top/artists?time_range=${time_range}&limit=50`, {
+    headers: {
+      'Authorization': 'Bearer ' + access_token
+    }
+  }).then(response => {
+    const artists = response.data.items;
+    let html = `
+    <html>
+      <head>
+        <title>Your Top Artists</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="/css/artists.css">
+      </head>
+      <body>
+        <div class="artists-container">
+          <header>
+            <h1>Your Top Artists</h1>
+            <div class="nav-links">
+              <a href="/" class="home-link">Home</a>
+              <a href="/recently-played?access_token=${access_token}" class="nav-link">Recently Played</a>
+              <a href="/top-tracks?access_token=${access_token}" class="nav-link">Top Tracks</a>
+            </div>
+          </header>
+          
+          <div class="time-filter">
+            <a href="/top-artists?access_token=${access_token}&time_range=short_term" class="${time_range === 'short_term' ? 'active' : ''}">Last 4 Weeks</a>
+            <a href="/top-artists?access_token=${access_token}&time_range=medium_term" class="${time_range === 'medium_term' ? 'active' : ''}">Last 6 Months</a>
+            <a href="/top-artists?access_token=${access_token}&time_range=long_term" class="${time_range === 'long_term' ? 'active' : ''}">All Time</a>
+          </div>
+          
+          <div class="artists-grid">
+    `;
+
+    artists.forEach((artist, index) => {
+      html += `
+        <div class="artist-card">
+          <div class="artist-rank">${index + 1}</div>
+          <a href="${artist.external_urls.spotify}" target="_blank">
+            <img src="${artist.images[1]?.url || artist.images[0]?.url}" alt="${artist.name}" class="artist-img" />
+            <div class="artist-name">${artist.name}</div>
+          </a>
+          <div class="artist-genres">${artist.genres.slice(0, 3).join(', ')}</div>
+        </div>
+      `;
+    });
+
+    html += `
+          </div>
+        </div>
+      </body>
+    </html>
+    `;
+
+    res.send(html);
+  }).catch(error => {
+    res.send(`
+      <html>
+        <head>
+          <title>Error</title>
+          <link rel="stylesheet" href="/css/error.css">
+        </head>
+        <body>
+          <div class="error-container">
+            <h1>Error Retrieving Top Artists</h1>
+            <p>Something went wrong when trying to fetch your top artists.</p>
             <p>Error details: ${error.message}</p>
             <a href="/" class="home-link">Return to Home</a>
           </div>
