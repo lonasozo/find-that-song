@@ -5,50 +5,66 @@
 }
 
 body {
-  font-family: 'Circular', Helvetica, Arial, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #121212;
-  color: #ffffff;
-  padding: 20px;
+  color: #fff;
+  margin: 0;
+  padding: 0;
 }
 
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 40px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #282828;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #333;
 }
 
 h1 {
-  font-size: 2rem;
-  font-weight: 700;
+  margin: 0;
+  font-size: 24px;
+  color: #1DB954;
 }
 
-.home-link {
-  background-color: #333;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  padding: 8px 16px;
+.home-link, .nav-link {
+  color: #fff;
   text-decoration: none;
-  font-size: 0.9rem;
+  padding: 6px 12px;
+  background-color: #1DB954;
+  border-radius: 20px;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.home-link:hover, .nav-link:hover {
+  background-color: #1ed760;
+}
+
+.nav-links {
+  display: flex;
+  gap: 10px;
 }
 
 .tracks-container {
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
+  padding: 20px;
+}
+
+.tracks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .track-item {
-  display: grid;
-  grid-template-columns: 60px 1fr auto;
-  gap: 16px;
-  padding: 12px;
-  margin-bottom: 8px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
+  display: flex;
   align-items: center;
+  background-color: #181818;
+  border-radius: 8px;
+  padding: 10px;
+  transition: background-color 0.3s;
 }
 
 .track-item:hover {
@@ -56,63 +72,106 @@ h1 {
 }
 
 .album-img {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
+  width: 64px;
+  height: 64px;
   border-radius: 4px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  margin-right: 15px;
 }
 
 .track-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex: 1;
+  min-width: 0;
 }
 
 .track-name {
-  font-weight: 700;
+  font-weight: bold;
+  font-size: 16px;
   margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.artist-name, .album-name {
+  font-size: 14px;
+  color: #b3b3b3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.artist-link, .album-link {
+  color: #b3b3b3;
+  text-decoration: none;
+}
+
+.artist-link:hover, .album-link:hover {
+  text-decoration: underline;
   color: #fff;
 }
 
-.artist-name {
-  font-size: 0.9rem;
-  color: #b3b3b3;
-  margin-bottom: 4px;
-}
-
-.album-name {
-  font-size: 0.8rem;
-  color: #b3b3b3;
-}
-
 .track-meta {
-  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-width: 100px;
+  font-size: 14px;
   color: #b3b3b3;
-  font-size: 0.8rem;
 }
 
 .spotify-link {
-  display: inline-block;
-  background-color: #1DB954;
-  color: white;
-  border-radius: 20px;
-  padding: 8px 16px;
+  color: #fff;
   text-decoration: none;
-  margin-top: 8px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  transition: background-color 0.3s;
+  padding: 4px 10px;
+  background-color: #1DB954;
+  border-radius: 15px;
+  font-size: 12px;
 }
 
 .spotify-link:hover {
   background-color: #1ed760;
 }
 
+.track-rank {
+  font-size: 18px;
+  font-weight: bold;
+  color: #b3b3b3;
+  margin-right: 15px;
+  min-width: 25px;
+  text-align: center;
+}
+
+.time-filter {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.time-filter a {
+  color: #b3b3b3;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  border: 1px solid #333;
+}
+
+.time-filter a:hover {
+  background-color: #282828;
+  color: #fff;
+}
+
+.time-filter a.active {
+  background-color: #1DB954;
+  color: #fff;
+  border: 1px solid #1DB954;
+}
+
 @media (max-width: 768px) {
   .track-item {
-    grid-template-columns: 50px 1fr;
+    padding: 8px;
   }
   
   .album-img {
@@ -121,8 +180,41 @@ h1 {
   }
   
   .track-meta {
-    grid-column: 1 / -1;
-    text-align: left;
-    margin-top: 8px;
+    min-width: auto;
+  }
+  
+  .time-filter {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .nav-links {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 15px;
+  }
+  
+  h1 {
+    font-size: 2.2rem;
+  }
+  
+  .track-item {
+    padding: 15px;
+    gap: 16px;
+  }
+  
+  .track-name {
+    font-size: 1.1rem;
   }
 }
