@@ -1,0 +1,159 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #121212;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+.artists-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #333;
+}
+
+h1 {
+  margin: 0;
+  font-size: 24px;
+  color: #1DB954;
+}
+
+.home-link, .nav-link {
+  color: #fff;
+  text-decoration: none;
+  padding: 6px 12px;
+  background-color: #1DB954;
+  border-radius: 20px;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.home-link:hover, .nav-link:hover {
+  background-color: #1ed760;
+}
+
+.nav-links {
+  display: flex;
+  gap: 10px;
+}
+
+.time-filter {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.time-filter a {
+  color: #b3b3b3;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  border: 1px solid #333;
+}
+
+.time-filter a:hover {
+  background-color: #282828;
+  color: #fff;
+}
+
+.time-filter a.active {
+  background-color: #1DB954;
+  color: #fff;
+  border: 1px solid #1DB954;
+}
+
+.artists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+.artist-card {
+  background-color: #181818;
+  border-radius: 8px;
+  padding: 15px;
+  transition: background-color 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.artist-card:hover {
+  background-color: #282828;
+}
+
+.artist-rank {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-weight: bold;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.artist-img {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  margin-bottom: 12px;
+  object-fit: cover;
+}
+
+.artist-name {
+  font-weight: bold;
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.artist-genres {
+  font-size: 12px;
+  color: #b3b3b3;
+  text-align: center;
+}
+
+.artist-card a {
+  color: #fff;
+  text-decoration: none;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .artists-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+  }
+  
+  .time-filter {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .nav-links {
+    width: 100%;
+    justify-content: center;
+  }
+}
