@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
 import { getSpotifyAuthUrl } from '../lib/spotify';
+import { getProductionSpotifyAuthUrl } from '../lib/spotify-production';
 
 export default function SpotifyLogin() {
   const [loginUrl, setLoginUrl] = useState('');
   
   useEffect(() => {
-    // Generate the auth URL dynamically based on current environment
-    const url = getSpotifyAuthUrl();
+    // Check if we're in production
+    const isProduction = process.env.NODE_ENV === 'production';
+    
+    // Use the production-specific function in production
+    const url = isProduction ? getProductionSpotifyAuthUrl() : getSpotifyAuthUrl();
     
     // Override redirect URI if needed based on environment
     if (typeof window !== 'undefined') {
@@ -15,19 +19,8 @@ export default function SpotifyLogin() {
       const baseUrl = isLocalhost 
         ? 'http://localhost:3000/callback'
         : 'https://find-that-song.vercel.app/callback';
-        
-      // Use URLSearchParams to update the redirect_uri parameter if needed
-      const urlObj = new URL(url);
-      const params = new URLSearchParams(urlObj.search);
       
-      if (params.get('redirect_uri') !== baseUrl) {
-        console.log(`Updating redirect URI to match current environment: ${baseUrl}`);
-        params.set('redirect_uri', baseUrl);
-        urlObj.search = params.toString();
-        setLoginUrl(urlObj.toString());
-      } else {
-        setLoginUrl(url);
-      }
+      setLoginUrl(url);
     } else {
       setLoginUrl(url);
     }
