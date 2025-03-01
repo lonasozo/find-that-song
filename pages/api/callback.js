@@ -9,6 +9,10 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Log important environment information
+    console.log(`API Callback Handler - Environment: ${process.env.NODE_ENV}`);
+    console.log(`Redirect URI from env: ${env.SPOTIFY_REDIRECT_URI}`);
+
     // Check for potential issues before attempting the exchange
     const credentialsAreSame = env.SPOTIFY_CLIENT_ID === env.SPOTIFY_CLIENT_SECRET;
 
@@ -38,8 +42,14 @@ export default async function handler(req, res) {
     // Provide more helpful error information
     let errorDetails = {
       error: 'Failed to exchange code for token',
-      message: error.message
+      message: error.message,
+      environment: process.env.NODE_ENV,
+      spotifyRedirectUri: env.SPOTIFY_REDIRECT_URI
     };
+
+    if (error.response?.data) {
+      errorDetails.spotifyError = error.response.data;
+    }
 
     // Add specific guidance for common errors
     if (error.response?.status === 400) {
