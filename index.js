@@ -458,6 +458,32 @@ app.get('/generate-playlist', (req, res) => {
       <title>Playlist Generator</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="stylesheet" href="/css/playlist-generator.css">
+      <style>
+        /* Custom styling for multi-select dropdown */
+        select[multiple] {
+          height: auto;
+          min-height: 100px;
+          background-image: none;
+          padding: 8px;
+        }
+        select[multiple] option {
+          padding: 8px;
+          margin-bottom: 3px;
+          border-radius: 4px;
+          background-color: #f0f0f0;
+          color: #333;
+        }
+        select[multiple] option:checked {
+          background-color: #1DB954;
+          color: white;
+        }
+        .genres-hint {
+          display: block;
+          margin-top: 5px;
+          font-size: 0.8em;
+          color: #777;
+        }
+      </style>
     </head>
     <body>
       <div class="generator-container">
@@ -497,7 +523,7 @@ app.get('/generate-playlist', (req, res) => {
             
             <div class="form-group" id="genres-container" style="display:none;">
               <label for="genres">Select Genres:</label>
-              <select id="genres" name="genres" multiple>
+              <select id="genres" name="genres" multiple class="form-select">
                 <option value="acoustic">Acoustic</option>
                 <option value="alternative">Alternative</option>
                 <option value="ambient">Ambient</option>
@@ -519,7 +545,7 @@ app.get('/generate-playlist', (req, res) => {
                 <option value="soul">Soul</option>
                 <option value="techno">Techno</option>
               </select>
-              <small>Hold Ctrl/Cmd to select multiple genres (max 5)</small>
+              <span class="genres-hint">Hold Ctrl/Cmd to select multiple genres (max 5)</span>
             </div>
             
             <div class="form-group">

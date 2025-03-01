@@ -65,6 +65,7 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  margin-bottom: 20px;
 }
 
 label {
@@ -90,6 +91,53 @@ select[multiple] {
   height: 150px;
 }
 
+/* General Form Styling */
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+/* Style all select elements consistently */
+.form-group select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+  background-repeat: no-repeat;
+  background-position-x: calc(100% - 10px);
+  background-position-y: 50%;
+}
+
+/* Special styling for multi-select */
+.form-group select[multiple] {
+  height: auto;
+  min-height: 150px;
+  background-image: none;
+  overflow-y: auto;
+}
+
+.form-group select[multiple] option {
+  padding: 8px;
+  margin-bottom: 2px;
+  border-radius: 3px;
+}
+
+.form-group select[multiple] option:checked {
+  background-color: #1DB954;
+  color: white;
+}
+
 small {
   color: #b3b3b3;
   font-size: 12px;
@@ -109,6 +157,7 @@ small {
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s;
+  display: inline-block;
 }
 
 .submit-btn:hover {
