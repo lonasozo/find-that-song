@@ -1,15 +1,16 @@
 import { exchangeCodeForToken } from '../../lib/spotify';
+import { exchangeCodeForTokenProduction } from '../../lib/spotify-production';
 import { env } from '../../lib/env';
 
 export default async function handler(req, res) {
   const { code } = req.query;
+  const isProduction = process.env.NODE_ENV === 'production';
 
   if (!code) {
     return res.status(400).json({ error: 'Missing authorization code' });
   }
 
   try {
-    // Log important environment information
     console.log(`API Callback Handler - Environment: ${process.env.NODE_ENV}`);
     console.log(`Redirect URI from env: ${env.SPOTIFY_REDIRECT_URI}`);
 
@@ -24,8 +25,15 @@ export default async function handler(req, res) {
       });
     }
 
-    // Exchange the code for an access token
-    const tokenData = await exchangeCodeForToken(code);
+    // Use production-specific function in production environment
+    let tokenData;
+    if (isProduction) {
+      console.log('Using production-specific token exchange flow');
+      tokenData = await exchangeCodeForTokenProduction(code);
+    } else {
+      console.log('Using development token exchange flow');
+      tokenData = await exchangeCodeForToken(code);
+    }
 
     return res.status(200).json({
       success: true,
@@ -39,7 +47,6 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('Error in callback handler:', error);
 
-    // Provide more helpful error information
     let errorDetails = {
       error: 'Failed to exchange code for token',
       message: error.message,
@@ -49,6 +56,13 @@ export default async function handler(req, res) {
 
     if (error.response?.data) {
       errorDetails.spotifyError = error.response.data;
+
+      // Add user-friendly message for common errors
+      if (error.response.data.error === 'invalid_grant') {
+        errorDetails.userMessage = 'The login session expired. Please try logging in again.';
+      } else if (error.response.data.error === 'invalid_client') {
+        errorDetails.userMessage = 'Authentication failed. Please contact support.';
+      }
     }
 
     // Add specific guidance for common errors
