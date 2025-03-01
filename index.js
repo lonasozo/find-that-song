@@ -4,11 +4,17 @@ const querystring = require('querystring');
 require('dotenv').config();
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 const client_id = process.env.SPOTIFY_CLIENT_ID;
 const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 const redirect_uri = process.env.SPOTIFY_REDIRECT_URI;
+
+// Aggiungiamo un middleware di logging per il debug
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
 
 app.get('/', (req, res) => {
   res.send('Server is running');
@@ -55,7 +61,7 @@ app.get('/songs', (req, res) => {
     const items = response.data.items;
     let html = '<html><head><title>Recently Played Songs</title></head><body>';
     html += '<h1>Recently Played Songs</h1><ul>';
-    
+
     items.forEach(item => {
       const track = item.track;
       const album = track.album;
@@ -68,7 +74,7 @@ app.get('/songs', (req, res) => {
         <p><a href="${track.external_urls.spotify}">Listen on Spotify</a></p>
       </li>`;
     });
-    
+
     html += '</ul></body></html>';
     res.send(html);
   }).catch(error => {
@@ -76,6 +82,14 @@ app.get('/songs', (req, res) => {
   });
 });
 
-app.listen(port, () => {
-  console.log(`App listening at http://localhost:${port}`);
-});
+// Modifica la parte finale per supportare sia l'ambiente di sviluppo locale sia Vercel
+
+// Per l'ambiente Vercel serverless
+module.exports = app;
+
+// Solo per l'ambiente di sviluppo locale, non eseguire in Vercel
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(port, () => {
+    console.log(`App listening at http://localhost:${port}`);
+  });
+}
