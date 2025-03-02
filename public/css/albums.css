@@ -1,7 +1,44 @@
+/* Theme variables */
+:root {
+  /* Light theme (default) */
+  --bg-primary: #f5f5f5;
+  --bg-secondary: #ffffff;
+  --bg-sidebar: #f8f9fa;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-muted: #888888;
+  --border-color: #eaeaea;
+  --accent-color: #1db954;
+  --accent-hover: #1ed760;
+  --sidebar-active: #e3f2fd;
+  --card-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  --header-bg: #ffffff;
+  --sidebar-text: #333333;
+  --sidebar-border: #e0e0e0;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --bg-sidebar: #121212;
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --text-muted: #9e9e9e;
+  --border-color: #333333;
+  --accent-color: #1db954;
+  --accent-hover: #1ed760;
+  --sidebar-active: #282828;
+  --card-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  --header-bg: #1e1e1e;
+  --sidebar-text: #ffffff;
+  --sidebar-border: #333333;
+}
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #121212;
-  color: #fff;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   margin: 0;
   padding: 0;
 }
@@ -18,27 +55,27 @@ header {
   align-items: center;
   margin-bottom: 20px;
   padding-bottom: 15px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--border-color);
 }
 
 h1 {
   margin: 0;
   font-size: 24px;
-  color: #1DB954;
+  color: var(--accent-color);
 }
 
-.home-link, .nav-link {
-  color: #fff;
+.home-link {
+  color: var(--bg-secondary);
   text-decoration: none;
   padding: 6px 12px;
-  background-color: #1DB954;
+  background-color: var(--accent-color);
   border-radius: 20px;
   font-size: 14px;
   transition: background-color 0.3s;
 }
 
-.home-link:hover, .nav-link:hover {
-  background-color: #1ed760;
+.home-link:hover{
+  background-color: var(--accent-hover);
 }
 
 .nav-links {
@@ -56,23 +93,23 @@ h1 {
 }
 
 .time-filter a {
-  color: #b3b3b3;
+  color: var(--text-secondary);
   text-decoration: none;
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 14px;
-  border: 1px solid #333;
+  border: 1px solid var(--border-color);
 }
 
 .time-filter a:hover {
-  background-color: #282828;
-  color: #fff;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .time-filter a.active {
-  background-color: #1DB954;
-  color: #fff;
-  border: 1px solid #1DB954;
+  background-color: var(--accent-color);
+  color: var(--bg-secondary);
+  border: 1px solid var(--accent-color);
 }
 
 .albums-grid {
@@ -82,24 +119,25 @@ h1 {
 }
 
 .album-card {
-  background-color: #181818;
+  background-color: var(--bg-secondary);
   border-radius: 8px;
   padding: 15px;
   transition: background-color 0.3s;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--card-shadow);
 }
 
 .album-card:hover {
-  background-color: #282828;
+  background-color: var(--sidebar-active);
 }
 
 .album-rank {
   position: absolute;
   top: 10px;
   left: 10px;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: #fff;
+  background-color: var(--accent-color);
+  color: var(--bg-secondary);
   font-weight: bold;
   width: 30px;
   height: 30px;
@@ -126,11 +164,12 @@ h1 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: var(--text-primary);
 }
 
 .artist-name {
   font-size: 14px;
-  color: #b3b3b3;
+  color: var(--text-secondary);
   text-align: center;
   margin-bottom: 6px;
   white-space: nowrap;
@@ -140,20 +179,20 @@ h1 {
 }
 
 .artist-link {
-  color: #b3b3b3;
+  color: var(--text-secondary);
   text-decoration: none;
 }
 
 .artist-link:hover {
   text-decoration: underline;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .album-info {
   display: flex;
   justify-content: space-between;
   font-size: 12px;
-  color: #b3b3b3;
+  color: var(--text-secondary);
 }
 
 .album-year, .album-tracks {
@@ -161,7 +200,7 @@ h1 {
 }
 
 .album-card a {
-  color: #fff;
+  color: var(--text-primary);
   text-decoration: none;
   display: block;
 }

@@ -1,17 +1,19 @@
 {
   "name": "find-that-song",
   "version": "1.0.0",
-  "description": "A Spotify app to find recently played and favorite songs",
+  "description": "A Spotify integration app to find and manage songs",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
+    "start": "node index.js",
+    "dev": "nodemon index.js",
     "vercel-build": "echo 'Build step for Vercel deployment'"
   },
   "dependencies": {
-    "axios": "^1.8.1",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2"
+    "axios": "^1.5.0",
+    "dotenv": "^16.3.1",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "express-ejs-layouts": "^2.5.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

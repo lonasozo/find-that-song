@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Recently Played Songs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <div class="container">
+      <h2>Recently Played Tracks</h2>
+      
+      <div class="track-list">
+          <% if (items && items.length > 0) { %>
+              <% items.forEach(item => { %>
+                  <div class="track-item">
+                      <% if (item.track.album.images && item.track.album.images.length > 0) { %>
+                          <img src="<%= item.track.album.images[0].url %>" alt="<%= item.track.album.name %>" class="album-cover">
+                      <% } else { %>
+                          <div class="album-cover placeholder">No Image</div>
+                      <% } %>
+                      
+                      <div class="track-info">
+                          <h3><%= item.track.name %></h3>
+                          <p class="artist"><%= item.track.artists.map(artist => artist.name).join(', ') %></p>
+                          <p class="album"><%= item.track.album.name %></p>
+                          <p class="played-at">Played at: <%= new Date(item.played_at).toLocaleString() %></p>
+                          <a href="<%= item.track.external_urls.spotify %>" target="_blank" class="spotify-link">Open in Spotify</a>
+                      </div>
+                  </div>
+              <% }); %>
+          <% } else { %>
+              <p class="no-results">No recently played tracks found.</p>
+          <% } %>
+      </div>
+    </div>
+  </body>
+</html>
