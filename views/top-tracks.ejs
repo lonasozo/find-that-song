@@ -7,66 +7,66 @@
   <body>
     <div class="container">
       <h2>Top Tracks</h2>
-      
-      <div class="content-header">
-        <h1><%= title %></h1>
-        
-        <div class="time-range-selector">
-          <a href="/top-tracks?access_token=<%= access_token %>&time_range=short_term" 
-             class="time-range-option <%= time_range === 'short_term' ? 'active' : '' %>">
-            Last 4 Weeks
-          </a>
-          <a href="/top-tracks?access_token=<%= access_token %>&time_range=medium_term" 
-             class="time-range-option <%= time_range === 'medium_term' ? 'active' : '' %>">
-            Last 6 Months
-          </a>
-          <a href="/top-tracks?access_token=<%= access_token %>&time_range=long_term" 
-             class="time-range-option <%= time_range === 'long_term' ? 'active' : '' %>">
-            All Time
-          </a>
-        </div>
-      </div>
 
-      <div class="track-list-container">
-        <% if (tracks && tracks.length > 0) { %>
-          <div class="track-list">
-            <% tracks.forEach((track, index) => { %>
-              <div class="track-item" data-spotify-url="<%= track.external_urls.spotify %>">
-                <div class="track-number"><%= index + 1 %></div>
-                <div class="track-image">
-                  <% if (track.album.images && track.album.images.length > 0) { %>
-                    <img src="<%= track.album.images[0].url %>" alt="<%= track.album.name %>" loading="lazy">
-                  <% } else { %>
-                    <div class="no-image">🎵</div>
-                  <% } %>
-                  <div class="track-actions">
-                    <a href="<%= track.external_urls.spotify %>" target="_blank" class="spotify-link" title="Open in Spotify">
-                      <span class="spotify-icon">🎧</span>
-                    </a>
-                  </div>
-                  <div class="track-play-overlay">
-                    <div class="play-icon">▶</div>
-                  </div>
-                </div>
-                <div class="track-info">
-                  <div class="track-name"><%= track.name %></div>
-                  <div class="track-artist">
-                    <%= track.artists.map(artist => artist.name).join(', ') %>
-                  </div>
-                  <div class="track-meta">
-                    <span class="track-album"><%= track.album.name %></span>
-                    <span class="track-popularity">Popularity: <%= track.popularity %>/100</span>
-                  </div>
+      
+      <% if (!locals.layout) { %>
+        <!-- This section is returned for AJAX calls -->
+        <div class="track-list">
+          <% tracks.forEach((track, index) => { %>
+            <div class="track-item" data-spotify-url="<%= track.external_urls.spotify %>">
+              <div class="track-number"><%= index + 1 %></div>
+              <div class="track-image">
+                <img src="<%= track.album.images[0]?.url || '/img/default-album.png' %>" alt="<%= track.name %>">
+                <div class="track-play-overlay">
+                  <i class="fas fa-play"></i>
                 </div>
               </div>
-            <% }) %>
-          </div>
-        <% } else { %>
-          <div class="no-content-message">
-            <p>No top tracks found for this time range.</p>
-          </div>
-        <% } %>
-      </div>
+              <div class="track-details">
+                <div class="track-title"><%= track.name %></div>
+                <div class="track-artist"><%= track.artists.map(artist => artist.name).join(', ') %></div>
+                <div class="track-album"><%= track.album.name %></div>
+              </div>
+              <div class="track-actions">
+                <a href="<%= track.external_urls.spotify %>" target="_blank" class="spotify-link">
+                  <i class="fab fa-spotify"></i>
+                </a>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      <% } else { %>
+        <!-- This is the full page for initial load -->
+        
+        
+        <div id="top-tracks-content" class="content-container">
+            <div class="track-list">
+                <% tracks.forEach((track, index) => { %>
+                    <div class="track-item" data-spotify-url="<%= track.external_urls.spotify %>">
+                        <div class="track-number"><%= index + 1 %></div>
+                        <div class="track-image">
+                            <img src="<%= track.album.images[0]?.url || '/img/default-album.png' %>" alt="<%= track.name %>">
+                            <div class="track-play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="track-details">
+                            <div class="track-title"><%= track.name %></div>
+                            <div class="track-artist"><%= track.artists.map(artist => artist.name).join(', ') %></div>
+                            <div class="track-album"><%= track.album.name %></div>
+                        </div>
+                        <div class="track-actions">
+                            <a href="<%= track.external_urls.spotify %>" target="_blank" class="spotify-link">
+                                <i class="fab fa-spotify"></i>
+                            </a>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+        
+        <!-- Include the AJAX functionality script -->
+        <script src="/js/ajax-content.js"></script>
+      <% } %>
     </div>
 
     <script>

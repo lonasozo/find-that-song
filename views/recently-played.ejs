@@ -3,10 +3,11 @@
   <head>
     <title>Recently Played Songs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Link to the external stylesheet -->
+    <link rel="stylesheet" href="/css/recently-played.css">
   </head>
   <body>
     <div class="container">
-      <h2>Recently Played Tracks</h2>
       
       <div class="content-header">
         <h1><%= title %></h1>
@@ -16,33 +17,50 @@
         <% if (items && items.length > 0) { %>
           <div class="track-list">
             <% items.forEach((item, index) => { %>
-              <div class="track-item" data-spotify-url="<%= item.track.external_urls.spotify %>">
+              <div class="track-item" data-spotify-url="<%= item.track.external_urls.spotify %>" data-duration="<%= item.track.duration_ms %>" data-explicit="<%= item.track.explicit %>" data-played-at="<%= item.played_at %>">
                 <div class="track-number"><%= index + 1 %></div>
                 <div class="track-image">
-                  <% if (item.track.album.images && item.track.album.images.length > 0) { %>
-                    <img src="<%= item.track.album.images[0].url %>" alt="<%= item.track.album.name %>" loading="lazy">
-                  <% } else { %>
-                    <div class="no-image">🎵</div>
-                  <% } %>
-                  <div class="track-actions">
-                    <a href="<%= item.track.external_urls.spotify %>" target="_blank" class="spotify-link" title="Open in Spotify">
-                      <span class="spotify-icon">🎧</span>
-                    </a>
-                  </div>
-                  <!-- Play overlay spostato qui, all'interno dell'immagine -->
-                  <div class="track-play-overlay">
-                    <div class="play-icon">GO</div>
-                  </div>
+                  <a href="<%= item.track.external_urls.spotify %>" target="_blank" class="cover-link">
+                    <% if (item.track.album.images && item.track.album.images.length > 0) { %>
+                      <img src="<%= item.track.album.images[0].url %>" alt="<%= item.track.album.name %>" loading="lazy">
+                    <% } else { %>
+                      <div class="no-image">🎵</div>
+                    <% } %>
+                    
+                    <!-- Play overlay inside the anchor tag -->
+                    <div class="track-play-overlay">
+                      <i class="fas fa-play"></i>
+                    </div>
+                  </a>
                 </div>
                 <div class="track-info">
-                  <div class="track-name"><%= item.track.name %></div>
+                  <div class="track-name">
+                    <!-- Add link to track title -->
+                    <a href="<%= item.track.external_urls.spotify %>" target="_blank" class="track-link">
+                      <%= item.track.name %>
+                    </a>
+                  </div>
                   <div class="track-artist">
-                    <%= item.track.artists.map(artist => artist.name).join(', ') %>
+                    <% item.track.artists.forEach((artist, i) => { %>
+                      <a href="<%= artist.external_urls.spotify %>" target="_blank" class="artist-link">
+                        <%= artist.name %><%= i < item.track.artists.length - 1 ? ', ' : '' %>
+                      </a>
+                    <% }) %>
                   </div>
                   <div class="track-meta">
-                    <span class="track-album"><%= item.track.album.name %></span>
+                    <span class="track-album">
+                      <a href="<%= item.track.album.external_urls.spotify %>" target="_blank" class="album-link">
+                        <%= item.track.album.name %>
+                      </a>
+                    </span>
                     <span class="track-played-at">Played: <%= new Date(item.played_at).toLocaleString() %></span>
                   </div>
+                </div>
+                <!-- Replace the old track-actions with the Spotify icon button -->
+                <div class="track-actions">
+                  <a href="<%= item.track.external_urls.spotify %>" target="_blank" class="spotify-link">
+                    <i class="fab fa-spotify"></i>
+                  </a>
                 </div>
               </div>
             <% }) %>
@@ -55,46 +73,7 @@
       </div>
     </div>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Solo per dispositivi mobili
-        if (window.innerWidth <= 480) {
-          const trackItems = document.querySelectorAll('.track-item');
-          
-          trackItems.forEach(item => {
-            // Ottiene l'URL Spotify dall'attributo data
-            const spotifyUrl = item.getAttribute('data-spotify-url');
-            const overlay = item.querySelector('.track-play-overlay');
-            
-            // Aggiunge evento touch/click
-            item.addEventListener('click', function(e) {
-              // Se l'overlay è già attivo, apri il link
-              if (overlay.classList.contains('active')) {
-                window.open(spotifyUrl, '_blank');
-                setTimeout(() => {
-                  overlay.classList.remove('active');
-                }, 500);
-              } else {
-                // Altrimenti, mostra l'overlay
-                e.preventDefault();
-                
-                // Prima rimuovi tutti gli altri overlay attivi
-                document.querySelectorAll('.track-play-overlay.active').forEach(el => {
-                  if (el !== overlay) el.classList.remove('active');
-                });
-                
-                // Attiva questo overlay
-                overlay.classList.add('active');
-                
-                // Auto-nascondi dopo 3 secondi
-                setTimeout(() => {
-                  overlay.classList.remove('active');
-                }, 3000);
-              }
-            });
-          });
-        }
-      });
-    </script>
+    <!-- Link to external JavaScript file -->
+    <script src="/js/recently-played.js"></script>
   </body>
 </html>

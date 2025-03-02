@@ -79,7 +79,7 @@ app.get('/recently-played', async (req, res) => {
   const isAjax = req.query.ajax === 'true';
 
   try {
-    const items = await spotifyService.getRecentlyPlayed(access_token);
+    const items = await spotifyService.getRecentlyPlayed(access_token, 10);
     res.render('recently-played', {
       title: 'Recently Played',
       items,
@@ -98,14 +98,32 @@ app.get('/top-tracks', async (req, res) => {
 
   try {
     const tracks = await spotifyService.getTopTracks(access_token, time_range);
+
+    // If this is an AJAX request, we only send the content part
+    if (isAjax) {
+      return res.render('top-tracks', {
+        tracks,
+        time_range,
+        access_token,
+        layout: false
+      });
+    }
+
+    // Otherwise we send the full page
     res.render('top-tracks', {
       title: 'Top Tracks',
       tracks,
       access_token,
       time_range,
-      layout: !isAjax
+      layout: true
     });
   } catch (error) {
+    console.error('Error fetching top tracks:', error);
+
+    if (isAjax) {
+      return res.status(500).send('<div class="error-message">Error loading tracks. Please try again.</div>');
+    }
+
     renderErrorPage(res, "Error Retrieving Top Tracks", error, access_token);
   }
 });

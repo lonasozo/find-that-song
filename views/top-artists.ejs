@@ -12,11 +12,6 @@
         <%- include('partials/nav', { access_token }) %>
       </header>
       
-      <div class="time-filter">
-        <a href="/top-artists?access_token=<%= access_token %>&time_range=short_term" class="<%= time_range === 'short_term' ? 'active' : '' %>">Last 4 Weeks</a>
-        <a href="/top-artists?access_token=<%= access_token %>&time_range=medium_term" class="<%= time_range === 'medium_term' ? 'active' : '' %>">Last 6 Months</a>
-        <a href="/top-artists?access_token=<%= access_token %>&time_range=long_term" class="<%= time_range === 'long_term' ? 'active' : '' %>">All Time</a>
-      </div>
       
       <div class="artists-grid">
         <% artists.forEach((artist, index) => { %>
