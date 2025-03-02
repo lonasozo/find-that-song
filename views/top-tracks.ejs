@@ -10,26 +10,28 @@
       
       <% if (!locals.layout) { %>
         <!-- This section is returned for AJAX calls -->
-        <div class="tracks-grid">
-            <% tracks.forEach((track, index) => { %>
-                <div class="track-card">
-                    <!-- Track content -->
-                    <div class="track-number"><%= index + 1 %></div>
-                    <div class="track-image">
-                        <img src="<%= track.album.images[0]?.url || '/img/default-album.png' %>" alt="<%= track.name %>">
-                    </div>
-                    <div class="track-info">
-                        <div class="track-name"><%= track.name %></div>
-                        <div class="track-artist"><%= track.artists.map(artist => artist.name).join(', ') %></div>
-                        <div class="track-album"><%= track.album.name %></div>
-                    </div>
-                    <div class="track-actions">
-                        <a href="<%= track.external_urls.spotify %>" target="_blank" class="spotify-link">
-                            <i class="fas fa-external-link-alt"></i> Open in Spotify
-                        </a>
-                    </div>
+        <div class="track-list">
+          <% tracks.forEach((track, index) => { %>
+            <div class="track-item" data-spotify-url="<%= track.external_urls.spotify %>">
+              <div class="track-number"><%= index + 1 %></div>
+              <div class="track-image">
+                <img src="<%= track.album.images[0]?.url || '/img/default-album.png' %>" alt="<%= track.name %>">
+                <div class="track-play-overlay">
+                  <i class="fas fa-play"></i>
                 </div>
-            <% }); %>
+              </div>
+              <div class="track-details">
+                <div class="track-title"><%= track.name %></div>
+                <div class="track-artist"><%= track.artists.map(artist => artist.name).join(', ') %></div>
+                <div class="track-album"><%= track.album.name %></div>
+              </div>
+              <div class="track-actions">
+                <a href="<%= track.external_urls.spotify %>" target="_blank" class="spotify-link">
+                  <i class="fab fa-spotify"></i>
+                </a>
+              </div>
+            </div>
+          <% }); %>
         </div>
       <% } else { %>
         <!-- This is the full page for initial load -->
@@ -65,22 +67,24 @@
         </div>
         
         <div id="top-tracks-content" class="content-container">
-            <div class="tracks-grid">
+            <div class="track-list">
                 <% tracks.forEach((track, index) => { %>
-                    <div class="track-card">
-                        <!-- Track content -->
+                    <div class="track-item" data-spotify-url="<%= track.external_urls.spotify %>">
                         <div class="track-number"><%= index + 1 %></div>
                         <div class="track-image">
                             <img src="<%= track.album.images[0]?.url || '/img/default-album.png' %>" alt="<%= track.name %>">
+                            <div class="track-play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
                         </div>
-                        <div class="track-info">
-                            <div class="track-name"><%= track.name %></div>
+                        <div class="track-details">
+                            <div class="track-title"><%= track.name %></div>
                             <div class="track-artist"><%= track.artists.map(artist => artist.name).join(', ') %></div>
                             <div class="track-album"><%= track.album.name %></div>
                         </div>
                         <div class="track-actions">
                             <a href="<%= track.external_urls.spotify %>" target="_blank" class="spotify-link">
-                                <i class="fas fa-external-link-alt"></i> Open in Spotify
+                                <i class="fab fa-spotify"></i>
                             </a>
                         </div>
                     </div>

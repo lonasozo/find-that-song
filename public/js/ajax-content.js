@@ -49,6 +49,9 @@ function loadContentByTimeRange(contentType, timeRange, accessToken) {
 
       // Update URL without reload to reflect the current state
       updateUrlWithoutReload(contentType, timeRange, accessToken);
+
+      // Dispatch event to reinitialize track interactions
+      document.dispatchEvent(new CustomEvent('content-loaded'));
     })
     .catch(error => {
       console.error('Error loading content:', error);

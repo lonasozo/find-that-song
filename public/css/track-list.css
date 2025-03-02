@@ -1,0 +1,141 @@
+/* Track list styling - used for both Recently Played and Top Tracks */
+.track-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.track-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  transition: background-color 0.2s ease;
+  position: relative;
+}
+
+.track-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.track-number {
+  width: 30px;
+  text-align: center;
+  font-weight: bold;
+  color: #999;
+}
+
+.track-image {
+  position: relative;
+  margin: 0 15px;
+}
+
+.track-image img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.track-play-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  border-radius: 4px;
+  color: white;
+  font-size: 20px;
+}
+
+.track-item:hover .track-play-overlay {
+  opacity: 1;
+}
+
+.track-play-overlay.active {
+  opacity: 1;
+}
+
+.track-details {
+  flex: 1;
+  min-width: 0; /* Ensures text truncation works */
+}
+
+.track-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-artist, .track-album {
+  font-size: 0.9em;
+  color: #999;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-actions {
+  margin-left: 10px;
+}
+
+.spotify-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #1DB954;
+  color: white;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.spotify-link:hover {
+  background-color: #1ED760;
+  transform: scale(1.1);
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  .track-album {
+    display: none;
+  }
+  
+  .track-number {
+    width: 20px;
+    font-size: 0.9em;
+  }
+  
+  .track-image {
+    margin: 0 10px 0 5px;
+  }
+  
+  .track-image img {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .track-number {
+    display: none;
+  }
+  
+  .spotify-link {
+    width: 30px;
+    height: 30px;
+    font-size: 0.8em;
+  }
+}
