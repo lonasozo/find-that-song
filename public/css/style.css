@@ -321,3 +321,141 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+
+/* Track List Styling (for both Top Tracks and Recently Played) */
+.track-list-container {
+  margin: 20px 0;
+}
+
+.track-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.track-item {
+  display: grid;
+  grid-template-columns: 40px 80px 1fr 50px;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.track-item:hover {
+  background-color: var(--bg-hover);
+}
+
+.track-number {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-align: center;
+}
+
+.track-image {
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.track-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.track-image .no-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-tertiary);
+  font-size: 24px;
+}
+
+.track-info {
+  display: flex;
+  flex-direction: column;
+  padding: 0 15px;
+  overflow: hidden;
+}
+
+.track-name {
+  font-weight: 600;
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-artist {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-meta {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+}
+
+.track-played-at {
+  font-style: italic;
+  font-size: 0.75rem;
+}
+
+.track-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.spotify-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--spotify-green);
+  font-size: 1.2rem;
+  transition: transform 0.2s ease;
+}
+
+.spotify-link:hover {
+  transform: scale(1.2);
+}
+
+/* Responsive adjustments for track list */
+@media (max-width: 768px) {
+  .track-item {
+    grid-template-columns: 30px 60px 1fr 40px;
+    padding: 8px 10px;
+  }
+  
+  .track-image {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .track-item {
+    grid-template-columns: 25px 50px 1fr 30px;
+    padding: 6px 8px;
+  }
+  
+  .track-image {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .track-meta {
+    display: none;
+  }
+}
