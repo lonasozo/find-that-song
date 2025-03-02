@@ -1,0 +1,60 @@
+.time-range-container {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.time-range-label {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.time-range-buttons {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.time-range-button {
+    background-color: #333333;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    margin: 0 5px 5px 0;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.time-range-button:hover {
+    background-color: #555555;
+}
+
+.time-range-button.active {
+    background-color: #1DB954;
+    font-weight: bold;
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.content-header h1 {
+    margin: 0 0 15px 0;
+}
+
+@media (max-width: 768px) {
+    .content-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .time-range-container {
+        width: 100%;
+        margin-top: 10px;
+    }
+}
