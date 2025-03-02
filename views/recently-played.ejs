@@ -6,7 +6,6 @@
   </head>
   <body>
     <div class="container">
-      <h2>Recently Played Tracks</h2>
       
       <div class="content-header">
         <h1><%= title %></h1>
@@ -24,14 +23,9 @@
                   <% } else { %>
                     <div class="no-image">🎵</div>
                   <% } %>
-                  <div class="track-actions">
-                    <a href="<%= item.track.external_urls.spotify %>" target="_blank" class="spotify-link" title="Open in Spotify">
-                      <span class="spotify-icon">🎧</span>
-                    </a>
-                  </div>
-                  <!-- Play overlay spostato qui, all'interno dell'immagine -->
+                  <!-- Play overlay for mobile view -->
                   <div class="track-play-overlay">
-                    <div class="play-icon"></div>
+                    <i class="fas fa-play"></i>
                   </div>
                 </div>
                 <div class="track-info">
@@ -43,6 +37,12 @@
                     <span class="track-album"><%= item.track.album.name %></span>
                     <span class="track-played-at">Played: <%= new Date(item.played_at).toLocaleString() %></span>
                   </div>
+                </div>
+                <!-- Replace the old track-actions with the Spotify icon button -->
+                <div class="track-actions">
+                  <a href="<%= item.track.external_urls.spotify %>" target="_blank" class="spotify-link">
+                    <i class="fab fa-spotify"></i>
+                  </a>
                 </div>
               </div>
             <% }) %>
