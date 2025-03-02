@@ -1,3 +1,40 @@
+/* Theme variables */
+:root {
+    /* Light theme (default) */
+    --bg-primary: #f5f5f5;
+    --bg-secondary: #ffffff;
+    --bg-sidebar: #f8f9fa;
+    --text-primary: #333333;
+    --text-secondary: #666666;
+    --text-muted: #888888;
+    --border-color: #eaeaea;
+    --accent-color: #1db954;
+    --accent-hover: #1ed760;
+    --sidebar-active: #e3f2fd;
+    --card-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --header-bg: #ffffff;
+    --sidebar-text: #333333;
+    --sidebar-border: #e0e0e0;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+    --bg-primary: #121212;
+    --bg-secondary: #1e1e1e;
+    --bg-sidebar: #121212;
+    --text-primary: #ffffff;
+    --text-secondary: #b3b3b3;
+    --text-muted: #9e9e9e;
+    --border-color: #333333;
+    --accent-color: #1db954;
+    --accent-hover: #1ed760;
+    --sidebar-active: #282828;
+    --card-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    --header-bg: #1e1e1e;
+    --sidebar-text: #ffffff;
+    --sidebar-border: #333333;
+}
+
 /* Base styles */
 * {
     box-sizing: border-box;
@@ -8,8 +45,9 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
-    color: #333;
-    background-color: #f5f5f5;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
@@ -27,8 +65,8 @@ body {
 /* Sidebar styles */
 .sidebar {
     width: 250px;
-    background-color: #121212;
-    color: #fff;
+    background-color: var(--bg-sidebar);
+    color: var(--sidebar-text);
     height: 100vh;
     position: fixed;
     top: 0;
@@ -36,16 +74,20 @@ body {
     overflow-y: auto;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     z-index: 1000;
+    border-right: 1px solid var(--sidebar-border);
 }
 
 .sidebar-header {
     padding: 20px 15px;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--sidebar-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .sidebar-header h1 {
     font-size: 1.5rem;
-    color: #1db954; /* Spotify green */
+    color: var(--accent-color);
     margin: 0;
 }
 
@@ -61,32 +103,72 @@ body {
     margin-bottom: 5px;
 }
 
-.nav-link {
+/* Navigation link styles - update only these rules */
+.sidebar .nav-list .nav-item .nav-link {
     display: flex;
     align-items: center;
     padding: 12px 15px;
-    color: #b3b3b3;
+    color: var(--text-secondary);
     text-decoration: none;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, border-left-color 0.3s ease;
     border-left: 3px solid transparent;
+    font-weight: normal;
 }
 
-.nav-link:hover, 
-.nav-link.active {
-    color: #fff;
-    background-color: #282828;
-    border-left-color: #1db954;
+.sidebar .nav-list .nav-item .nav-link:hover {
+    background-color: rgba(0, 0, 0, 0.05);
 }
 
-.nav-icon {
-    margin-right: 10px;
-    font-size: 1.2rem;
-    width: 24px;
-    text-align: center;
+[data-theme="dark"] .sidebar .nav-list .nav-item .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
-.nav-text {
+/* Active link style - only this gets the green color */
+.sidebar .nav-list .nav-item .nav-link.active {
+    color: var(--accent-color);
+    background-color: var(--sidebar-active);
+    border-left-color: var(--accent-color);
     font-weight: 500;
+}
+
+.sidebar .nav-list .nav-item .nav-link .nav-text {
+    font-weight: inherit;
+}
+
+/* Theme toggle button - ensure it doesn't inherit active styles */
+.theme-toggle {
+    margin: 15px;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid var(--sidebar-border);
+    padding-top: 15px;
+}
+
+.theme-toggle-button {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.theme-toggle-button:hover {
+    color: var(--text-secondary);
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .theme-toggle-button:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.theme-icon {
+    margin-right: 8px;
+    font-size: 1.2rem;
 }
 
 /* Main content area */
@@ -94,6 +176,7 @@ body {
     flex: 1;
     margin-left: 250px; /* Same as sidebar width */
     padding: 20px;
+    background-color: var(--bg-primary);
 }
 
 /* Content container */
@@ -108,12 +191,12 @@ body {
     align-items: center;
     height: 200px;
     font-size: 1.2rem;
-    color: #777;
+    color: var(--text-muted);
 }
 
 /* Error message */
 .error {
-    background-color: #fee;
+    background-color: rgba(255, 0, 0, 0.1);
     border-left: 4px solid #d43;
     color: #d43;
     padding: 15px;
@@ -125,8 +208,8 @@ body {
 footer {
     margin-top: 30px;
     padding: 15px 0;
-    border-top: 1px solid #eaeaea;
-    color: #888;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-muted);
     font-size: 0.85rem;
     text-align: center;
 }
@@ -140,10 +223,10 @@ footer {
 }
 
 .track-item {
-    background-color: #fff;
+    background-color: var(--bg-secondary);
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--card-shadow);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -159,11 +242,11 @@ footer {
 }
 
 .album-cover.placeholder {
-    background-color: #eee;
+    background-color: var(--bg-secondary);
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #aaa;
+    color: var(--text-muted);
     font-weight: 500;
 }
 
@@ -177,22 +260,23 @@ footer {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: var(--text-primary);
 }
 
 .track-info p {
     margin-bottom: 5px;
-    color: #666;
+    color: var(--text-secondary);
     font-size: 0.9rem;
 }
 
 .track-info .artist {
     font-weight: 500;
-    color: #333;
+    color: var(--text-secondary);
 }
 
 .track-info .played-at {
     font-size: 0.8rem;
-    color: #888;
+    color: var(--text-muted);
     margin-top: 8px;
 }
 
@@ -200,7 +284,7 @@ footer {
     display: inline-block;
     margin-top: 10px;
     padding: 6px 12px;
-    background-color: #1db954;
+    background-color: var(--accent-color);
     color: white;
     border-radius: 50px;
     text-decoration: none;
@@ -210,7 +294,7 @@ footer {
 }
 
 .spotify-link:hover {
-    background-color: #1ed760;
+    background-color: var(--accent-hover);
 }
 
 /* Responsive adjustments */

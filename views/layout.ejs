@@ -17,37 +17,58 @@
                 <nav class="sidebar-nav">
                     <ul class="nav-list">
                         <li class="nav-item">
-                            <a href="/recently-played?access_token=<%= access_token %>" class="nav-link" data-ajax="true">
+                            <a href="/recently-played?access_token=<%= access_token %>" 
+                               class="nav-link <%= (title === 'Recently Played') ? 'active' : '' %>" 
+                               data-page="recently-played"
+                               data-ajax="true">
                                 <span class="nav-icon">🎵</span>
                                 <span class="nav-text">Recently Played</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/top-tracks?access_token=<%= access_token %>" class="nav-link" data-ajax="true">
+                            <a href="/top-tracks?access_token=<%= access_token %>"
+                               class="nav-link <%= (title === 'Top Tracks') ? 'active' : '' %>"
+                               data-page="top-tracks"
+                               data-ajax="true">
                                 <span class="nav-icon">🔥</span>
                                 <span class="nav-text">Top Tracks</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/top-artists?access_token=<%= access_token %>" class="nav-link" data-ajax="true">
+                            <a href="/top-artists?access_token=<%= access_token %>"
+                               class="nav-link <%= (title === 'Top Artists') ? 'active' : '' %>"
+                               data-page="top-artists"
+                               data-ajax="true">
                                 <span class="nav-icon">🎤</span>
                                 <span class="nav-text">Top Artists</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/top-albums?access_token=<%= access_token %>" class="nav-link" data-ajax="true">
+                            <a href="/top-albums?access_token=<%= access_token %>"
+                               class="nav-link <%= (title === 'Top Albums') ? 'active' : '' %>"
+                               data-page="top-albums"
+                               data-ajax="true">
                                 <span class="nav-icon">💿</span>
                                 <span class="nav-text">Top Albums</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/generate-playlist?access_token=<%= access_token %>" class="nav-link" data-ajax="true">
+                            <a href="/generate-playlist?access_token=<%= access_token %>"
+                               class="nav-link <%= (title === 'Generate Playlist') ? 'active' : '' %>"
+                               data-page="generate-playlist"
+                               data-ajax="true">
                                 <span class="nav-icon">📝</span>
                                 <span class="nav-text">Generate Playlist</span>
                             </a>
                         </li>
                     </ul>
                 </nav>
+                <div class="theme-toggle">
+                    <button id="theme-toggle-btn" class="theme-toggle-button">
+                        <span id="theme-icon" class="theme-icon">☀️</span>
+                        <span id="theme-text">Light Mode</span>
+                    </button>
+                </div>
             </aside>
         <% } %>
         
@@ -65,5 +86,6 @@
     </div>
 
     <script src="/js/app.js"></script>
+    <script src="/js/theme.js"></script>
 </body>
 </html>

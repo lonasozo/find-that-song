@@ -27,7 +27,7 @@ h1 {
   color: #1DB954;
 }
 
-.home-link, .nav-link {
+.home-link{
   color: #fff;
   text-decoration: none;
   padding: 6px 12px;
@@ -37,7 +37,7 @@ h1 {
   transition: background-color 0.3s;
 }
 
-.home-link:hover, .nav-link:hover {
+.home-link:hover {
   background-color: #1ed760;
 }
 

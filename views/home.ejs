@@ -6,10 +6,127 @@
     <link rel="stylesheet" href="../public/css/home.css">
   </head>
   <body style="text-align: center;">
-    <a href="/login" class="login-button">ENTER with Spotify</a>
-    <div class="description">
-      <p>Missed the moment and didn't save your favorite song? Check your recent listens on Spotify</p>
-      <p>Also discover your top tracks and artists over different time periods!</p>
+    <div class="home-container">
+      <div class="hero">
+        <h1>Find That Song</h1>
+        <p>Discover your music listening habits and create personalized playlists</p>
+        <a href="/login" class="login-button">Login with Spotify</a>
+      </div>
+      
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">🎵</div>
+          <h2>Recently Played</h2>
+          <p>See what you've been listening to recently</p>
+        </div>
+        
+        <div class="feature">
+          <div class="feature-icon">🔥</div>
+          <h2>Top Tracks</h2>
+          <p>Discover your most played tracks</p>
+        </div>
+        
+        <div class="feature">
+          <div class="feature-icon">🎤</div>
+          <h2>Top Artists</h2>
+          <p>See which artists you listen to most</p>
+        </div>
+        
+        <div class="feature">
+          <div class="feature-icon">📝</div>
+          <h2>Generate Playlists</h2>
+          <p>Create custom playlists based on your listening habits</p>
+        </div>
+      </div>
     </div>
+
+    <style>
+      .home-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+      
+      .hero {
+        text-align: center;
+        padding: 60px 20px;
+        background-color: var(--bg-secondary);
+        border-radius: 10px;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 40px;
+      }
+      
+      .hero h1 {
+        font-size: 3rem;
+        color: var(--accent-color);
+        margin-bottom: 20px;
+      }
+      
+      .hero p {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        margin-bottom: 30px;
+      }
+      
+      .login-button {
+        display: inline-block;
+        background-color: var(--accent-color);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 1.1rem;
+        transition: background-color 0.3s ease;
+      }
+      
+      .login-button:hover {
+        background-color: var(--accent-hover);
+      }
+      
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+      }
+      
+      .feature {
+        background-color: var(--bg-secondary);
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: var(--card-shadow);
+        text-align: center;
+        transition: transform 0.3s ease;
+      }
+      
+      .feature:hover {
+        transform: translateY(-10px);
+      }
+      
+      .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+      }
+      
+      .feature h2 {
+        margin-bottom: 15px;
+        color: var(--text-primary);
+      }
+      
+      .feature p {
+        color: var(--text-secondary);
+      }
+      
+      @media (max-width: 768px) {
+        .hero h1 {
+          font-size: 2.2rem;
+        }
+        
+        .features {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
   </body>
 </html>
