@@ -321,3 +321,294 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+
+/* Track List Styling (for both Top Tracks and Recently Played) */
+.track-list-container {
+  margin: 20px 0;
+}
+
+.track-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.track-item {
+  display: grid;
+  grid-template-columns: 40px 80px 1fr 50px;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.track-item:hover {
+  background-color: var(--bg-hover);
+}
+
+.track-number {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-align: center;
+}
+
+.track-image {
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.track-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.track-image .no-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-tertiary);
+  font-size: 24px;
+}
+
+.track-info {
+  display: flex;
+  flex-direction: column;
+  padding: 0 15px;
+  overflow: hidden;
+}
+
+.track-name {
+  font-weight: 600;
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-artist {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-meta {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+}
+
+.track-played-at {
+  font-style: italic;
+  font-size: 0.75rem;
+}
+
+.track-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.spotify-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--spotify-green);
+  font-size: 1.2rem;
+  transition: transform 0.2s ease;
+}
+
+.spotify-link:hover {
+  transform: scale(1.2);
+}
+
+/* Responsive adjustments for track list */
+@media (max-width: 768px) {
+  .track-item {
+    grid-template-columns: 30px 60px 1fr 40px;
+    padding: 8px 10px;
+  }
+  
+  .track-image {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Change track list to cards on mobile */
+  .track-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .track-item {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    transform: none;
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .track-item:hover {
+    transform: translateY(-5px);
+  }
+  
+  .track-number {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: bold;
+  }
+  
+  .track-image {
+    width: 100%;
+    height: 180px;
+    position: relative;
+    border-radius: 0;
+  }
+  
+  .track-info {
+    width: 100%;
+    padding: 12px;
+  }
+  
+  .track-name {
+    font-size: 1rem;
+    margin-bottom: 4px;
+  }
+  
+  .track-artist {
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+  }
+  
+  .track-meta {
+    display: block;
+    margin-top: 6px;
+  }
+  
+  .track-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+  }
+  
+  .spotify-link {
+    background-color: rgba(0, 0, 0, 0.6);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: white;
+  }
+  
+  /* Play button overlay styles - riposizionato solo sopra l'immagine */
+  .track-play-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 180px;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+    pointer-events: none;
+  }
+  
+  .track-play-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+  
+  .play-icon {
+    color: white;
+    font-size: 2rem;
+    background-color: var(--accent-color);
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  .play-icon::before {
+    content: "▶";
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 4px; /* Align play symbol in center */
+  }
+  
+  /* Make the time range selector more mobile-friendly */
+  .time-range-selector {
+    justify-content: center;
+    margin: 15px 0;
+  }
+  
+  .time-range-option {
+    flex: 1;
+    min-width: 80px;
+    font-size: 0.85rem;
+    padding: 5px 10px;
+  }
+}
+
+/* Time range selector styles - updated for consistency */
+.time-range-selector {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.time-range-option {
+  padding: 6px 12px;
+  border-radius: 20px;
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.time-range-option:hover {
+  background-color: var(--bg-hover, #f0f0f0);
+}
+
+.time-range-option.active {
+  background-color: var(--accent-color);
+  color: white;
+}

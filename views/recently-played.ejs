@@ -8,29 +8,93 @@
     <div class="container">
       <h2>Recently Played Tracks</h2>
       
-      <div class="track-list">
-          <% if (items && items.length > 0) { %>
-              <% items.forEach(item => { %>
-                  <div class="track-item">
-                      <% if (item.track.album.images && item.track.album.images.length > 0) { %>
-                          <img src="<%= item.track.album.images[0].url %>" alt="<%= item.track.album.name %>" class="album-cover">
-                      <% } else { %>
-                          <div class="album-cover placeholder">No Image</div>
-                      <% } %>
-                      
-                      <div class="track-info">
-                          <h3><%= item.track.name %></h3>
-                          <p class="artist"><%= item.track.artists.map(artist => artist.name).join(', ') %></p>
-                          <p class="album"><%= item.track.album.name %></p>
-                          <p class="played-at">Played at: <%= new Date(item.played_at).toLocaleString() %></p>
-                          <a href="<%= item.track.external_urls.spotify %>" target="_blank" class="spotify-link">Open in Spotify</a>
-                      </div>
+      <div class="content-header">
+        <h1><%= title %></h1>
+      </div>
+
+      <div class="track-list-container">
+        <% if (items && items.length > 0) { %>
+          <div class="track-list">
+            <% items.forEach((item, index) => { %>
+              <div class="track-item" data-spotify-url="<%= item.track.external_urls.spotify %>">
+                <div class="track-number"><%= index + 1 %></div>
+                <div class="track-image">
+                  <% if (item.track.album.images && item.track.album.images.length > 0) { %>
+                    <img src="<%= item.track.album.images[0].url %>" alt="<%= item.track.album.name %>" loading="lazy">
+                  <% } else { %>
+                    <div class="no-image">🎵</div>
+                  <% } %>
+                  <div class="track-actions">
+                    <a href="<%= item.track.external_urls.spotify %>" target="_blank" class="spotify-link" title="Open in Spotify">
+                      <span class="spotify-icon">🎧</span>
+                    </a>
                   </div>
-              <% }); %>
-          <% } else { %>
-              <p class="no-results">No recently played tracks found.</p>
-          <% } %>
+                  <!-- Play overlay spostato qui, all'interno dell'immagine -->
+                  <div class="track-play-overlay">
+                    <div class="play-icon">GO</div>
+                  </div>
+                </div>
+                <div class="track-info">
+                  <div class="track-name"><%= item.track.name %></div>
+                  <div class="track-artist">
+                    <%= item.track.artists.map(artist => artist.name).join(', ') %>
+                  </div>
+                  <div class="track-meta">
+                    <span class="track-album"><%= item.track.album.name %></span>
+                    <span class="track-played-at">Played: <%= new Date(item.played_at).toLocaleString() %></span>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <div class="no-content-message">
+            <p>No recently played tracks found.</p>
+          </div>
+        <% } %>
       </div>
     </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Solo per dispositivi mobili
+        if (window.innerWidth <= 480) {
+          const trackItems = document.querySelectorAll('.track-item');
+          
+          trackItems.forEach(item => {
+            // Ottiene l'URL Spotify dall'attributo data
+            const spotifyUrl = item.getAttribute('data-spotify-url');
+            const overlay = item.querySelector('.track-play-overlay');
+            
+            // Aggiunge evento touch/click
+            item.addEventListener('click', function(e) {
+              // Se l'overlay è già attivo, apri il link
+              if (overlay.classList.contains('active')) {
+                window.open(spotifyUrl, '_blank');
+                setTimeout(() => {
+                  overlay.classList.remove('active');
+                }, 500);
+              } else {
+                // Altrimenti, mostra l'overlay
+                e.preventDefault();
+                
+                // Prima rimuovi tutti gli altri overlay attivi
+                document.querySelectorAll('.track-play-overlay.active').forEach(el => {
+                  if (el !== overlay) el.classList.remove('active');
+                });
+                
+                // Attiva questo overlay
+                overlay.classList.add('active');
+                
+                // Auto-nascondi dopo 3 secondi
+                setTimeout(() => {
+                  overlay.classList.remove('active');
+                }, 3000);
+              }
+            });
+          });
+        }
+      });
+    </script>
   </body>
 </html>

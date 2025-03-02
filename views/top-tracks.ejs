@@ -3,47 +3,112 @@
   <head>
     <title>Your Top Tracks</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="../public/css/tracks.css">
   </head>
   <body>
-    <div class="tracks-container">
-      <header>
-        <h1>Your Top Tracks</h1>
-        <%- include('partials/nav', { access_token }) %>
-      </header>
+    <div class="container">
+      <h2>Top Tracks</h2>
       
-      <div class="time-filter">
-        <a href="/top-tracks?access_token=<%= access_token %>&time_range=short_term" class="<%= time_range === 'short_term' ? 'active' : '' %>">Last 4 Weeks</a>
-        <a href="/top-tracks?access_token=<%= access_token %>&time_range=medium_term" class="<%= time_range === 'medium_term' ? 'active' : '' %>">Last 6 Months</a>
-        <a href="/top-tracks?access_token=<%= access_token %>&time_range=long_term" class="<%= time_range === 'long_term' ? 'active' : '' %>">All Time</a>
+      <div class="content-header">
+        <h1><%= title %></h1>
+        
+        <div class="time-range-selector">
+          <a href="/top-tracks?access_token=<%= access_token %>&time_range=short_term" 
+             class="time-range-option <%= time_range === 'short_term' ? 'active' : '' %>">
+            Last 4 Weeks
+          </a>
+          <a href="/top-tracks?access_token=<%= access_token %>&time_range=medium_term" 
+             class="time-range-option <%= time_range === 'medium_term' ? 'active' : '' %>">
+            Last 6 Months
+          </a>
+          <a href="/top-tracks?access_token=<%= access_token %>&time_range=long_term" 
+             class="time-range-option <%= time_range === 'long_term' ? 'active' : '' %>">
+            All Time
+          </a>
+        </div>
       </div>
-      
-      <div class="tracks-list">
-        <% tracks.forEach((track, index) => { %>
-          <% const album = track.album; %>
-          
-          <div class="track-item">
-            <div class="track-rank"><%= index + 1 %></div>
-            <a href="<%= track.external_urls.spotify %>" target="_blank" title="Play <%= track.name %> on Spotify">
-              <img src="<%= album.images[2]?.url || album.images[0].url %>" alt="<%= album.name %>" class="album-img" />
-            </a>
-            <div class="track-info">
-              <div class="track-name"><%= track.name %></div>
-              <div class="artist-name">
-                <% track.artists.forEach((artist, index) => { %>
-                  <a href="<%= artist.external_urls.spotify %>" target="_blank" class="artist-link"><%= artist.name %></a><%= index < track.artists.length-1 ? ', ' : '' %>
-                <% }); %>
+
+      <div class="track-list-container">
+        <% if (tracks && tracks.length > 0) { %>
+          <div class="track-list">
+            <% tracks.forEach((track, index) => { %>
+              <div class="track-item" data-spotify-url="<%= track.external_urls.spotify %>">
+                <div class="track-number"><%= index + 1 %></div>
+                <div class="track-image">
+                  <% if (track.album.images && track.album.images.length > 0) { %>
+                    <img src="<%= track.album.images[0].url %>" alt="<%= track.album.name %>" loading="lazy">
+                  <% } else { %>
+                    <div class="no-image">🎵</div>
+                  <% } %>
+                  <div class="track-actions">
+                    <a href="<%= track.external_urls.spotify %>" target="_blank" class="spotify-link" title="Open in Spotify">
+                      <span class="spotify-icon">🎧</span>
+                    </a>
+                  </div>
+                  <div class="track-play-overlay">
+                    <div class="play-icon">▶</div>
+                  </div>
+                </div>
+                <div class="track-info">
+                  <div class="track-name"><%= track.name %></div>
+                  <div class="track-artist">
+                    <%= track.artists.map(artist => artist.name).join(', ') %>
+                  </div>
+                  <div class="track-meta">
+                    <span class="track-album"><%= track.album.name %></span>
+                    <span class="track-popularity">Popularity: <%= track.popularity %>/100</span>
+                  </div>
+                </div>
               </div>
-              <div class="album-name">
-                <a href="<%= album.external_urls.spotify %>" target="_blank" class="album-link"><%= album.name %></a>
-              </div>
-            </div>
-            <div class="track-meta">
-              <a href="<%= track.external_urls.spotify %>" class="spotify-link" target="_blank">Play</a>
-            </div>
+            <% }) %>
           </div>
-        <% }); %>
+        <% } else { %>
+          <div class="no-content-message">
+            <p>No top tracks found for this time range.</p>
+          </div>
+        <% } %>
       </div>
     </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Solo per dispositivi mobili
+        if (window.innerWidth <= 480) {
+          const trackItems = document.querySelectorAll('.track-item');
+          
+          trackItems.forEach(item => {
+            // Ottiene l'URL Spotify dall'attributo data
+            const spotifyUrl = item.getAttribute('data-spotify-url');
+            const overlay = item.querySelector('.track-play-overlay');
+            
+            // Aggiunge evento touch/click
+            item.addEventListener('click', function(e) {
+              // Se l'overlay è già attivo, apri il link
+              if (overlay.classList.contains('active')) {
+                window.open(spotifyUrl, '_blank');
+                setTimeout(() => {
+                  overlay.classList.remove('active');
+                }, 500);
+              } else {
+                // Altrimenti, mostra l'overlay
+                e.preventDefault();
+                
+                // Prima rimuovi tutti gli altri overlay attivi
+                document.querySelectorAll('.track-play-overlay.active').forEach(el => {
+                  if (el !== overlay) el.classList.remove('active');
+                });
+                
+                // Attiva questo overlay
+                overlay.classList.add('active');
+                
+                // Auto-nascondi dopo 3 secondi
+                setTimeout(() => {
+                  overlay.classList.remove('active');
+                }, 3000);
+              }
+            });
+          });
+        }
+      });
+    </script>
   </body>
 </html>
