@@ -51,6 +51,74 @@
         font-style: italic;
         color: #888;
       }
+
+      /* Styles for links */
+      .artist-link, .album-link {
+        color: inherit;
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+      
+      .artist-link:hover, .album-link:hover {
+        color: #1DB954;
+        text-decoration: underline;
+      }
+      
+      .track-image {
+        position: relative;
+        overflow: hidden;
+        border-radius: 4px;
+      }
+      
+      .track-image a.cover-link {
+        display: block;
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+      
+      .track-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      
+      .track-play-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        color: white;
+        font-size: 1.5rem;
+      }
+      
+      .cover-link:hover .track-play-overlay {
+        opacity: 1;
+      }
+      
+      .track-play-overlay.active {
+        opacity: 1;
+      }
+
+      /* New style for track title link */
+      .track-link {
+        color: inherit;
+        text-decoration: none;
+        font-weight: inherit;
+        transition: color 0.2s ease;
+      }
+      
+      .track-link:hover {
+        color: #1DB954;
+        text-decoration: underline;
+      }
     </style>
   </head>
   <body>
@@ -67,23 +135,39 @@
               <div class="track-item" data-spotify-url="<%= item.track.external_urls.spotify %>" data-duration="<%= item.track.duration_ms %>" data-explicit="<%= item.track.explicit %>" data-played-at="<%= item.played_at %>">
                 <div class="track-number"><%= index + 1 %></div>
                 <div class="track-image">
-                  <% if (item.track.album.images && item.track.album.images.length > 0) { %>
-                    <img src="<%= item.track.album.images[0].url %>" alt="<%= item.track.album.name %>" loading="lazy">
-                  <% } else { %>
-                    <div class="no-image">🎵</div>
-                  <% } %>
-                  <!-- Play overlay for mobile view -->
-                  <div class="track-play-overlay">
-                    <i class="fas fa-play"></i>
-                  </div>
+                  <a href="<%= item.track.external_urls.spotify %>" target="_blank" class="cover-link">
+                    <% if (item.track.album.images && item.track.album.images.length > 0) { %>
+                      <img src="<%= item.track.album.images[0].url %>" alt="<%= item.track.album.name %>" loading="lazy">
+                    <% } else { %>
+                      <div class="no-image">🎵</div>
+                    <% } %>
+                    
+                    <!-- Play overlay now inside the anchor tag -->
+                    <div class="track-play-overlay">
+                      <i class="fas fa-play"></i>
+                    </div>
+                  </a>
                 </div>
                 <div class="track-info">
-                  <div class="track-name"><%= item.track.name %></div>
+                  <div class="track-name">
+                    <!-- Add link to track title -->
+                    <a href="<%= item.track.external_urls.spotify %>" target="_blank" class="track-link">
+                      <%= item.track.name %>
+                    </a>
+                  </div>
                   <div class="track-artist">
-                    <%= item.track.artists.map(artist => artist.name).join(', ') %>
+                    <% item.track.artists.forEach((artist, i) => { %>
+                      <a href="<%= artist.external_urls.spotify %>" target="_blank" class="artist-link">
+                        <%= artist.name %><%= i < item.track.artists.length - 1 ? ', ' : '' %>
+                      </a>
+                    <% }) %>
                   </div>
                   <div class="track-meta">
-                    <span class="track-album"><%= item.track.album.name %></span>
+                    <span class="track-album">
+                      <a href="<%= item.track.album.external_urls.spotify %>" target="_blank" class="album-link">
+                        <%= item.track.album.name %>
+                      </a>
+                    </span>
                     <span class="track-played-at">Played: <%= new Date(item.played_at).toLocaleString() %></span>
                   </div>
                 </div>
@@ -111,35 +195,51 @@
           const trackItems = document.querySelectorAll('.track-item');
           
           trackItems.forEach(item => {
-            // Ottiene l'URL Spotify dall'attributo data
+            // Get the Spotify URL and the overlay - now inside anchor tag
             const spotifyUrl = item.getAttribute('data-spotify-url');
-            const overlay = item.querySelector('.track-play-overlay');
+            const coverLink = item.querySelector('.cover-link');
+            const overlay = coverLink.querySelector('.track-play-overlay');
             
-            // Aggiunge evento touch/click
+            // Mobile tap handler for non-link areas of the track item
             item.addEventListener('click', function(e) {
-              // Se l'overlay è già attivo, apri il link
-              if (overlay.classList.contains('active')) {
-                window.open(spotifyUrl, '_blank');
-                setTimeout(() => {
-                  overlay.classList.remove('active');
-                }, 500);
-              } else {
-                // Altrimenti, mostra l'overlay
-                e.preventDefault();
-                
-                // Prima rimuovi tutti gli altri overlay attivi
-                document.querySelectorAll('.track-play-overlay.active').forEach(el => {
-                  if (el !== overlay) el.classList.remove('active');
-                });
-                
-                // Attiva questo overlay
-                overlay.classList.add('active');
-                
-                // Auto-nascondi dopo 3 secondi
-                setTimeout(() => {
-                  overlay.classList.remove('active');
-                }, 3000);
+              // Skip if clicking on any link or its children
+              if (e.target.tagName === 'A' || e.target.closest('a')) {
+                return;
               }
+              
+              // Show overlay when tapping anywhere on the track
+              e.preventDefault();
+              
+              // Remove other active overlays
+              document.querySelectorAll('.track-play-overlay.active').forEach(el => {
+                if (el !== overlay) el.classList.remove('active');
+              });
+              
+              // Toggle this overlay
+              overlay.classList.toggle('active');
+              
+              // Auto-hide after timeout
+              setTimeout(() => {
+                overlay.classList.remove('active');
+              }, 3000);
+            });
+            
+            // Special handling for direct overlay clicks - not needed anymore as the overlay is
+            // now part of the anchor tag and will naturally navigate when clicked
+          });
+        } else {
+          // For desktop: ensure hovering works properly
+          const coverLinks = document.querySelectorAll('.cover-link');
+          coverLinks.forEach(link => {
+            const overlay = link.querySelector('.track-play-overlay');
+            
+            // Show overlay on hover for desktop
+            link.addEventListener('mouseenter', () => {
+              overlay.style.opacity = '1';
+            });
+            
+            link.addEventListener('mouseleave', () => {
+              overlay.style.opacity = '0';
             });
           });
         }
@@ -194,12 +294,12 @@
             }
             
             // Add explicit tag if track is explicit
-            const isExplicit = item.getAttribute('data-explicit') === 'true';
-            if (isExplicit) {
-              const explicitTag = document.createElement('span');
-              explicitTag.textContent = 'Explicit ';
-              metaDiv.appendChild(explicitTag);
-            }
+            // const isExplicit = item.getAttribute('data-explicit') === 'true';
+            // if (isExplicit) {
+            //   const explicitTag = document.createElement('span');
+            //   explicitTag.textContent = 'Explicit ';
+            //   metaDiv.appendChild(explicitTag);
+            // }
             
             // Add relative time to the played_at timestamp
             const playedAt = item.getAttribute('data-played-at');

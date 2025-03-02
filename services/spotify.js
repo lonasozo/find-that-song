@@ -55,10 +55,12 @@ class SpotifyService {
    * @param {string} accessToken - Spotify access token
    * @returns {Promise<Array>} - Recently played tracks
    */
-  async getRecentlyPlayed(accessToken) {
+  async getRecentlyPlayed(accessToken, limit = 50) {
     try {
       const response = await axios.get('https://api.spotify.com/v1/me/player/recently-played', {
-        headers: { 'Authorization': 'Bearer ' + accessToken }
+        headers: { 'Authorization': 'Bearer ' + accessToken },
+        params: { limit: limit }
+
       });
 
       return response.data.items;

@@ -79,7 +79,7 @@ app.get('/recently-played', async (req, res) => {
   const isAjax = req.query.ajax === 'true';
 
   try {
-    const items = await spotifyService.getRecentlyPlayed(access_token);
+    const items = await spotifyService.getRecentlyPlayed(access_token, 10);
     res.render('recently-played', {
       title: 'Recently Played',
       items,
