@@ -102,10 +102,17 @@ document.addEventListener('DOMContentLoaded', function () {
       // Add explicit tag if track is explicit
       const isExplicit = item.getAttribute('data-explicit') === 'true';
       if (isExplicit) {
+        // Create explicit tag with consistent styling
         const explicitTag = document.createElement('span');
         explicitTag.className = 'meta-tag explicit-tag';
         explicitTag.textContent = 'E';
-        metaDiv.appendChild(explicitTag);
+
+        // Insert after track duration if it exists, or at the end of metaDiv
+        if (metaDiv.querySelector('.track-duration')) {
+          metaDiv.querySelector('.track-duration').after(explicitTag);
+        } else {
+          metaDiv.appendChild(explicitTag);
+        }
       }
 
       // Add relative time to the played_at timestamp

@@ -16,8 +16,22 @@
 }
 
 .explicit-tag {
-  background: rgba(255, 0, 0, 0.1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 0, 0, 0.1);
   color: #ff4444;
+  border: 1px solid #ff4444;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 0.7em;
+  font-weight: bold;
+  margin-left: 8px;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 0;
+  vertical-align: middle;
 }
 
 .context-info {
