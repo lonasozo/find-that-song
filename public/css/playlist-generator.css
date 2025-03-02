@@ -37,8 +37,8 @@
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #121212;
-  color: #fff;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   margin: 0;
   padding: 0;
 }
@@ -55,27 +55,27 @@ header {
   align-items: center;
   margin-bottom: 20px;
   padding-bottom: 15px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--border-color);
 }
 
 h1 {
   margin: 0;
   font-size: 24px;
-  color: #1DB954;
+  color: var(--accent-color);
 }
 
 .home-link{
-  color: #fff;
+  color: var(--bg-secondary);
   text-decoration: none;
   padding: 6px 12px;
-  background-color: #1DB954;
+  background-color: var(--accent-color);
   border-radius: 20px;
   font-size: 14px;
   transition: background-color 0.3s;
 }
 
 .home-link:hover {
-  background-color: #1ed760;
+  background-color: var(--accent-hover);
 }
 
 .nav-links {
@@ -86,10 +86,11 @@ h1 {
 }
 
 .generator-form-container {
-  background-color: #181818;
+  background-color: var(--bg-secondary);
   border-radius: 8px;
   padding: 25px;
   margin-top: 20px;
+  box-shadow: var(--card-shadow);
 }
 
 .generator-form {
@@ -107,21 +108,21 @@ h1 {
 
 label {
   font-size: 16px;
-  color: #b3b3b3;
+  color: var(--text-secondary);
 }
 
 input, select, textarea {
   padding: 12px;
   border-radius: 4px;
-  border: 1px solid #333;
-  background-color: #282828;
-  color: #fff;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   font-size: 16px;
 }
 
 input:focus, select:focus, textarea:focus {
   outline: none;
-  border-color: #1DB954;
+  border-color: var(--accent-color);
 }
 
 select[multiple] {
@@ -140,7 +141,7 @@ select[multiple] {
 .form-group textarea {
   width: 100%;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   font-size: 16px;
 }
@@ -150,7 +151,7 @@ select[multiple] {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
   background-repeat: no-repeat;
   background-position-x: calc(100% - 10px);
   background-position-y: 50%;
@@ -171,12 +172,12 @@ select[multiple] {
 }
 
 .form-group select[multiple] option:checked {
-  background-color: #1DB954;
+  background-color: var(--accent-color);
   color: white;
 }
 
 small {
-  color: #b3b3b3;
+  color: var(--text-muted);
   font-size: 12px;
   margin-top: 5px;
 }
@@ -186,8 +187,8 @@ small {
 }
 
 .submit-btn {
-  background-color: #1DB954;
-  color: #fff;
+  background-color: var(--accent-color);
+  color: var(--bg-secondary);
   border: none;
   padding: 12px 24px;
   border-radius: 20px;
@@ -198,20 +199,21 @@ small {
 }
 
 .submit-btn:hover {
-  background-color: #1ed760;
+  background-color: var(--accent-hover);
 }
 
 /* Success page styles */
 .playlist-success {
-  background-color: #181818;
+  background-color: var(--bg-secondary);
   border-radius: 8px;
   padding: 25px;
   margin-bottom: 30px;
   text-align: center;
+  box-shadow: var(--card-shadow);
 }
 
 .playlist-success h2 {
-  color: #1DB954;
+  color: var(--accent-color);
   margin-top: 0;
 }
 
@@ -224,8 +226,8 @@ small {
 
 .spotify-link {
   display: inline-block;
-  background-color: #1DB954;
-  color: #fff;
+  background-color: var(--accent-color);
+  color: var(--bg-secondary);
   text-decoration: none;
   padding: 10px 20px;
   border-radius: 20px;
@@ -233,13 +235,13 @@ small {
 }
 
 .spotify-link:hover {
-  background-color: #1ed760;
+  background-color: var(--accent-hover);
 }
 
 .create-another {
   display: inline-block;
-  background-color: #333;
-  color: #fff;
+  background-color: var(--sidebar-active);
+  color: var(--text-primary);
   text-decoration: none;
   padding: 10px 20px;
   border-radius: 20px;
@@ -247,7 +249,7 @@ small {
 }
 
 .create-another:hover {
-  background-color: #444;
+  background-color: var(--border-color);
 }
 
 .tracks-list {
@@ -256,21 +258,22 @@ small {
 
 .tracks-list h3 {
   margin-bottom: 15px;
-  color: #b3b3b3;
+  color: var(--text-secondary);
 }
 
 .track-item {
   display: flex;
   align-items: center;
-  background-color: #181818;
+  background-color: var(--bg-secondary);
   border-radius: 8px;
   padding: 10px;
   margin-bottom: 10px;
   transition: background-color 0.3s;
+  box-shadow: var(--card-shadow);
 }
 
 .track-item:hover {
-  background-color: #282828;
+  background-color: var(--sidebar-active);
 }
 
 .album-img {
@@ -292,30 +295,31 @@ small {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: var(--text-primary);
 }
 
 .artist-name, .album-name {
   font-size: 14px;
-  color: #b3b3b3;
+  color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .artist-link, .album-link {
-  color: #b3b3b3;
+  color: var(--text-secondary);
   text-decoration: none;
 }
 
 .artist-link:hover, .album-link:hover {
   text-decoration: underline;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .track-rank {
   font-size: 16px;
   font-weight: bold;
-  color: #b3b3b3;
+  color: var(--text-secondary);
   margin-right: 15px;
   min-width: 25px;
   text-align: center;
