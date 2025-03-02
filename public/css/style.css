@@ -1,0 +1,239 @@
+/* Base styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f5f5f5;
+}
+
+.container {
+    width: 100%;
+    padding: 0 15px;
+    margin: 0 auto;
+}
+
+/* App container with sidebar layout */
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar styles */
+.sidebar {
+    width: 250px;
+    background-color: #121212;
+    color: #fff;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.sidebar-header {
+    padding: 20px 15px;
+    border-bottom: 1px solid #333;
+}
+
+.sidebar-header h1 {
+    font-size: 1.5rem;
+    color: #1db954; /* Spotify green */
+    margin: 0;
+}
+
+.sidebar-nav {
+    padding: 15px 0;
+}
+
+.nav-list {
+    list-style: none;
+}
+
+.nav-item {
+    margin-bottom: 5px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    color: #b3b3b3;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.nav-link:hover, 
+.nav-link.active {
+    color: #fff;
+    background-color: #282828;
+    border-left-color: #1db954;
+}
+
+.nav-icon {
+    margin-right: 10px;
+    font-size: 1.2rem;
+    width: 24px;
+    text-align: center;
+}
+
+.nav-text {
+    font-weight: 500;
+}
+
+/* Main content area */
+.main-content {
+    flex: 1;
+    margin-left: 250px; /* Same as sidebar width */
+    padding: 20px;
+}
+
+/* Content container */
+#content-container {
+    min-height: calc(100vh - 80px);
+}
+
+/* Loading indicator */
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    font-size: 1.2rem;
+    color: #777;
+}
+
+/* Error message */
+.error {
+    background-color: #fee;
+    border-left: 4px solid #d43;
+    color: #d43;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 3px;
+}
+
+/* Footer */
+footer {
+    margin-top: 30px;
+    padding: 15px 0;
+    border-top: 1px solid #eaeaea;
+    color: #888;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+/* Track list styles */
+.track-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.track-item {
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.track-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.album-cover {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.album-cover.placeholder {
+    background-color: #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #aaa;
+    font-weight: 500;
+}
+
+.track-info {
+    padding: 15px;
+}
+
+.track-info h3 {
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.track-info p {
+    margin-bottom: 5px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.track-info .artist {
+    font-weight: 500;
+    color: #333;
+}
+
+.track-info .played-at {
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 8px;
+}
+
+.spotify-link {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 6px 12px;
+    background-color: #1db954;
+    color: white;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.spotify-link:hover {
+    background-color: #1ed760;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .app-container {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    
+    .main-content {
+        margin-left: 0;
+    }
+    
+    .nav-link {
+        padding: 10px 15px;
+    }
+    
+    .track-list {
+        grid-template-columns: 1fr;
+    }
+}

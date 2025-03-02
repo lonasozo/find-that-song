@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 require('dotenv').config();
 const spotifyService = require('./services/spotify');
+const expressLayouts = require('express-ejs-layouts');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -9,6 +10,8 @@ const port = process.env.PORT || 3000;
 // Configure express to use EJS as the view engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.use(expressLayouts);
+app.set('layout', 'layout');
 
 // Configure static files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -25,19 +28,33 @@ app.use(express.urlencoded({ extended: true }));
 
 // Helper function to render error pages
 function renderErrorPage(res, title, error, accessToken) {
-  return res.render('error', {
-    title,
-    message: error.message,
-    details: error.response?.data?.error?.message || error.message,
-    status: error.response?.data?.error?.status || '',
-    step: error.step || 'unknown',
-    accessToken
-  });
+  const isAjax = res.req.query.ajax === 'true';
+
+  if (isAjax) {
+    return res.render('error', {
+      title,
+      message: error.message,
+      details: error.response?.data?.error?.message || error.message,
+      status: error.response?.data?.error?.status || '',
+      step: error.step || 'unknown',
+      accessToken,
+      layout: false
+    });
+  } else {
+    return res.render('error', {
+      title,
+      message: error.message,
+      details: error.response?.data?.error?.message || error.message,
+      status: error.response?.data?.error?.status || '',
+      step: error.step || 'unknown',
+      accessToken
+    });
+  }
 }
 
 // Routes
 app.get('/', (req, res) => {
-  res.render('home');
+  res.render('home', { title: 'Home' });
 });
 
 app.get('/login', (req, res) => {
@@ -59,12 +76,15 @@ app.get('/callback', async (req, res) => {
 
 app.get('/recently-played', async (req, res) => {
   const access_token = req.query.access_token;
+  const isAjax = req.query.ajax === 'true';
 
   try {
     const items = await spotifyService.getRecentlyPlayed(access_token);
     res.render('recently-played', {
+      title: 'Recently Played',
       items,
-      access_token
+      access_token,
+      layout: !isAjax
     });
   } catch (error) {
     renderErrorPage(res, "Error Retrieving Tracks", error, access_token);
@@ -74,13 +94,16 @@ app.get('/recently-played', async (req, res) => {
 app.get('/top-tracks', async (req, res) => {
   const access_token = req.query.access_token;
   const time_range = req.query.time_range || 'medium_term';
+  const isAjax = req.query.ajax === 'true';
 
   try {
     const tracks = await spotifyService.getTopTracks(access_token, time_range);
     res.render('top-tracks', {
+      title: 'Top Tracks',
       tracks,
       access_token,
-      time_range
+      time_range,
+      layout: !isAjax
     });
   } catch (error) {
     renderErrorPage(res, "Error Retrieving Top Tracks", error, access_token);
@@ -90,13 +113,16 @@ app.get('/top-tracks', async (req, res) => {
 app.get('/top-artists', async (req, res) => {
   const access_token = req.query.access_token;
   const time_range = req.query.time_range || 'medium_term';
+  const isAjax = req.query.ajax === 'true';
 
   try {
     const artists = await spotifyService.getTopArtists(access_token, time_range);
     res.render('top-artists', {
+      title: 'Top Artists',
       artists,
       access_token,
-      time_range
+      time_range,
+      layout: !isAjax
     });
   } catch (error) {
     renderErrorPage(res, "Error Retrieving Top Artists", error, access_token);
@@ -106,6 +132,7 @@ app.get('/top-artists', async (req, res) => {
 app.get('/top-albums', async (req, res) => {
   const access_token = req.query.access_token;
   const time_range = req.query.time_range || 'medium_term';
+  const isAjax = req.query.ajax === 'true';
 
   try {
     const tracks = await spotifyService.getTopTracks(access_token, time_range);
@@ -128,9 +155,11 @@ app.get('/top-albums', async (req, res) => {
     const albums = Array.from(albumMap.values()).sort((a, b) => b.count - a.count);
 
     res.render('top-albums', {
+      title: 'Top Albums',
       albums,
       access_token,
-      time_range
+      time_range,
+      layout: !isAjax
     });
   } catch (error) {
     renderErrorPage(res, "Error Retrieving Top Albums", error, access_token);
@@ -139,9 +168,13 @@ app.get('/top-albums', async (req, res) => {
 
 app.get('/generate-playlist', (req, res) => {
   const access_token = req.query.access_token;
+  const isAjax = req.query.ajax === 'true';
+
   res.render('generate-playlist', {
+    title: 'Generate Playlist',
     access_token,
-    defaultPlaylistName: `Find That Song - ${new Date().toLocaleDateString()}`
+    defaultPlaylistName: `Find That Song - ${new Date().toLocaleDateString()}`,
+    layout: !isAjax
   });
 });
 

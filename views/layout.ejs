@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find That Song - <%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <% if (locals.access_token) { %>
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h1>Find That Song</h1>
+                </div>
+                <nav class="sidebar-nav">
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="/recently-played?access_token=<%= access_token %>" class="nav-link" data-ajax="true">
+                                <span class="nav-icon">🎵</span>
+                                <span class="nav-text">Recently Played</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/top-tracks?access_token=<%= access_token %>" class="nav-link" data-ajax="true">
+                                <span class="nav-icon">🔥</span>
+                                <span class="nav-text">Top Tracks</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/top-artists?access_token=<%= access_token %>" class="nav-link" data-ajax="true">
+                                <span class="nav-icon">🎤</span>
+                                <span class="nav-text">Top Artists</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/top-albums?access_token=<%= access_token %>" class="nav-link" data-ajax="true">
+                                <span class="nav-icon">💿</span>
+                                <span class="nav-text">Top Albums</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/generate-playlist?access_token=<%= access_token %>" class="nav-link" data-ajax="true">
+                                <span class="nav-icon">📝</span>
+                                <span class="nav-text">Generate Playlist</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
+        <% } %>
+        
+        <div class="main-content">
+            <main id="content-container">
+                <%- body %>
+            </main>
+            
+            <footer>
+                <div class="container">
+                    <p>&copy; <%= new Date().getFullYear() %> Find That Song</p>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>

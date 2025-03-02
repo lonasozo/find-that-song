@@ -3,42 +3,33 @@
   <head>
     <title>Recently Played Songs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/css/tracks.css">
   </head>
   <body>
-    <div class="tracks-container">
-      <header>
-        <h1>Recently Played Tracks</h1>
-        <%- include('partials/nav', { access_token }) %>
-      </header>
-      <div class="tracks-list">
-        <% items.forEach(item => { %>
-          <% const track = item.track; %>
-          <% const album = track.album; %>
-          <% const playedAt = new Date(item.played_at); %>
-          <% const formattedDate = playedAt.toLocaleString(); %>
-          
-          <div class="track-item">
-            <a href="<%= track.external_urls.spotify %>" target="_blank" title="Play <%= track.name %> on Spotify">
-              <img src="<%= album.images[2]?.url || album.images[0].url %>" alt="<%= album.name %>" class="album-img" />
-            </a>
-            <div class="track-info">
-              <div class="track-name"><%= track.name %></div>
-              <div class="artist-name">
-                <% track.artists.forEach((artist, index) => { %>
-                  <a href="<%= artist.external_urls.spotify %>" target="_blank" class="artist-link"><%= artist.name %></a><%= index < track.artists.length-1 ? ', ' : '' %>
-                <% }); %>
-              </div>
-              <div class="album-name">
-                <a href="<%= album.external_urls.spotify %>" target="_blank" class="album-link"><%= album.name %></a>
-              </div>
-            </div>
-            <div class="track-meta">
-              <div><%= formattedDate %></div>
-              <a href="<%= track.external_urls.spotify %>" class="spotify-link" target="_blank">Play</a>
-            </div>
-          </div>
-        <% }); %>
+    <div class="container">
+      <h2>Recently Played Tracks</h2>
+      
+      <div class="track-list">
+          <% if (items && items.length > 0) { %>
+              <% items.forEach(item => { %>
+                  <div class="track-item">
+                      <% if (item.track.album.images && item.track.album.images.length > 0) { %>
+                          <img src="<%= item.track.album.images[0].url %>" alt="<%= item.track.album.name %>" class="album-cover">
+                      <% } else { %>
+                          <div class="album-cover placeholder">No Image</div>
+                      <% } %>
+                      
+                      <div class="track-info">
+                          <h3><%= item.track.name %></h3>
+                          <p class="artist"><%= item.track.artists.map(artist => artist.name).join(', ') %></p>
+                          <p class="album"><%= item.track.album.name %></p>
+                          <p class="played-at">Played at: <%= new Date(item.played_at).toLocaleString() %></p>
+                          <a href="<%= item.track.external_urls.spotify %>" target="_blank" class="spotify-link">Open in Spotify</a>
+                      </div>
+                  </div>
+              <% }); %>
+          <% } else { %>
+              <p class="no-results">No recently played tracks found.</p>
+          <% } %>
       </div>
     </div>
   </body>
