@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Your Top Artists</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/artists.css">
+  </head>
+  <body>
+    <div class="artists-container">
+      <header>
+        <h1>Your Top Artists</h1>
+        <%- include('partials/nav', { access_token }) %>
+      </header>
+      
+      <div class="time-filter">
+        <a href="/top-artists?access_token=<%= access_token %>&time_range=short_term" class="<%= time_range === 'short_term' ? 'active' : '' %>">Last 4 Weeks</a>
+        <a href="/top-artists?access_token=<%= access_token %>&time_range=medium_term" class="<%= time_range === 'medium_term' ? 'active' : '' %>">Last 6 Months</a>
+        <a href="/top-artists?access_token=<%= access_token %>&time_range=long_term" class="<%= time_range === 'long_term' ? 'active' : '' %>">All Time</a>
+      </div>
+      
+      <div class="artists-grid">
+        <% artists.forEach((artist, index) => { %>
+          <div class="artist-card">
+            <div class="artist-rank"><%= index + 1 %></div>
+            <a href="<%= artist.external_urls.spotify %>" target="_blank">
+              <img src="<%= artist.images[1]?.url || artist.images[0]?.url %>" alt="<%= artist.name %>" class="artist-img" />
+              <div class="artist-name"><%= artist.name %></div>
+            </a>
+            <div class="artist-genres"><%= artist.genres.slice(0, 3).join(', ') %></div>
+          </div>
+        <% }); %>
+      </div>
+    </div>
+  </body>
+</html>

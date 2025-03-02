@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Playlist Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/playlist-generator.css">
+    <style>
+      /* Custom styling for multi-select dropdown */
+      select[multiple] {
+        height: auto;
+        min-height: 100px;
+        background-image: none;
+        padding: 8px;
+      }
+      select[multiple] option {
+        padding: 8px;
+        margin-bottom: 3px;
+        border-radius: 4px;
+        background-color: #f0f0f0;
+        color: #333;
+      }
+      select[multiple] option:checked {
+        background-color: #1DB954;
+        color: white;
+      }
+      .genres-hint {
+        display: block;
+        margin-top: 5px;
+        font-size: 0.8em;
+        color: #777;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="generator-container">
+      <header>
+        <h1>Generate Spotify Playlist</h1>
+        <%- include('partials/nav', { access_token }) %>
+      </header>
+      
+      <div class="generator-form-container">
+        <form action="/create-playlist" method="post" class="generator-form">
+          <input type="hidden" name="access_token" value="<%= access_token %>">
+          
+          <div class="form-group">
+            <label for="playlist-name">Playlist Name:</label>
+            <input type="text" id="playlist-name" name="playlist_name" required placeholder="My Custom Playlist" value="<%= defaultPlaylistName %>">
+          </div>
+          
+          <div class="form-group">
+            <label for="playlist-description">Description:</label>
+            <textarea id="playlist-description" name="playlist_description" placeholder="Playlist generated based on my music taste">Playlist automatically generated based on my music preferences</textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="seed-type">Generate based on:</label>
+            <select id="seed-type" name="seed_type" required>
+              <option value="top_tracks">My Top Tracks</option>
+              <option value="top_artists">My Top Artists</option>
+              <option value="genres">Specific Genres</option>
+            </select>
+          </div>
+          
+          <div class="form-group" id="genres-container" style="display:none;">
+            <label for="genres">Select Genres:</label>
+            <select id="genres" name="genres" multiple class="form-select">
+              <option value="acoustic">Acoustic</option>
+              <option value="alternative">Alternative</option>
+              <option value="ambient">Ambient</option>
+              <option value="blues">Blues</option>
+              <option value="classical">Classical</option>
+              <option value="country">Country</option>
+              <option value="dance">Dance</option>
+              <option value="electronic">Electronic</option>
+              <option value="folk">Folk</option>
+              <option value="funk">Funk</option>
+              <option value="hip-hop">Hip-Hop</option>
+              <option value="house">House</option>
+              <option value="indie">Indie</option>
+              <option value="jazz">Jazz</option>
+              <option value="metal">Metal</option>
+              <option value="pop">Pop</option>
+              <option value="r-n-b">R&B</option>
+              <option value="rock">Rock</option>
+              <option value="soul">Soul</option>
+              <option value="techno">Techno</option>
+            </select>
+            <span class="genres-hint">Hold Ctrl/Cmd to select multiple genres (max 5)</span>
+          </div>
+          
+          <div class="form-group">
+            <label for="time-range">Based on time period:</label>
+            <select id="time-range" name="time_range">
+              <option value="short_term">Last 4 Weeks</option>
+              <option value="medium_term" selected>Last 6 Months</option>
+              <option value="long_term">All Time</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="track-count">Number of songs:</label>
+            <input type="number" id="track-count" name="track_count" min="10" max="50" value="20">
+          </div>
+          
+          <div class="form-group">
+            <label for="playlist-public">Playlist privacy:</label>
+            <select id="playlist-public" name="public">
+              <option value="true">Public</option>
+              <option value="false">Private</option>
+            </select>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="submit-btn">Generate Playlist</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    <script>
+      document.getElementById('seed-type').addEventListener('change', function() {
+        const genreContainer = document.getElementById('genres-container');
+        if (this.value === 'genres') {
+          genreContainer.style.display = 'block';
+        } else {
+          genreContainer.style.display = 'none';
+        }
+      });
+    </script>
+  </body>
+</html>

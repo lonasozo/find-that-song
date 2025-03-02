@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Your Top Tracks</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/tracks.css">
+  </head>
+  <body>
+    <div class="tracks-container">
+      <header>
+        <h1>Your Top Tracks</h1>
+        <%- include('partials/nav', { access_token }) %>
+      </header>
+      
+      <div class="time-filter">
+        <a href="/top-tracks?access_token=<%= access_token %>&time_range=short_term" class="<%= time_range === 'short_term' ? 'active' : '' %>">Last 4 Weeks</a>
+        <a href="/top-tracks?access_token=<%= access_token %>&time_range=medium_term" class="<%= time_range === 'medium_term' ? 'active' : '' %>">Last 6 Months</a>
+        <a href="/top-tracks?access_token=<%= access_token %>&time_range=long_term" class="<%= time_range === 'long_term' ? 'active' : '' %>">All Time</a>
+      </div>
+      
+      <div class="tracks-list">
+        <% tracks.forEach((track, index) => { %>
+          <% const album = track.album; %>
+          
+          <div class="track-item">
+            <div class="track-rank"><%= index + 1 %></div>
+            <a href="<%= track.external_urls.spotify %>" target="_blank" title="Play <%= track.name %> on Spotify">
+              <img src="<%= album.images[2]?.url || album.images[0].url %>" alt="<%= album.name %>" class="album-img" />
+            </a>
+            <div class="track-info">
+              <div class="track-name"><%= track.name %></div>
+              <div class="artist-name">
+                <% track.artists.forEach((artist, index) => { %>
+                  <a href="<%= artist.external_urls.spotify %>" target="_blank" class="artist-link"><%= artist.name %></a><%= index < track.artists.length-1 ? ', ' : '' %>
+                <% }); %>
+              </div>
+              <div class="album-name">
+                <a href="<%= album.external_urls.spotify %>" target="_blank" class="album-link"><%= album.name %></a>
+              </div>
+            </div>
+            <div class="track-meta">
+              <a href="<%= track.external_urls.spotify %>" class="spotify-link" target="_blank">Play</a>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    </div>
+  </body>
+</html>

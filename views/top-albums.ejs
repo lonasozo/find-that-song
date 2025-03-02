@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Your Top Albums</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/albums.css">
+  </head>
+  <body>
+    <div class="albums-container">
+      <header>
+        <h1>Your Top Albums</h1>
+        <%- include('partials/nav', { access_token }) %>
+      </header>
+      
+      <div class="time-filter">
+        <a href="/top-albums?access_token=<%= access_token %>&time_range=short_term" class="<%= time_range === 'short_term' ? 'active' : '' %>">Last 4 Weeks</a>
+        <a href="/top-albums?access_token=<%= access_token %>&time_range=medium_term" class="<%= time_range === 'medium_term' ? 'active' : '' %>">Last 6 Months</a>
+        <a href="/top-albums?access_token=<%= access_token %>&time_range=long_term" class="<%= time_range === 'long_term' ? 'active' : '' %>">All Time</a>
+      </div>
+      
+      <div class="albums-grid">
+        <% albums.forEach((album, index) => { %>
+          <% 
+            // Create a shortened version of the artists list
+            let artistsText = album.artists.map(artist => artist.name).join(', ');
+            let displayArtistsText = artistsText;
+            if (artistsText.length > 25) {
+              displayArtistsText = artistsText.substring(0, 22) + '...';
+            }
+          %>
+          <div class="album-card">
+            <div class="album-rank"><%= index + 1 %></div>
+            <a href="<%= album.external_urls.spotify %>" target="_blank">
+              <img src="<%= album.images[1]?.url || album.images[0]?.url %>" alt="<%= album.name %>" class="album-img" />
+              <div class="album-name"><%= album.name %></div>
+            </a>
+            <div class="artist-name" title="<%= artistsText %>">
+              <%= displayArtistsText %>
+            </div>
+            <div class="album-info">
+              <span class="album-year"><%= album.release_date ? new Date(album.release_date).getFullYear() : 'N/A' %></span>
+              <span class="album-tracks"><%= album.total_tracks %> tracks</span>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    </div>
+  </body>
+</html>
