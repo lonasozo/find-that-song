@@ -7,6 +7,7 @@
   <body>
     <div class="container">
       <h2>Top Tracks</h2>
+
       
       <% if (!locals.layout) { %>
         <!-- This section is returned for AJAX calls -->
@@ -35,36 +36,7 @@
         </div>
       <% } else { %>
         <!-- This is the full page for initial load -->
-        <div class="content-header">
-            <h1>Your Top Tracks</h1>
-            
-            <div class="time-range-container">
-                <div class="time-range-label">Time Range:</div>
-                <div class="time-range-buttons">
-                    <button type="button" 
-                            class="time-range-button <%= time_range === 'short_term' ? 'active' : '' %>" 
-                            data-time-range="short_term" 
-                            data-content-type="top-tracks" 
-                            data-access-token="<%= access_token %>">
-                        Last 4 Weeks
-                    </button>
-                    <button type="button" 
-                            class="time-range-button <%= time_range === 'medium_term' ? 'active' : '' %>" 
-                            data-time-range="medium_term" 
-                            data-content-type="top-tracks" 
-                            data-access-token="<%= access_token %>">
-                        Last 6 Months
-                    </button>
-                    <button type="button" 
-                            class="time-range-button <%= time_range === 'long_term' ? 'active' : '' %>" 
-                            data-time-range="long_term" 
-                            data-content-type="top-tracks" 
-                            data-access-token="<%= access_token %>">
-                        All Time
-                    </button>
-                </div>
-            </div>
-        </div>
+        
         
         <div id="top-tracks-content" class="content-container">
             <div class="track-list">
