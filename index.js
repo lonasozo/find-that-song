@@ -66,7 +66,7 @@ function checkAccessToken(req, res, next) {
 
 // Routes
 app.get('/', (req, res) => {
-  res.render('home', { title: 'Home' });
+  res.render('home', { title: 'Home', layout: false });
 });
 
 app.get('/login', (req, res) => {
