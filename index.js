@@ -80,7 +80,7 @@ app.get('/callback', async (req, res) => {
   try {
     const tokenData = await spotifyService.getAccessToken(code);
     const access_token = tokenData.access_token;
-    res.redirect('/recently-played?access_token=' + access_token);
+    res.redirect('/top-artists?access_token=' + access_token);
   } catch (error) {
     renderErrorPage(res, "Authorization Error", error);
   }

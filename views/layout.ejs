@@ -21,12 +21,10 @@
                 <nav class="sidebar-nav">
                     <ul class="nav-list">
                         <li class="nav-item">
-                            <a href="/recently-played?access_token=<%= access_token %>" 
-                               class="nav-link <%= (title === 'Recently Played') ? 'active' : '' %>" 
-                               data-page="recently-played"
-                               data-ajax="true">
-                                <span class="nav-icon">🎵</span>
-                                <span class="nav-text">Recently Played</span>
+                            <a href="/top-artists?access_token=<%= access_token %>"
+                                class="nav-link <%= (title === 'Top Artists') ? 'active' : '' %>" data-page="top-artists" data-ajax="true">
+                                <span class="nav-icon">🎤</span>
+                                <span class="nav-text">Top Artists</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -39,21 +37,20 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/top-artists?access_token=<%= access_token %>"
-                               class="nav-link <%= (title === 'Top Artists') ? 'active' : '' %>"
-                               data-page="top-artists"
-                               data-ajax="true">
-                                <span class="nav-icon">🎤</span>
-                                <span class="nav-text">Top Artists</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a href="/top-albums?access_token=<%= access_token %>"
                                class="nav-link <%= (title === 'Top Albums') ? 'active' : '' %>"
                                data-page="top-albums"
                                data-ajax="true">
                                 <span class="nav-icon">💿</span>
                                 <span class="nav-text">Top Albums</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/recently-played?access_token=<%= access_token %>"
+                                class="nav-link <%= (title === 'Recently Played') ? 'active' : '' %>" data-page="recently-played"
+                                data-ajax="true">
+                                <span class="nav-icon">🎵</span>
+                                <span class="nav-text">Recently Played</span>
                             </a>
                         </li>
                         <!-- <li class="nav-item">
