@@ -16,7 +16,7 @@ function initTimeRangeSelector() {
     // If time_range is not in URL, select medium_term by default
     if (!timeRange) {
       const mediumTermButton = document.querySelector('.time-range-btn[data-range="medium_term"]');
-      if (mediumTermButton) {
+      if (mediumTermButton && !mediumTermButton.classList.contains('active')) {
         // Update active class
         timeRangeButtons.forEach(btn => btn.classList.remove('active'));
         mediumTermButton.classList.add('active');
@@ -39,7 +39,10 @@ function initTimeRangeSelector() {
       // Get the time range
       const timeRange = this.getAttribute('data-range');
 
-      // Show loader
+      // Clear content container and show loader
+      contentContainer.innerHTML = '<div class="global-loader"><div class="loader"></div></div>';
+
+      // Show time range loader
       if (timeRangeLoader) timeRangeLoader.style.display = 'flex';
 
       // Get the current page and access token from URL
@@ -88,8 +91,8 @@ function initTimeRangeSelector() {
     });
   });
 
-  // Call the function to set default time range
-  setTimeout(setDefaultTimeRange, 100); // Short delay to ensure DOM is fully loaded
+  // Call the function to set default time range after a short delay
+  setTimeout(setDefaultTimeRange, 100);
 }
 
 // Utility for formatting duration

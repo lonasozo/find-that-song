@@ -12,9 +12,47 @@ function initPageScripts() {
   // ...
 }
 
-// Initialize scripts on first page load
+// Initialize scripts on page load
 document.addEventListener('DOMContentLoaded', function () {
-  if (typeof initPageScripts === 'function') {
-    initPageScripts();
+  // Function to initialize page-specific scripts
+  function initPageScripts() {
+    console.log('Initializing page scripts');
+
+    // Re-attach track interactions if available
+    if (typeof attachTrackInteractions === 'function') {
+      attachTrackInteractions();
+    }
+
+    // Initialize time range visibility
+    initTimeRangeVisibility();
   }
+
+  // Function to determine if the current page should show time range
+  function pageNeedsTimeRange(pageName) {
+    return ['top-tracks', 'top-artists', 'top-albums'].includes(pageName);
+  }
+
+  // Function to initialize time range selector visibility
+  function initTimeRangeVisibility() {
+    const currentPath = window.location.pathname.substring(1).split('?')[0];
+    const timeRangeSelector = document.getElementById('time-range-selector');
+
+    if (timeRangeSelector) {
+      if (pageNeedsTimeRange(currentPath)) {
+        console.log('Page needs time range:', currentPath);
+        timeRangeSelector.style.display = 'flex';
+        timeRangeSelector.style.visibility = 'visible';
+      } else {
+        console.log('Page does not need time range:', currentPath);
+        timeRangeSelector.style.display = 'none';
+      }
+    }
+  }
+
+  // Initialize on first page load
+  initPageScripts();
+
+  // Make functions available globally
+  window.initPageScripts = initPageScripts;
+  window.initTimeRangeVisibility = initTimeRangeVisibility;
 });

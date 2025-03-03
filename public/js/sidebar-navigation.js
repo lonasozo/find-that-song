@@ -2,6 +2,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // Select all sidebar links with data-ajax attribute
   const sidebarLinks = document.querySelectorAll('.sidebar-nav .nav-link[data-ajax="true"]');
 
+  // Initialize time range visibility on first load based on current page
+  initTimeRangeVisibility();
+
   // Add click event listener to each sidebar link
   sidebarLinks.forEach(link => {
     link.addEventListener('click', function (e) {
@@ -44,11 +47,63 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  // Function to determine if page needs time range selector
+  function pageNeedsTimeRange(page) {
+    // Make sure we handle both with and without trailing slashes
+    const normalizedPage = page.replace(/\/$/, '');
+    return ['top-tracks', 'top-artists', 'top-albums'].includes(normalizedPage);
+  }
+
+  // Initialize time range visibility on page load
+  function initTimeRangeVisibility() {
+    const currentPath = window.location.pathname.substring(1).split('?')[0];
+    const timeRangeSelector = document.getElementById('time-range-selector');
+
+    if (timeRangeSelector) {
+      if (pageNeedsTimeRange(currentPath)) {
+        console.log(`Showing time range for ${currentPath}`);
+        timeRangeSelector.style.display = 'flex';
+      } else {
+        console.log(`Hiding time range for ${currentPath}`);
+        timeRangeSelector.style.display = 'none';
+      }
+    } else {
+      console.log('Time range selector not found in DOM');
+    }
+  }
+
   // Function to load page content via AJAX
   function loadPageContent(url) {
-    // Show loading state
+    // Get the content container
     const contentContainer = document.getElementById('content-container');
-    contentContainer.innerHTML = '<div class="loader centered"></div>';
+
+    // Extract page name from URL
+    const urlObj = new URL(url, window.location.origin);
+    const pagePath = urlObj.pathname.substring(1); // Remove leading slash
+    const pageName = pagePath.split('?')[0]; // Remove query parameters
+
+    console.log(`Loading content for page: ${pageName}`);
+
+    // Clear content and show loader
+    contentContainer.innerHTML = '<div class="global-loader"><div class="loader"></div></div>';
+
+    // Handle time range selector visibility
+    const timeRangeSelector = document.getElementById('time-range-selector');
+    const timeRangeLoader = document.getElementById('time-range-loader');
+
+    if (timeRangeSelector) {
+      // Only show time range selector for specific pages
+      if (pageNeedsTimeRange(pageName)) {
+        console.log(`Showing time range for ${pageName}`);
+        timeRangeSelector.style.display = 'flex';
+        timeRangeSelector.style.visibility = 'visible'; // Add this line
+      } else {
+        console.log(`Hiding time range for ${pageName}`);
+        timeRangeSelector.style.display = 'none';
+      }
+    } else {
+      console.log('Time range selector not found during page load');
+    }
 
     // Make AJAX request
     fetch(url)
@@ -67,23 +122,22 @@ document.addEventListener('DOMContentLoaded', function () {
         // Update the page content
         contentContainer.innerHTML = mainContent;
 
-        // Handle time range selector if it exists on the new page
-        if (url.includes('top-tracks') || url.includes('top-artists') || url.includes('top-albums')) {
-          // Show time range selector
-          const timeRangeSelector = document.getElementById('time-range-selector');
+        // Re-handle time range selector if the page needs it
+        if (pageNeedsTimeRange(pageName)) {
+          // Ensure time range selector is visible
           if (timeRangeSelector) {
             timeRangeSelector.style.display = 'flex';
+            timeRangeSelector.style.visibility = 'visible';
 
             // Re-initialize time range selector functionality
             if (typeof initTimeRangeSelector === 'function') {
-              initTimeRangeSelector();
+              setTimeout(initTimeRangeSelector, 100); // Small delay to ensure DOM is ready
             }
           }
-        } else {
-          // Hide time range selector for other pages
-          const timeRangeSelector = document.getElementById('time-range-selector');
-          if (timeRangeSelector) {
-            timeRangeSelector.style.display = 'none';
+
+          // Make sure loader is hidden
+          if (timeRangeLoader) {
+            timeRangeLoader.style.display = 'none';
           }
         }
 
