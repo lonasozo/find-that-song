@@ -52,6 +52,18 @@ function renderErrorPage(res, title, error, accessToken) {
   }
 }
 
+// Helper function to check for access token
+function checkAccessToken(req, res, next) {
+  const access_token = req.query.access_token || req.body.access_token;
+
+  if (!access_token) {
+    console.log('No access token provided. Redirecting to homepage...');
+    return res.redirect('/');
+  }
+
+  next();
+}
+
 // Routes
 app.get('/', (req, res) => {
   res.render('home', { title: 'Home' });
@@ -74,7 +86,7 @@ app.get('/callback', async (req, res) => {
   }
 });
 
-app.get('/recently-played', async (req, res) => {
+app.get('/recently-played', checkAccessToken, async (req, res) => {
   const access_token = req.query.access_token;
   const isAjax = req.query.ajax === 'true';
 
@@ -91,7 +103,7 @@ app.get('/recently-played', async (req, res) => {
   }
 });
 
-app.get('/top-tracks', async (req, res) => {
+app.get('/top-tracks', checkAccessToken, async (req, res) => {
   const access_token = req.query.access_token;
   const time_range = req.query.time_range || 'medium_term';
   const isAjax = req.query.ajax === 'true';
@@ -128,7 +140,7 @@ app.get('/top-tracks', async (req, res) => {
   }
 });
 
-app.get('/top-artists', async (req, res) => {
+app.get('/top-artists', checkAccessToken, async (req, res) => {
   const access_token = req.query.access_token;
   const time_range = req.query.time_range || 'medium_term';
   const isAjax = req.query.ajax === 'true';
@@ -147,7 +159,7 @@ app.get('/top-artists', async (req, res) => {
   }
 });
 
-app.get('/top-albums', async (req, res) => {
+app.get('/top-albums', checkAccessToken, async (req, res) => {
   const access_token = req.query.access_token;
   const time_range = req.query.time_range || 'medium_term';
   const isAjax = req.query.ajax === 'true';
@@ -184,7 +196,7 @@ app.get('/top-albums', async (req, res) => {
   }
 });
 
-app.get('/generate-playlist', (req, res) => {
+app.get('/generate-playlist', checkAccessToken, (req, res) => {
   const access_token = req.query.access_token;
   const isAjax = req.query.ajax === 'true';
 
@@ -196,7 +208,7 @@ app.get('/generate-playlist', (req, res) => {
   });
 });
 
-app.post('/create-playlist', async (req, res) => {
+app.post('/create-playlist', checkAccessToken, async (req, res) => {
   try {
     const {
       access_token,

@@ -6,41 +6,14 @@
     <link rel="stylesheet" href="../public/css/home.css">
   </head>
   <body style="text-align: center;">
-    <div class="home-container">
-      <div class="hero">
-        <h1>Find That Song</h1>
-        <p>Discover your music listening habits and create personalized playlists</p>
-        <a href="/login" class="login-button">Login with Spotify</a>
-      </div>
-      
-      <div class="features">
-        <div class="feature">
-          <div class="feature-icon">🎵</div>
-          <h2>Recently Played</h2>
-          <p>See what you've been listening to recently</p>
-        </div>
-        
-        <div class="feature">
-          <div class="feature-icon">🔥</div>
-          <h2>Top Tracks</h2>
-          <p>Discover your most played tracks</p>
-        </div>
-        
-        <div class="feature">
-          <div class="feature-icon">🎤</div>
-          <h2>Top Artists</h2>
-          <p>See which artists you listen to most</p>
-        </div>
-        
-        <div class="feature">
-          <div class="feature-icon">📝</div>
-          <h2>Generate Playlists</h2>
-          <p>Create custom playlists based on your listening habits</p>
-        </div>
-      </div>
+    <div class="hero">
+      <h1>Find That Song</h1>
+      <p>Discover your music listening habits and create personalized playlists</p>
+      <a href="/login" class="login-button">Enter with Spotify</a>
     </div>
 
     <style>
+
       .home-container {
         max-width: 1200px;
         margin: 0 auto;
@@ -84,47 +57,10 @@
         background-color: var(--accent-hover);
       }
       
-      .features {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 30px;
-        margin-top: 40px;
-      }
-      
-      .feature {
-        background-color: var(--bg-secondary);
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: var(--card-shadow);
-        text-align: center;
-        transition: transform 0.3s ease;
-      }
-      
-      .feature:hover {
-        transform: translateY(-10px);
-      }
-      
-      .feature-icon {
-        font-size: 2.5rem;
-        margin-bottom: 20px;
-      }
-      
-      .feature h2 {
-        margin-bottom: 15px;
-        color: var(--text-primary);
-      }
-      
-      .feature p {
-        color: var(--text-secondary);
-      }
       
       @media (max-width: 768px) {
         .hero h1 {
           font-size: 2.2rem;
-        }
-        
-        .features {
-          grid-template-columns: 1fr;
         }
       }
     </style>
