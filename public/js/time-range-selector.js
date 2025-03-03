@@ -7,6 +7,26 @@ function initTimeRangeSelector() {
   const timeRangeLoader = document.getElementById('time-range-loader');
   const contentContainer = document.getElementById('content-container');
 
+  // Default to medium_term (Last 6 Months) on first load
+  const setDefaultTimeRange = () => {
+    // Get current URL parameters
+    const url = new URL(window.location.href);
+    const timeRange = url.searchParams.get('time_range');
+
+    // If time_range is not in URL, select medium_term by default
+    if (!timeRange) {
+      const mediumTermButton = document.querySelector('.time-range-btn[data-range="medium_term"]');
+      if (mediumTermButton) {
+        // Update active class
+        timeRangeButtons.forEach(btn => btn.classList.remove('active'));
+        mediumTermButton.classList.add('active');
+
+        // Trigger click on the medium term button
+        mediumTermButton.click();
+      }
+    }
+  };
+
   timeRangeButtons.forEach(button => {
     button.addEventListener('click', function () {
       // Skip if already active
@@ -50,6 +70,11 @@ function initTimeRangeSelector() {
           // Update the content with the extracted HTML
           contentContainer.innerHTML = mainContent;
 
+          // Update URL with new time_range parameter without reloading the page
+          const newUrl = new URL(window.location.href);
+          newUrl.searchParams.set('time_range', timeRange);
+          history.pushState({}, '', newUrl);
+
           // Re-initialize any event listeners on the new content
           if (typeof initPageScripts === 'function') {
             initPageScripts();
@@ -62,6 +87,9 @@ function initTimeRangeSelector() {
         });
     });
   });
+
+  // Call the function to set default time range
+  setTimeout(setDefaultTimeRange, 100); // Short delay to ensure DOM is fully loaded
 }
 
 // Utility for formatting duration
