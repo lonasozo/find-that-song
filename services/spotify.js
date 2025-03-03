@@ -53,6 +53,7 @@ class SpotifyService {
   /**
    * Get user's recently played tracks
    * @param {string} accessToken - Spotify access token
+   * @param {number} limit - Number of tracks to return
    * @returns {Promise<Array>} - Recently played tracks
    */
   async getRecentlyPlayed(accessToken, limit = 50) {
@@ -60,7 +61,6 @@ class SpotifyService {
       const response = await axios.get('https://api.spotify.com/v1/me/player/recently-played', {
         headers: { 'Authorization': 'Bearer ' + accessToken },
         params: { limit: limit }
-
       });
 
       return response.data.items;
@@ -114,17 +114,15 @@ class SpotifyService {
 
   /**
    * Get user profile information
+   * @param {string} accessToken - Spotify access token
    * @returns {Promise<Object>} - User profile data
    */
-  async getUserProfile() {
+  async getUserProfile(accessToken) {
     try {
-      // Ensure we have the access token
-      await this.ensureAccessToken();
-
       console.log('Getting user profile');
 
       const response = await axios.get('https://api.spotify.com/v1/me', {
-        headers: { 'Authorization': `Bearer ${this.accessToken}` }
+        headers: { 'Authorization': `Bearer ${accessToken}` }
       });
 
       console.log(`Got profile for user: ${response.data.display_name} (${response.data.id})`);
@@ -186,130 +184,572 @@ class SpotifyService {
   }
 
   /**
-   * Get music recommendations based on seeds
-   * @param {string} type - Type of recommendation (top_artists, genres)
-   * @param {Object} options - Options for recommendations
-   * @returns {Promise<Object>} - Recommended tracks
+   * Shuffle an array (Fisher-Yates algorithm)
+   * @param {Array} array - Array to shuffle
+   * @returns {Array} - Shuffled array
    */
-  async getRecommendations(type, options = {}) {
+  shuffleArray(array) {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }
+
+  /**
+   * Get music recommendations based on seeds
+   * @param {string} accessToken - Spotify access token
+   * @param {Object} options - Options for recommendations
+   * @returns {Promise<Array>} - Recommended tracks
+   */
+  async getRecommendations(accessToken, options = {}) {
     try {
-      await this.ensureAccessToken();
+      const {
+        seedTracks = [],
+        seedArtists = [],
+        seedGenres = [],
+        limit = 20
+      } = options;
 
-      const { limit = 20 } = options;
-      let seedArtists = [];
-      let seedTracks = [];
-      let seedGenres = [];
+      console.log(`Getting recommendations with limit: ${limit}`);
 
-      console.log(`Getting recommendations with type: ${type}, limit: ${limit}`);
+      // If multiple genres are selected, try two approaches:
+      // 1. First try with all genres as seeds (up to 5)
+      // 2. If that fails, get recommendations for each genre separately and combine
 
-      // Handle different recommendation types
-      if (type === 'top_artists') {
-        // Get user's top artists first
+      // Handle multiple genres
+      if (seedGenres && seedGenres.length > 1) {
+        console.log(`Multiple genres selected: ${seedGenres.join(', ')}`);
+
+        // Try approach 1: All genres together (limited to 5)
         try {
-          console.log('Fetching user top artists...');
-          const topItems = await this.getTopItems('artists', { limit: 5, time_range: 'medium_term' });
+          const combinedTracks = await this.getRecommendationsWithAllGenres(
+            accessToken,
+            seedGenres.slice(0, 5),
+            limit
+          );
 
-          if (topItems && topItems.items && topItems.items.length > 0) {
-            // Extract artist IDs for seed
-            seedArtists = topItems.items.slice(0, 5).map(artist => artist.id);
-            console.log(`Using seed artists: ${seedArtists.join(', ')}`);
-          } else {
-            console.log('No top artists found, will try genres...');
-            // Use some default genres if no artists found
-            seedGenres = ['pop', 'rock'];
+          if (combinedTracks && combinedTracks.length > 0) {
+            console.log(`Successfully got ${combinedTracks.length} tracks using combined genres`);
+            return combinedTracks;
           }
-        } catch (error) {
-          console.error('Error getting top artists:', error.message);
-          // Use some default genres if error occurs
-          seedGenres = ['pop', 'rock'];
+        } catch (combinedError) {
+          console.log('Combined genre approach failed, trying individual genres');
         }
-      } else if (type === 'genres') {
-        // Get genre seeds from options
-        if (options.genres && Array.isArray(options.genres) && options.genres.length > 0) {
-          seedGenres = options.genres.slice(0, 5); // Limit to 5 genres max
-          console.log(`Using seed genres: ${seedGenres.join(', ')}`);
-        } else {
-          console.log('No genres provided, using default genres');
-          seedGenres = ['pop', 'rock'];
-        }
-      }
 
-      // Simplified request with minimal parameters to maximize chance of success
-      let requestParams = { limit };
-
-      // Add either artists or genres, not both, to reduce chance of errors
-      if (seedArtists.length > 0) {
-        requestParams.seed_artists = seedArtists.join(',');
-      } else if (seedGenres.length > 0) {
-        requestParams.seed_genres = seedGenres.join(',');
-      } else {
-        // Last resort - use pop and rock
-        requestParams.seed_genres = 'pop,rock';
-      }
-
-      console.log('Making recommendation request with params:', JSON.stringify(requestParams));
-
-      // Try the API call with retries
-      let attempts = 0;
-      const maxAttempts = 3;
-
-      while (attempts < maxAttempts) {
+        // Try approach 2: Genre by genre
         try {
+          const mixedTracks = await this.getRecommendationsByGenreMix(
+            accessToken,
+            seedGenres,
+            limit
+          );
+
+          if (mixedTracks && mixedTracks.length > 0) {
+            console.log(`Successfully got ${mixedTracks.length} tracks using genre mix approach`);
+            return mixedTracks;
+          }
+        } catch (mixError) {
+          console.log('Genre mix approach failed, falling back to search');
+        }
+
+        // If both recommendation approaches fail, use search API
+        console.log('Trying direct search for multiple genres...');
+        return await this.searchTracksByGenre(accessToken, seedGenres, limit);
+      }
+
+      // Single genre or no genre case - use the original implementation
+      // First try - use the proper seed format and standard URL format
+      try {
+        const params = new URLSearchParams();
+        params.append('limit', limit);
+
+        // Add seed parameters correctly
+        if (seedTracks.length > 0) {
+          params.append('seed_tracks', seedTracks.slice(0, 5).join(','));
+          console.log(`Using seed tracks: ${params.get('seed_tracks')}`);
+        }
+
+        if (seedArtists.length > 0) {
+          params.append('seed_artists', seedArtists.slice(0, 5).join(','));
+          console.log(`Using seed artists: ${params.get('seed_artists')}`);
+        }
+
+        // Process genres and ensure they're valid format
+        if (seedGenres.length > 0) {
+          // Clean up genre names - remove spaces, lowercase, ensure they're valid
+          const validGenres = seedGenres
+            .filter(Boolean) // Filter out undefined/null/empty values
+            .slice(0, 5)
+            .map(genre => genre.toLowerCase().trim().replace(/\s+/g, '-'));
+
+          if (validGenres.length > 0) {
+            // Use common genres only if available
+            const safeGenres = this.getSafeGenres(validGenres);
+            params.append('seed_genres', safeGenres.join(','));
+            console.log(`Using seed genres: ${params.get('seed_genres')}`);
+          }
+        }
+
+        // Add audio feature parameters for variety
+        if (seedGenres.includes('country')) {
+          params.append('target_acousticness', '0.7');
+        } else if (seedGenres.includes('pop')) {
+          params.append('target_popularity', '70');
+        } else if (seedGenres.includes('rock')) {
+          params.append('target_energy', '0.8');
+        }
+
+        console.log('Making recommendations request with params:', params.toString());
+
+        const response = await axios.get(
+          'https://api.spotify.com/v1/recommendations', {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          },
+          params: params
+        }
+        );
+
+        console.log(`Received ${response.data.tracks?.length || 0} recommendations`);
+
+        // Debug logs to see what kind of tracks we're getting
+        if (response.data.tracks && response.data.tracks.length > 0) {
+          const firstThreeTracks = response.data.tracks.slice(0, 3);
+          console.log('Sample tracks received:',
+            firstThreeTracks.map(t => `"${t.name}" by ${t.artists[0].name}`).join(', '));
+          return response.data.tracks;
+        } else {
+          throw new Error('No tracks returned from recommendations API');
+        }
+      } catch (recommendationsError) {
+        console.error('Error in recommendations API:', recommendationsError.message);
+        // Continue to backup method
+      }
+
+      // Second approach - try search as a fallback instead of recommendations
+      console.log('Trying direct search for tracks by genre...');
+      return await this.searchTracksByGenre(accessToken, seedGenres[0] || 'country', limit);
+    } catch (error) {
+      console.error('All recommendation methods failed:', error);
+      // Try fallback tracks as last resort
+      return await this.getFallbackTracks(accessToken, limit);
+    }
+  }
+
+  /**
+   * Get recommendations using all genres as seeds
+   * @param {string} accessToken - Spotify access token
+   * @param {Array<string>} genres - Array of genres to use as seeds
+   * @param {number} limit - Number of tracks to return
+   * @returns {Promise<Array>} - Array of recommended tracks
+   */
+  async getRecommendationsWithAllGenres(accessToken, genres, limit) {
+    try {
+      // Clean up and validate genres
+      const validGenres = genres
+        .filter(Boolean)
+        .slice(0, 5) // Spotify allows maximum 5 seeds total
+        .map(genre => genre.toLowerCase().trim().replace(/\s+/g, '-'));
+
+      if (validGenres.length === 0) {
+        return [];
+      }
+
+      const safeGenres = this.getSafeGenres(validGenres);
+
+      // Create parameters with all genres at once
+      const params = new URLSearchParams();
+      params.append('limit', limit);
+      params.append('seed_genres', safeGenres.join(','));
+
+      // Add timestamp to avoid cached results
+      params.append('timestamp', Date.now());
+
+      console.log(`Getting recommendations with all genres: ${safeGenres.join(',')}`);
+
+      const response = await axios.get('https://api.spotify.com/v1/recommendations', {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        },
+        params: params
+      });
+
+      if (response.data?.tracks?.length > 0) {
+        return response.data.tracks;
+      } else {
+        return [];
+      }
+    } catch (error) {
+      console.error('Error getting recommendations with all genres:', error.message);
+      return [];
+    }
+  }
+
+  /**
+   * Get recommendations for each genre and mix them together
+   * @param {string} accessToken - Spotify access token
+   * @param {Array<string>} genres - Array of genres
+   * @param {number} limit - Total number of tracks to return
+   * @returns {Promise<Array>} - Mixed array of tracks
+   */
+  async getRecommendationsByGenreMix(accessToken, genres, limit) {
+    try {
+      // Calculate tracks per genre
+      const validGenres = genres.filter(Boolean);
+      if (validGenres.length === 0) return [];
+
+      const tracksPerGenre = Math.ceil(limit / validGenres.length);
+      let allTracks = [];
+
+      // Get recommendations for each genre individually
+      for (const genre of validGenres) {
+        try {
+          const params = new URLSearchParams();
+          params.append('seed_genres', genre);
+          params.append('limit', tracksPerGenre);
+
+          // Add timestamp to avoid cached results
+          params.append('timestamp', Date.now() % 1000);
+
+          console.log(`Getting recommendations for genre: ${genre}`);
+
+          const response = await axios.get('https://api.spotify.com/v1/recommendations', {
+            headers: {
+              'Authorization': `Bearer ${accessToken}`
+            },
+            params: params
+          });
+
+          if (response.data?.tracks?.length > 0) {
+            console.log(`Got ${response.data.tracks.length} tracks for genre "${genre}"`);
+            allTracks = allTracks.concat(response.data.tracks);
+          }
+        } catch (genreError) {
+          console.log(`Failed to get recommendations for genre "${genre}":`, genreError.message);
+        }
+      }
+
+      // Check if we got any tracks
+      if (allTracks.length > 0) {
+        // Shuffle and limit
+        const shuffled = this.shuffleArray(allTracks);
+        return shuffled.slice(0, limit);
+      }
+
+      return [];
+    } catch (error) {
+      console.error('Error in genre mix recommendations:', error.message);
+      return [];
+    }
+  }
+
+  /**
+   * Use Spotify search API to find tracks by genre
+   * @param {string} accessToken - Spotify access token
+   * @param {string|Array} genres - Genre(s) to search for
+   * @param {number} limit - Number of tracks to return
+   * @returns {Promise<Array>} - Array of tracks
+   */
+  async searchTracksByGenre(accessToken, genres, limit = 20) {
+    try {
+      // Convert single genre to array for consistency
+      const genreArray = Array.isArray(genres) ? genres : [genres];
+
+      // Filter out empty genres
+      const validGenres = genreArray.filter(g => g && g.trim() !== '');
+
+      if (validGenres.length === 0) {
+        console.log('No valid genres provided for search');
+        return [];
+      }
+
+      console.log(`Searching for tracks across ${validGenres.length} genres: ${validGenres.join(', ')}`);
+
+      // Calculate how many tracks to fetch per genre
+      const tracksPerGenre = Math.ceil(limit / validGenres.length);
+      let allTracks = [];
+
+      // Search for each genre and collect results
+      for (const genre of validGenres) {
+        try {
+          // Specific genre search with genre: prefix
+          const searchQuery = `genre:${genre}`;
+          console.log(`Searching for "${searchQuery}"`);
+
+          const response = await axios.get('https://api.spotify.com/v1/search', {
+            headers: {
+              'Authorization': `Bearer ${accessToken}`
+            },
+            params: {
+              q: searchQuery,
+              type: 'track',
+              limit: tracksPerGenre
+            }
+          });
+
+          if (response.data.tracks && response.data.tracks.items.length > 0) {
+            console.log(`Found ${response.data.tracks.items.length} tracks for genre "${genre}"`);
+            allTracks = allTracks.concat(response.data.tracks.items);
+            continue; // Move to next genre if we got results
+          }
+
+          // If specific search fails, try broader keyword search
+          console.log(`No results for "genre:${genre}", trying general search for "${genre}"`);
+          const keywordResponse = await axios.get('https://api.spotify.com/v1/search', {
+            headers: {
+              'Authorization': `Bearer ${accessToken}`
+            },
+            params: {
+              q: genre, // Just use the genre as a keyword
+              type: 'track',
+              limit: tracksPerGenre
+            }
+          });
+
+          if (keywordResponse.data.tracks && keywordResponse.data.tracks.items.length > 0) {
+            console.log(`Found ${keywordResponse.data.tracks.items.length} tracks with keyword "${genre}"`);
+            allTracks = allTracks.concat(keywordResponse.data.tracks.items);
+          } else {
+            console.log(`No results found for genre "${genre}"`);
+          }
+        } catch (genreError) {
+          console.error(`Error searching for genre "${genre}":`, genreError.message);
+          // Continue with other genres
+        }
+      }
+
+      // Randomize and limit the final results
+      if (allTracks.length > 0) {
+        console.log(`Found a total of ${allTracks.length} tracks across all genres`);
+
+        // Shuffle the tracks to mix genres
+        const shuffledTracks = this.shuffleArray(allTracks);
+
+        // Take only up to the requested limit
+        const limitedTracks = shuffledTracks.slice(0, limit);
+
+        console.log(`Returning ${limitedTracks.length} mixed tracks across selected genres`);
+        return limitedTracks;
+      }
+
+      console.log('No tracks found across any genres');
+      return [];
+    } catch (error) {
+      console.error('Error searching for tracks by genre:', error.message);
+      return [];
+    }
+  }
+
+  /**
+   * Get a list of safe genres that should work with Spotify API
+   * @param {string[]} userGenres - User selected genres
+   * @returns {string[]} - Safe list of genres
+   */
+  getSafeGenres(userGenres = []) {
+    // These are known to be valid Spotify genre seeds
+    const validGenres = [
+      'acoustic', 'afrobeat', 'alt-rock', 'alternative', 'ambient', 'anime',
+      'black-metal', 'bluegrass', 'blues', 'bossanova', 'brazil', 'breakbeat',
+      'british', 'cantopop', 'chicago-house', 'children', 'chill', 'classical',
+      'club', 'comedy', 'country', 'dance', 'dancehall', 'death-metal', 'deep-house',
+      'detroit-techno', 'disco', 'disney', 'drum-and-bass', 'dub', 'dubstep', 'edm',
+      'electro', 'electronic', 'emo', 'folk', 'forro', 'french', 'funk', 'garage',
+      'german', 'gospel', 'goth', 'grindcore', 'groove', 'grunge', 'guitar',
+      'happy', 'hard-rock', 'hardcore', 'hardstyle', 'heavy-metal', 'hip-hop',
+      'house', 'idm', 'indian', 'indie', 'indie-pop', 'industrial', 'iranian',
+      'j-dance', 'j-idol', 'j-pop', 'j-rock', 'jazz', 'k-pop', 'kids', 'latin',
+      'latino', 'malay', 'mandopop', 'metal', 'metal-misc', 'metalcore', 'minimal-techno',
+      'mpb', 'new-age', 'new-release', 'opera', 'pagode', 'party', 'piano',
+      'pop', 'pop-film', 'post-dubstep', 'power-pop', 'progressive-house', 'psych-rock',
+      'punk', 'punk-rock', 'r-n-b', 'rainy-day', 'reggae', 'reggaeton', 'road-trip',
+      'rock', 'rock-n-roll', 'rockabilly', 'romance', 'sad', 'salsa', 'samba',
+      'sertanejo', 'show-tunes', 'singer-songwriter', 'ska', 'sleep', 'songwriter',
+      'soul', 'soundtracks', 'spanish', 'study', 'summer', 'swedish', 'synth-pop',
+      'tango', 'techno', 'trance', 'trip-hop', 'turkish', 'work-out', 'world-music'
+    ];
+
+    // If no user genres, return some popular ones
+    if (!userGenres || userGenres.length === 0) {
+      return ['pop', 'rock', 'hip-hop'];
+    }
+
+    // Filter user genres to only include valid ones
+    const safeGenres = userGenres.filter(genre => validGenres.includes(genre));
+
+    // If none of the user genres are valid, return popular ones
+    if (safeGenres.length === 0) {
+      console.log('No valid genres found, using defaults');
+      return ['pop', 'rock', 'hip-hop'];
+    }
+
+    return safeGenres;
+  }
+
+  /**
+   * Validate that the genre seeds are acceptable to Spotify
+   * @param {string} accessToken - Spotify access token
+   * @param {string[]} genres - List of genres to validate
+   */
+  async validateGenreSeeds(accessToken, genres) {
+    try {
+      const response = await axios({
+        method: 'get',
+        url: 'https://api.spotify.com/v1/recommendations/available-genre-seeds',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+
+      if (response.data && response.data.genres) {
+        const availableGenres = response.data.genres;
+        const invalidGenres = genres.filter(g => !availableGenres.includes(g));
+
+        if (invalidGenres.length > 0) {
+          console.log(`Warning: Invalid genre seeds detected: ${invalidGenres.join(', ')}`);
+        }
+      }
+    } catch (error) {
+      console.log('Could not validate genre seeds, continuing anyway');
+    }
+  }
+
+  /**
+   * Simplified recommendation approach when main method fails
+   * @param {string} accessToken - Spotify access token
+   * @param {number} limit - Number of tracks to request
+   * @param {Object} originalOptions - The original options that were passed
+   * @returns {Promise<Array>} - Array of tracks
+   */
+  async getSimplifiedRecommendations(accessToken, limit = 20, originalOptions = {}) {
+    const { seedGenres = [] } = originalOptions;
+
+    try {
+      // Determine genre approach based on original request
+      let attempts = [];
+
+      // If user selected genres, try those first individually
+      if (seedGenres && seedGenres.length > 0) {
+        for (const genre of seedGenres) {
+          if (genre) {
+            attempts.push({ seed_genres: genre });
+          }
+        }
+      }
+
+      // Add some generic attempts as backup
+      attempts = attempts.concat([
+        { seed_genres: 'pop', target_popularity: 80 },
+        { seed_genres: 'rock', target_energy: 0.8 },
+        { seed_genres: 'hip-hop', target_danceability: 0.8 },
+        { seed_genres: 'indie', target_acousticness: 0.6 },
+        { seed_genres: 'electronic', target_energy: 0.9 }
+      ]);
+
+      // Make each attempt unique by adding timestamp-based randomization
+      const timestamp = Date.now();
+      for (const params of attempts) {
+        try {
+          params.limit = limit;
+          params.timestamp = timestamp % 1000; // Add some randomization
+          console.log(`Trying recommendation with params:`, params);
+
           const response = await axios({
             method: 'get',
             url: 'https://api.spotify.com/v1/recommendations',
             headers: {
-              'Authorization': `Bearer ${this.accessToken}`
+              'Authorization': `Bearer ${accessToken}`
             },
-            params: requestParams
+            params: params
           });
 
-          if (response.data && response.data.tracks && response.data.tracks.length > 0) {
-            console.log(`Successfully received ${response.data.tracks.length} recommendations`);
-            return response.data;
-          } else {
-            console.log('Got empty track list, trying again with different parameters');
+          if (response.data?.tracks?.length > 0) {
+            console.log(`Success! Received ${response.data.tracks.length} tracks from seed: ${params.seed_genres}`);
 
-            // Try with different genres for next attempt
-            if (attempts === 0) {
-              requestParams = {
-                limit,
-                seed_genres: 'pop,electronic'
-              };
-            } else if (attempts === 1) {
-              requestParams = {
-                limit,
-                seed_genres: 'rock,alternative'
-              };
-            }
+            // Log sample tracks for debugging
+            const firstThreeTracks = response.data.tracks.slice(0, 3);
+            console.log('Sample tracks received:',
+              firstThreeTracks.map(t => `"${t.name}" by ${t.artists[0].name}`).join(', '));
 
-            attempts++;
+            return response.data.tracks;
           }
-        } catch (error) {
-          console.error(`Attempt ${attempts + 1} failed:`, error.message);
-
-          // Try with different genres for next attempt
-          if (attempts === 0) {
-            requestParams = {
-              limit,
-              seed_genres: 'pop,electronic'
-            };
-          } else if (attempts === 1) {
-            requestParams = {
-              limit,
-              seed_genres: 'rock,alternative'
-            };
-          }
-
-          attempts++;
+        } catch (attemptError) {
+          console.log(`Attempt failed with params ${JSON.stringify(params)}:`, attemptError.message);
+          // Continue to next attempt
         }
       }
 
-      // If all attempts failed, try our simplified last resort method
-      return this.getLastResortTracks(limit);
+      // As a last resort, try to get user's top tracks
+      console.log('All recommendation attempts failed, trying user top tracks...');
+      return await this.getFallbackTracks(accessToken, limit);
     } catch (error) {
-      console.error('Error in getRecommendations:', error.message);
-      return this.getLastResortTracks(options.limit || 20);
+      console.error('All simplified recommendation attempts failed:', error.message);
+      return await this.getFallbackTracks(accessToken, limit);
+    }
+  }
+
+  /**
+   * Get fallback tracks when all recommendation methods fail
+   * @param {string} accessToken - Spotify access token
+   * @param {number} limit - Number of tracks to return
+   * @returns {Promise<Array>} Array of tracks
+   */
+  async getFallbackTracks(accessToken, limit = 20) {
+    try {
+      console.log('Getting fallback tracks from user top tracks...');
+
+      // Try medium_term first (last 6 months)
+      try {
+        const response = await axios.get('https://api.spotify.com/v1/me/top/tracks', {
+          params: { time_range: 'medium_term', limit },
+          headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
+
+        if (response.data?.items?.length > 0) {
+          console.log(`Got ${response.data.items.length} fallback tracks from user top tracks (medium_term)`);
+          return response.data.items;
+        }
+      } catch (mediumTermError) {
+        console.log('Medium term fallback failed:', mediumTermError.message);
+      }
+
+      // If medium_term failed, try short_term (last 4 weeks)
+      try {
+        const response = await axios.get('https://api.spotify.com/v1/me/top/tracks', {
+          params: { time_range: 'short_term', limit },
+          headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
+
+        if (response.data?.items?.length > 0) {
+          console.log(`Got ${response.data.items.length} fallback tracks from user top tracks (short_term)`);
+          return response.data.items;
+        }
+      } catch (shortTermError) {
+        console.log('Short term fallback failed:', shortTermError.message);
+      }
+
+      // As a last resort, try to get recently played tracks
+      try {
+        const recentlyPlayed = await axios.get('https://api.spotify.com/v1/me/player/recently-played', {
+          params: { limit },
+          headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
+
+        if (recentlyPlayed.data?.items?.length > 0) {
+          console.log(`Got ${recentlyPlayed.data.items.length} tracks from recently played`);
+          return recentlyPlayed.data.items.map(item => item.track);
+        }
+      } catch (recentlyPlayedError) {
+        console.error('Recently played fallback failed:', recentlyPlayedError.message);
+      }
+
+      // If all else fails, return an empty array
+      console.log('All track fetching methods failed, returning empty array');
+      return [];
+    } catch (error) {
+      console.error('Error in getFallbackTracks:', error.message);
+      return [];
     }
   }
 
@@ -363,25 +803,21 @@ class SpotifyService {
       params.append('time_range', time_range);
 
       const response = await axios.get(
-        `https://api.spotify.com/v1/me/top/${type}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${this.accessToken}`
-          },
-          params: params
-        }
+        `https://api.spotify.com/v1/me/top/${type}`, {
+        headers: {
+          'Authorization': `Bearer ${this.accessToken}`
+        },
+        params: params
+      }
       );
 
       return response.data;
     } catch (error) {
       console.error(`Error getting top ${type}:`, error);
-
-      // If 403 error (user hasn't used Spotify enough)
       if (error.response && (error.response.status === 403 || error.response.status === 404)) {
         console.log(`User doesn't have enough ${type} history, returning empty array`);
         return { items: [] };
       }
-
       throw error;
     }
   }
@@ -417,30 +853,29 @@ class SpotifyService {
 
   /**
    * Create a new playlist
-   * @param {string} name - The name of the playlist
+   * @param {string} accessToken - The access token
+   * @param {string} userId - Spotify user ID
+   * @param {Object} options - Playlist options (name, description, isPublic)
    * @returns {Promise<Object>} - Created playlist data
    */
-  async createPlaylist(name) {
+  async createPlaylist(accessToken, userId, options = {}) {
+    const name = options.name || `Find That Song - ${new Date().toLocaleDateString()}`;
+    const description = options.description || 'Created with Find That Song app';
+    const isPublic = options.isPublic !== undefined ? options.isPublic : true;
+
     try {
-      // Ensure we have the access token
-      await this.ensureAccessToken();
-
-      // Get the current user's profile to get their ID
-      const userProfile = await this.getUserProfile(this.accessToken);
-      const userId = userProfile.id;
-
       console.log(`Creating playlist "${name}" for user ${userId}`);
 
       const response = await axios.post(
         `https://api.spotify.com/v1/users/${userId}/playlists`,
         {
-          name: name || `Find That Song - ${new Date().toLocaleDateString()}`,
-          description: 'Created with Find That Song app',
-          public: true
+          name: name,
+          description: description,
+          public: isPublic
         },
         {
           headers: {
-            'Authorization': `Bearer ${this.accessToken}`,
+            'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
           }
         }
@@ -460,23 +895,28 @@ class SpotifyService {
 
   /**
    * Add tracks to a playlist
+   * @param {string} accessToken - Spotify access token
    * @param {string} playlistId - Playlist ID
    * @param {Array<string>} trackUris - Track URIs to add
    * @returns {Promise<Object>} - API response
    */
-  async addTracksToPlaylist(playlistId, trackUris) {
+  async addTracksToPlaylist(accessToken, playlistId, trackUris) {
     try {
-      // Ensure we have the access token
-      await this.ensureAccessToken();
+      // Validate inputs
+      if (!Array.isArray(trackUris) || trackUris.length === 0) {
+        console.error('No track URIs provided to add to playlist');
+        throw new Error('No tracks provided to add to playlist');
+      }
 
       console.log(`Adding ${trackUris.length} tracks to playlist ${playlistId}`);
+      console.log('First few URIs:', trackUris.slice(0, 3));
 
       const response = await axios.post(
         `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
         { uris: trackUris },
         {
           headers: {
-            'Authorization': `Bearer ${this.accessToken}`,
+            'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
           }
         }

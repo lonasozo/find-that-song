@@ -49,68 +49,122 @@
     </header>
 
     <div class="generator-form-container">
-      <form id="playlist-form">
-        <input type="hidden" name="access_token" value="<%= access_token %>">
-        
-        <div class="form-group">
-          <label for="name">Playlist Name</label>
-          <input type="text" id="name" name="name" required 
-                 value="<%= defaultPlaylistName %>" 
-                 placeholder="My Awesome Playlist">
-        </div>
+      <div class="generate-playlist-container">
+        <h1>Generate a Custom Playlist</h1>
+        <p class="section-description">Create a new playlist based on your music preferences.</p>
 
-        <div class="form-group">
-          <label for="type">Generation Type</label>
-          <select id="type" name="type" required>
-            <option value="top_artists" selected>Based on My Top Artists</option>
-            <option value="genres">Based on Genres</option>
-          </select>
-        </div>
+        <form id="playlist-form" action="/create-playlist" method="post" class="playlist-form">
+            <input type="hidden" name="access_token" value="<%= access_token %>">
+            
+            <div class="form-group">
+                <label for="playlist_name">Playlist Name</label>
+                <input type="text" id="playlist_name" name="playlist_name" 
+                       value="<%= defaultPlaylistName %>" required class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="playlist_description">Description (optional)</label>
+                <textarea id="playlist_description" name="playlist_description" 
+                          class="form-control">Discover new music with Find That Song</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>What genres would you like in your playlist?</label>
+                <div class="genre-selector">
+                    <select id="genres" name="genres" multiple class="form-control">
+                        <optgroup label="Popular Genres">
+                            <option value="pop">Pop</option>
+                            <option value="rock">Rock</option>
+                            <option value="hip-hop">Hip-Hop</option>
+                            <option value="r-n-b">R&B</option>
+                            <option value="electronic">Electronic</option>
+                            <option value="dance">Dance</option>
+                            <option value="indie">Indie</option>
+                        </optgroup>
+                        <optgroup label="Specific Genres">
+                            <option value="acoustic">Acoustic</option>
+                            <option value="alternative">Alternative</option>
+                            <option value="ambient">Ambient</option>
+                            <option value="blues">Blues</option>
+                            <option value="classical">Classical</option>
+                            <option value="country">Country</option>
+                            <option value="folk">Folk</option>
+                            <option value="funk">Funk</option>
+                            <option value="heavy-metal">Heavy Metal</option>
+                            <option value="house">House</option>
+                            <option value="jazz">Jazz</option>
+                            <option value="piano">Piano</option>
+                            <option value="punk">Punk</option>
+                            <option value="reggae">Reggae</option>
+                            <option value="soul">Soul</option>
+                        </optgroup>
+                        <optgroup label="Moods">
+                            <option value="chill">Chill</option>
+                            <option value="happy">Happy</option>
+                            <option value="party">Party</option>
+                            <option value="romance">Romance</option>
+                            <option value="sad">Sad</option>
+                        </optgroup>
+                    </select>
+                    <small class="genres-hint">Tip: Press Ctrl (Cmd on Mac) to select multiple genres (max 5)</small>
+                    <small class="genres-hint">If no genres are selected, popular genres will be used.</small>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="track_count">Number of tracks</label>
+                <input type="number" id="track_count" name="track_count" min="5" max="50" value="20" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label>Privacy</label>
+                <div class="radio-options">
+                    <div class="radio-option">
+                        <input type="radio" id="public_true" name="public" value="true" checked>
+                        <label for="public_true">Public</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="public_false" name="public" value="false">
+                        <label for="public_false">Private</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Create Playlist</button>
+            </div>
+        </form>
+    </div>
 
-        <div class="form-group genres-container" style="display: none;">
-          <label for="genres">Select Genres (max 5)</label>
-          <select id="genres" name="genres" multiple size="10">
-            <!-- Simplified list of most reliable genres -->
-            <option value="pop">Pop</option>
-            <option value="rock">Rock</option>
-            <option value="hip-hop">Hip-Hop</option>
-            <option value="electronic">Electronic</option>
-            <option value="indie">Indie</option>
-            <option value="jazz">Jazz</option>
-            <option value="alternative">Alternative</option>
-            <option value="classical">Classical</option>
-            <option value="dance">Dance</option>
-            <option value="folk">Folk</option>
-            <option value="metal">Metal</option>
-            <option value="blues">Blues</option>
-            <option value="soul">Soul</option>
-            <option value="punk">Punk</option>
-            <option value="country">Country</option>
-            <option value="r-n-b">R&B</option>
-          </select>
-          <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple genres (up to 5)</small>
-        </div>
-
-        <div class="form-group">
-          <label for="track_count">Number of Tracks</label>
-          <input type="number" id="track_count" name="track_count" min="10" max="100" value="20">
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" class="submit-btn">Generate Playlist</button>
-        </div>
-      </form>
-
-      <div id="loading-spinner" style="display: none; text-align: center; margin-top: 20px;">
+    <div id="loading-spinner" style="display: none; text-align: center; margin-top: 20px;">
         <div class="spinner"></div>
         <p>Creating your playlist...</p>
-      </div>
-
-      <div id="result"></div>
     </div>
+
+    <div id="result"></div>
   </div>
+</div>
 
-  
+<script src="/js/playlist-generator.js"></script>
 
-  <script src="/js/playlist-generator.js"></script>
- </body></html>
+<script>
+    // Additional script to make form handling better
+    document.addEventListener('DOMContentLoaded', function() {
+        // Enhanced genre selector functionality
+        const genreSelect = document.getElementById('genres');
+        
+        // Function to limit genre selections to 5
+        if (genreSelect) {
+            genreSelect.addEventListener('change', function() {
+                const selectedOptions = Array.from(this.selectedOptions);
+                if (selectedOptions.length > 5) {
+                    alert('You can select a maximum of 5 genres.');
+                    // Deselect the last option
+                    selectedOptions[selectedOptions.length - 1].selected = false;
+                }
+            });
+        }
+    });
+</script>
+
+</body></html>

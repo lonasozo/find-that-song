@@ -1,0 +1,38 @@
+<div class="error-container">
+    <div class="error-icon">
+        <i class="fas fa-exclamation-triangle"></i>
+    </div>
+    
+    <div class="error-content">
+        <h1>Oops! Something went wrong</h1>
+        <h2><%= message %></h2>
+        
+        <% if (locals.status && status >= 400) { %>
+            <div class="error-status">Error <%= status %></div>
+        <% } %>
+        
+        <div class="error-details">
+            <% if (locals.error && process.env.NODE_ENV !== 'production') { %>
+                <div class="error-stack">
+                    <pre><%= error.stack %></pre>
+                </div>
+            <% } %>
+        </div>
+        
+        <% if (locals.isAuthError) { %>
+            <div class="auth-error-actions">
+                <p>Your session may have expired. Please try logging in again.</p>
+                <a href="/" class="btn btn-primary">Return to Login</a>
+            </div>
+        <% } else { %>
+            <div class="error-actions">
+                <a href="javascript:history.back()" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Go Back
+                </a>
+                <a href="/" class="btn btn-primary">
+                    <i class="fas fa-home"></i> Home
+                </a>
+            </div>
+        <% } %>
+    </div>
+</div>
