@@ -1,129 +1,123 @@
 # Find That Song
 
-Find That Song è un'applicazione web che ti aiuta a trovare le canzoni che hai ascoltato di recente su Spotify, ma di cui non ti ricordi il nome o che non hai fatto in tempo a salvare.
+Find That Song is a web application that helps you find songs you've recently listened to on Spotify, check some details about your listening history, and create new playlists.
+It is already [deployed on Vercel](https://find-that-song.vercel.app/).
 
-## Caratteristiche
+## Installation
 
-- Autenticazione tramite Spotify
-- Recupera l'elenco delle canzoni riprodotte di recente
-- Visualizza i dettagli delle canzoni, inclusi nome, album, artisti e data di riproduzione
-- Link diretto per ascoltare la canzone su Spotify
-
-## Installazione
-
-1. Clona il repository:
+1. Clone the repository:
    ```bash
    git clone https://github.com/lonasozo/find-that-song.git
    cd find-that-song
    ```
 
-2. Installa le dipendenze:
+2. Install dependencies:
    ```bash
    npm install
    ```
 
-3. Crea un file .env nella root del progetto e aggiungi le seguenti variabili d'ambiente:
+3. Create a .env file in the project root and add the following environment variables:
    ```
    SPOTIFY_CLIENT_ID=your_spotify_client_id
    SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
    SPOTIFY_REDIRECT_URI=your_spotify_redirect_uri
    ```
 
-## Utilizzo
+## Usage
 
-1. Avvia l'applicazione:
+1. Start the application:
    ```bash
    node index.js
    ```
 
-2. Apri il browser e vai all'URL:
+2. Open your browser and go to:
    ```
    http://localhost:3000/login
    ```
 
-3. Accedi con il tuo account Spotify e autorizza l'applicazione.
+3. Log in with your Spotify account and authorize the application.
 
-4. Verrai reindirizzato alla pagina con l'elenco delle canzoni riprodotte di recente.
+4. You'll be redirected to the page with a list of your recently played songs.
 
-## Test Locale con Vercel Dev
+## Local Testing with Vercel Dev
 
-Prima di deployare su Vercel, puoi testare l'applicazione in locale usando `vercel dev`:
+Before deploying to Vercel, you can test the application locally using `vercel dev`:
 
-1. **Installa Vercel CLI** (se non già fatto):
+1. **Install Vercel CLI** (if not already done):
    ```bash
    npm install -g vercel
    ```
 
-2. **Autenticati su Vercel**:
+2. **Authenticate with Vercel**:
    ```bash
    vercel login
    ```
 
-3. **Collega il progetto a Vercel** (solo la prima volta):
+3. **Link the project to Vercel** (only the first time):
    ```bash
    vercel link
    ```
-   - Segui le istruzioni per collegare il progetto al tuo account Vercel
+   - Follow the instructions to link the project to your Vercel account
 
-4. **Configura le variabili d'ambiente locali**:
-   - Vercel copierà automaticamente le variabili d'ambiente dal progetto remoto
-   - Puoi anche creare un file `.env.local` per le configurazioni di sviluppo
+4. **Configure local environment variables**:
+   - Vercel will automatically copy environment variables from the remote project
+   - You can also create a `.env.local` file for development configurations
 
-5. **Avvia il server di sviluppo locale**:
+5. **Start the local development server**:
    ```bash
    vercel dev
    ```
-   - Questo comando emulerà l'ambiente Vercel in locale
-   - L'applicazione sarà disponibile all'indirizzo `http://localhost:3000`
+   - This command will emulate the Vercel environment locally
+   - The application will be available at `http://localhost:3000`
 
-6. **Imposta il redirect URI su Spotify**:
-   - Durante i test locali, aggiungi `http://localhost:3000/callback` come URI di redirect nella dashboard di Spotify Developer
+6. **Set the redirect URI on Spotify**:
+   - During local testing, add `http://localhost:3000/callback` as a redirect URI in the Spotify Developer dashboard
 
-> **Nota**: Usando `vercel dev`, testerai l'applicazione con la stessa configurazione serverless che avrà in produzione, garantendo maggiore affidabilità del deployment.
+> **Note**: By using `vercel dev`, you'll test the application with the same serverless configuration it will have in production, ensuring greater deployment reliability.
 
-## Deployment su Vercel
+## Deployment to Vercel
 
-Per deployare questa applicazione su Vercel:
+To deploy this application to Vercel:
 
-1. **Configura le Variabili d'Ambiente su Vercel**:
-   - `SPOTIFY_CLIENT_ID`: Il tuo Client ID Spotify
-   - `SPOTIFY_CLIENT_SECRET`: Il tuo Client Secret Spotify
-   - `SPOTIFY_REDIRECT_URI`: L'URL di callback (es. `https://tuo-progetto.vercel.app/callback`)
+1. **Configure Environment Variables on Vercel**:
+   - `SPOTIFY_CLIENT_ID`: Your Spotify Client ID
+   - `SPOTIFY_CLIENT_SECRET`: Your Spotify Client Secret
+   - `SPOTIFY_REDIRECT_URI`: The callback URL (e.g., `https://your-project.vercel.app/callback`)
 
-2. **Aggiorna le Impostazioni Spotify**:
-   - Accedi al [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/)
-   - Seleziona la tua app
-   - Aggiungi l'URL di redirect di produzione (es. `https://tuo-progetto.vercel.app/callback`)
-   - Salva le modifiche
+2. **Update Spotify Settings**:
+   - Access the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/)
+   - Select your app
+   - Add the production redirect URL (e.g., `https://your-project.vercel.app/callback`)
+   - Save the changes
 
-3. **Comandi per il Deploy**:
+3. **Deployment Commands**:
    ```bash
-   # Installazione di Vercel CLI (se non già fatto)
+   # Install Vercel CLI (if not already done)
    npm install -g vercel
    
-   # Login su Vercel
+   # Login to Vercel
    vercel login
    
    # Deploy
    vercel
    
-   # Deploy in produzione
+   # Production deployment
    vercel --prod
    ```
 
-4. **Verifica il Deployment**:
-   - Visita l'URL fornito da Vercel dopo il deploy
-   - Verifica che l'autenticazione Spotify funzioni correttamente
-   - Controlla che le tue recently played tracks siano visibili
+4. **Verify the Deployment**:
+   - Visit the URL provided by Vercel after deployment
+   - Verify that Spotify authentication works correctly
+   - Check that your recently played tracks are visible
 
-> Nota: Assicurati che il file `vercel.json` sia presente nella root del progetto.
+> Note: Make sure the `vercel.json` file is present in the project root.
 
-## Contribuire
+## Contributing
 
-Se desideri contribuire a questo progetto, apri una pull request o segnala un problema.
+If you wish to contribute to this project, open a pull request or report an issue.
 
-## Licenza
+## License
 
-Questo progetto è sotto licenza MIT. Vedi il file LICENSE per maggiori dettagli.
+This project is licensed under the MIT License. See the LICENSE file for more details.
 
-> Assicurati di sostituire `your_spotify_client_id`, `your_spotify_client_secret`, e `your_spotify_redirect_uri` con i valori corretti.
+> Be sure to replace `your_spotify_client_id`, `your_spotify_client_secret`, and `your_spotify_redirect_uri` with the correct values.
