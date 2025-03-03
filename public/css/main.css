@@ -3,74 +3,109 @@
 @import url('time-range.css');
 @import url('track-list.css');
 /* ...existing styles... */
+/* Theme variables */
+:root {
+    /* Light theme (default) */
+    --bg-primary: #f5f5f5;
+    --bg-secondary: #ffffff;
+    --bg-sidebar: #f8f9fa;
+    --text-primary: #333333;
+    --text-secondary: #666666;
+    --text-muted: #888888;
+    --border-color: #eaeaea;
+    --accent-color: #1db954;
+    --accent-hover: #1ed760;
+    --sidebar-active: #e3f2fd;
+    --card-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --header-bg: #ffffff;
+    --sidebar-text: #333333;
+    --sidebar-border: #e0e0e0;
+}
 
-/* Time Range Selector Styles */
+/* Dark theme */
+[data-theme="dark"] {
+    --bg-primary: #121212;
+    --bg-secondary: #1e1e1e;
+    --bg-sidebar: #121212;
+    --text-primary: #ffffff;
+    --text-secondary: #b3b3b3;
+    --text-muted: #9e9e9e;
+    --border-color: #333333;
+    --accent-color: #1db954;
+    --accent-hover: #1ed760;
+    --sidebar-active: #282828;
+    --card-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    --header-bg: #1e1e1e;
+    --sidebar-text: #ffffff;
+    --sidebar-border: #333333;
+}
+/* CSS Variables per light/dark mode */
+
+/* Base styles using CSS variables */
+
+
+
+/* Time Range Selector Styles - Using CSS Variables */
 .time-range-selector {
-    display: flex;
-    justify-content: center;
-    margin: 20px 0;
-    gap: 10px;
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  gap: 10px;
+  padding: 5px;
+  border-radius: 25px;
+  background-color: var(--bg-color);
+  box-shadow: var(--shadow-light);
+  transition: all 0.3s ease;
 }
 
 .time-range-btn {
-    background-color: #f5f5f5;
-    border: 1px solid #e0e0e0;
-    color: #666;
-    padding: 8px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: all 0.2s ease;
+  background-color: var(--btn-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
 }
 
 .time-range-btn:hover {
-    background-color: #e9f8ee;
-    color: #1DB954;
+  color: var(--accent-color);
+  transform: translateY(-1px);
 }
 
 .time-range-btn.active {
-    background-color: #1DB954;
-    color: white;
-    border-color: #1DB954;
+  background-color: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+  box-shadow: var(--shadow-md);
 }
 
 .time-range-loader {
-    display: flex;
-    justify-content: center;
-    padding: 10px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0;
+  height: 40px;
 }
 
 .time-range-loader .loader {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #1DB954;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    animation: spin 1s linear infinite;
+  border: 3px solid var(--loader-bg);
+  border-top: 3px solid var(--accent-color);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-    .time-range-btn {
-        background-color: #2a2a2a;
-        border: 1px solid #333;
-        color: #bbb;
-    }
-    
-    .time-range-btn:hover {
-        background-color: #252525;
-        color: #1DB954;
-    }
-    
-    .time-range-loader .loader {
-        border-color: #333;
-        border-top-color: #1DB954;
-    }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* ...existing code... */
