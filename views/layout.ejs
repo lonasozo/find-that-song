@@ -10,6 +10,8 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Vercel Analytics -->
+    <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -112,6 +114,7 @@
     <!-- Common scripts -->
     <script src="/js/main.js"></script>
     <script src="/js/track-interactions.js"></script>
+    <script src="/js/custom-analytics.js"></script>
     
     <% if (["Top Tracks", "Top Artists", "Top Albums"].includes(title)) { %>
         <script src="/js/time-range-selector.js"></script>
@@ -128,5 +131,38 @@
             });
         </script>
     <% } %>
+
+    <!-- Custom Analytics Initialization -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Send page view event if vercel analytics is available
+            if (window.va) {
+                window.va('event', {
+                    name: 'page_view',
+                    data: { 
+                        page: '<%= title %>',
+                        url: window.location.pathname 
+                    }
+                });
+            }
+            
+            if (window.customAnalytics) {
+                window.customAnalytics.trackPageView('<%= title %>');
+                
+                // Track specific user actions on this page
+                <% if (title === 'Top Tracks') { %>
+                    // Track time range selection for top tracks
+                    document.querySelectorAll('.time-range-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            window.customAnalytics.trackEvent('time_range_changed', {
+                                page: 'Top Tracks',
+                                range: this.getAttribute('data-range')
+                            });
+                        });
+                    });
+                <% } %>
+            }
+        });
+    </script>
 </body>
 </html>

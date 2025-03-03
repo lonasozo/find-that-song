@@ -116,5 +116,40 @@
         });
       });
     </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Track homepage view with additional details
+        if (window.customAnalytics) {
+            window.customAnalytics.trackEvent('homepage_view', {
+                timestamp: new Date().toISOString(),
+                referrer: document.referrer || 'direct',
+                language: navigator.language
+            });
+            
+            // Track login button clicks
+            const loginButton = document.querySelector('.login-button') || document.querySelector('a[href*="login"]');
+            if (loginButton) {
+                loginButton.addEventListener('click', function() {
+                    window.customAnalytics.trackEvent('login_attempt', {
+                        from: 'homepage'
+                    });
+                });
+            }
+            
+            // Track other important homepage interactions
+            document.querySelectorAll('a, button').forEach(element => {
+                element.addEventListener('click', function(e) {
+                    const text = this.textContent.trim();
+                    const href = this.getAttribute('href') || '';
+                    window.customAnalytics.trackInteraction(
+                        this.tagName.toLowerCase(),
+                        'click',
+                        text || href
+                    );
+                });
+            });
+        }
+    });
+</script>
   </body>
 </html>
