@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Track Analysis - <%= track ? track.name : 'Loading...' %></title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/track-analysis.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Check for dark mode preference
+    if (localStorage.getItem('theme') === 'dark' || 
+        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+</head>
+<body>
+  <div class="track-analysis-container">
+    <header>
+      <h1>Track Analysis</h1>
+      <div class="nav-links">
+        <a href="/top-tracks?access_token=<%= access_token %>" class="home-link">Back to Tracks</a>
+      </div>
+    </header>
+
+    <main>
+      <% if (!track) { %>
+        <div class="loading-container">
+          <div class="spinner"></div>
+          <p>Loading track information...</p>
+        </div>
+      <% } else { %>
+        <section class="track-overview">
+          <div class="track-header">
+            <% if (track.album && track.album.images && track.album.images.length > 0) { %>
+              <img src="<%= track.album.images[0].url %>" alt="Album cover" class="album-cover">
+            <% } else { %>
+              <div class="album-cover placeholder">
+                <i class="fas fa-music"></i>
+              </div>
+            <% } %>
+            
+            <div class="track-info">
+              <h2><%= track.name %></h2>
+              <p class="artists"><%= track.artists ? track.artists.map(artist => artist.name).join(', ') : 'Unknown Artist' %></p>
+              <% if (track.album) { %>
+                <p class="album">Album: <%= track.album.name %></p>
+                <% if (track.album.release_date) { %>
+                  <p class="release">Released: <%= new Date(track.album.release_date).toLocaleDateString() %></p>
+                <% } %>
+              <% } %>
+              <p class="duration">Duration: <%= Math.floor(track.duration_ms / 60000) %>:<%= ((track.duration_ms % 60000) / 1000).toFixed(0).padStart(2, '0') %></p>
+              <p class="popularity">Popularity: <%= track.popularity || 0 %>/100</p>
+              
+              <div class="external-links">
+                <% if (track.external_urls && track.external_urls.spotify) { %>
+                  <a href="<%= track.external_urls.spotify %>" target="_blank" class="spotify-button">
+                    <i class="fab fa-spotify"></i> Open in Spotify
+                  </a>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="audio-features">
+          <h3>Audio Features</h3>
+          <% if (locals.analysisError || !audioFeatures) { %>
+            <div class="analysis-error-message">
+              <p><i class="fas fa-exclamation-circle"></i> Audio analysis is not available for this track.</p>
+              <p>This can happen due to regional restrictions or limitations in Spotify's API.</p>
+            </div>
+          <% } else { %>
+            <div class="features-container">
+              <div class="features-chart-container">
+                <canvas id="featuresRadarChart"></canvas>
+              </div>
+              
+              <div class="features-grid">
+                <div class="feature-item">
+                  <div class="feature-label">Danceability</div>
+                  <div class="feature-value"><%= (audioFeatures.danceability * 100).toFixed(0) %>%</div>
+                  <div class="feature-bar">
+                    <div class="feature-fill" style="width: <%= audioFeatures.danceability * 100 %>%"></div>
+                  </div>
+                </div>
+                
+                <div class="feature-item">
+                  <div class="feature-label">Energy</div>
+                  <div class="feature-value"><%= (audioFeatures.energy * 100).toFixed(0) %>%</div>
+                  <div class="feature-bar">
+                    <div class="feature-fill" style="width: <%= audioFeatures.energy * 100 %>%"></div>
+                  </div>
+                </div>
+                
+                <div class="feature-item">
+                  <div class="feature-label">Acousticness</div>
+                  <div class="feature-value"><%= (audioFeatures.acousticness * 100).toFixed(0) %>%</div>
+                  <div class="feature-bar">
+                    <div class="feature-fill" style="width: <%= audioFeatures.acousticness * 100 %>%"></div>
+                  </div>
+                </div>
+                
+                <div class="feature-item">
+                  <div class="feature-label">Instrumentalness</div>
+                  <div class="feature-value"><%= (audioFeatures.instrumentalness * 100).toFixed(0) %>%</div>
+                  <div class="feature-bar">
+                    <div class="feature-fill" style="width: <%= audioFeatures.instrumentalness * 100 %>%"></div>
+                  </div>
+                </div>
+                
+                <div class="feature-item">
+                  <div class="feature-label">Liveness</div>
+                  <div class="feature-value"><%= (audioFeatures.liveness * 100).toFixed(0) %>%</div>
+                  <div class="feature-bar">
+                    <div class="feature-fill" style="width: <%= audioFeatures.liveness * 100 %>%"></div>
+                  </div>
+                </div>
+                
+                <div class="feature-item">
+                  <div class="feature-label">Valence (Positivity)</div>
+                  <div class="feature-value"><%= (audioFeatures.valence * 100).toFixed(0) %>%</div>
+                  <div class="feature-bar">
+                    <div class="feature-fill" style="width: <%= audioFeatures.valence * 100 %>%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% } %>
+        </section>
+
+        <% if (!locals.analysisError && audioFeatures) { %>
+          <section class="track-details">
+            <h3>Technical Details</h3>
+            <div class="details-grid">
+              <% 
+                // Define a safe key array with fallback
+                const keyNames = ['C', 'C♯/D♭', 'D', 'D♯/E♭', 'E', 'F', 'F♯/G♭', 'G', 'G♯/A♭', 'A', 'A♯/B♭', 'B'];
+                const getKeyName = (keyIndex) => {
+                  if (keyIndex >= 0 && keyIndex < keyNames.length) {
+                    return keyNames[keyIndex];
+                  }
+                  return 'Unknown';
+                }
+              %>
+              
+              <div class="detail-item">
+                <div class="detail-label">Key</div>
+                <div class="detail-value"><%= getKeyName(audioFeatures.key) %></div>
+              </div>
+              
+              <div class="detail-item">
+                <div class="detail-label">Mode</div>
+                <div class="detail-value"><%= audioFeatures.mode ? 'Major' : 'Minor' %></div>
+              </div>
+              
+              <div class="detail-item">
+                <div class="detail-label">BPM</div>
+                <div class="detail-value"><%= Math.round(audioFeatures.tempo || 0) %></div>
+              </div>
+              
+              <div class="detail-item">
+                <div class="detail-label">Time Signature</div>
+                <div class="detail-value"><%= (audioFeatures.time_signature || 4) %>/4</div>
+              </div>
+              
+              <div class="detail-item">
+                <div class="detail-label">Loudness</div>
+                <div class="detail-value"><%= (audioFeatures.loudness || 0).toFixed(1) %> dB</div>
+              </div>
+              
+              <div class="detail-item">
+                <div class="detail-label">Beatless</div>
+                <div class="detail-value"><%= (audioFeatures.tempo_confidence !== undefined && audioFeatures.tempo_confidence < 0.5) ? 'Possibly' : 'No' %></div>
+              </div>
+            </div>
+          </section>
+
+          <% if (analysis) { %>
+            <section class="analysis-details">
+              <h3>Analysis Summary</h3>
+              <div class="analysis-grid">
+                <div class="analysis-item">
+                  <div class="analysis-label">Sections</div>
+                  <div class="analysis-value"><%= analysis.sections_count || 0 %></div>
+                </div>
+                
+                <div class="analysis-item">
+                  <div class="analysis-label">Segments</div>
+                  <div class="analysis-value"><%= analysis.segments_count || 0 %></div>
+                </div>
+                
+                <div class="analysis-item">
+                  <div class="analysis-label">Bars</div>
+                  <div class="analysis-value"><%= analysis.bars_count || 0 %></div>
+                </div>
+                
+                <div class="analysis-item">
+                  <div class="analysis-label">Beats</div>
+                  <div class="analysis-value"><%= analysis.beats_count || 0 %></div>
+                </div>
+              </div>
+            </section>
+          <% } %>
+
+          <section class="interpretation">
+            <h3>What Does This Mean?</h3>
+            <div class="interpretation-text">
+              <p><strong>Danceability:</strong> <%= audioFeatures.danceability > 0.7 ? 'This track has a high danceability, making it perfect for moving to the rhythm!' : audioFeatures.danceability > 0.4 ? 'This track has a moderate danceability.' : 'This track has low danceability, more suited for listening than dancing.' %></p>
+              
+              <p><strong>Energy:</strong> <%= audioFeatures.energy > 0.7 ? 'This is a high-energy track that feels fast, loud, and intense.' : audioFeatures.energy > 0.4 ? 'This track has a moderate energy level.' : 'This is a low-energy track that feels slow, quiet, and relaxed.' %></p>
+              
+              <p><strong>Mood:</strong> <%= audioFeatures.valence > 0.7 ? 'This track has a very positive, happy, and cheerful sound.' : audioFeatures.valence > 0.4 ? 'This track has a balanced emotional tone.' : 'This track has a more negative, sad, or angry emotional tone.' %></p>
+              
+              <p><strong>Sound Production:</strong> <%= audioFeatures.acousticness > 0.7 ? 'This track is primarily acoustic with minimal electronic elements.' : audioFeatures.acousticness > 0.4 ? 'This track balances acoustic and electronic elements.' : 'This track is primarily electronic with minimal acoustic elements.' %></p>
+              
+              <% if (audioFeatures.instrumentalness > 0.5) { %>
+                <p><strong>Vocal Content:</strong> This track is likely instrumental with few or no vocals.</p>
+              <% } else { %>
+                <p><strong>Vocal Content:</strong> This track likely contains vocals.</p>
+              <% } %>
+              
+              <% if (audioFeatures.liveness > 0.8) { %>
+                <p><strong>Performance:</strong> This track was likely recorded at a live performance.</p>
+              <% } else { %>
+                <p><strong>Performance:</strong> This track was likely studio recorded.</p>
+              <% } %>
+              
+              <% if (audioFeatures.speechiness > 0.66) { %>
+                <p><strong>Speech Content:</strong> This track is likely spoken word or has significant spoken content like a podcast or audiobook.</p>
+              <% } else if (audioFeatures.speechiness > 0.33) { %>
+                <p><strong>Speech Content:</strong> This track has a balance of music and spoken word (like rap).</p>
+              <% } else { %>
+                <p><strong>Speech Content:</strong> This track is mostly music with little spoken word content.</p>
+              <% } %>
+            </div>
+          </section>
+        <% } %>
+      <% } %>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      <% if (audioFeatures) { %>
+        try {
+          const featuresData = {
+            labels: ['Danceability', 'Energy', 'Acousticness', 'Instrumentalness', 'Liveness', 'Valence'],
+            datasets: [{
+              label: '<%= track.name %>',
+              data: [
+                <%= audioFeatures.danceability || 0 %>,
+                <%= audioFeatures.energy || 0 %>,
+                <%= audioFeatures.acousticness || 0 %>,
+                <%= audioFeatures.instrumentalness || 0 %>,
+                <%= audioFeatures.liveness || 0 %>,
+                <%= audioFeatures.valence || 0 %>
+              ],
+              backgroundColor: 'rgba(29, 185, 84, 0.2)',
+              borderColor: '#1DB954',
+              pointBackgroundColor: '#1DB954',
+              pointBorderColor: '#fff',
+              pointHoverBackgroundColor: '#fff',
+              pointHoverBorderColor: '#1DB954'
+            }]
+          };
+          
+          const ctx = document.getElementById('featuresRadarChart');
+          if (ctx) {
+            new Chart(ctx, {
+              type: 'radar',
+              data: featuresData,
+              options: {
+                scales: {
+                  r: {
+                    beginAtZero: true,
+                    max: 1,
+                    ticks: {
+                      stepSize: 0.2
+                    }
+                  }
+                },
+                plugins: {
+                  legend: {
+                    display: false
+                  }
+                }
+              }
+            });
+          }
+        } catch (error) {
+          console.error('Error creating chart:', error);
+        }
+      <% } %>
+    });
+  </script>
+</body>
+</html>

@@ -54,7 +54,10 @@ function renderErrorPage(res, title, error, accessToken) {
 
 // Helper function to check for access token
 function checkAccessToken(req, res, next) {
+  console.log('checkAccessToken middleware executing for path:', req.path);
   const access_token = req.query.access_token || req.body.access_token;
+
+  console.log('Access token found:', access_token ? 'Yes (length: ' + access_token.length + ')' : 'No');
 
   if (!access_token) {
     console.log('No access token provided. Redirecting to homepage...');
@@ -338,6 +341,78 @@ app.post('/create-playlist', checkAccessToken, async (req, res) => {
     console.error('Detailed error information:', JSON.stringify(errorDetails, null, 2));
     renderErrorPage(res, "Error Creating Playlist", error, req.body.access_token);
   }
+});
+
+app.get('/track-analysis/:trackId', checkAccessToken, async (req, res) => {
+
+  return false;
+  console.log('TRACK ANALYSIS ROUTE HIT - Track ID:', req.params.trackId);
+  const access_token = req.query.access_token;
+  const { trackId } = req.params;
+
+  try {
+    console.log(`Starting track analysis for track ${trackId} with token length: ${access_token.length}`);
+
+    // First try to get just the track details, which should always work
+    console.log('Getting track details...');
+    const track = await spotifyService.getTrack(access_token, trackId);
+    console.log('Track details retrieved successfully:', track.name);
+
+    // Then try to get audio features and analysis, but handle errors gracefully
+    let audioFeatures = null;
+    let analysis = null;
+
+    try {
+      // Try to get audio features
+      console.log('Getting audio features...');
+      audioFeatures = await spotifyService.getTrackAudioFeatures(access_token, trackId);
+      console.log('Audio features retrieved successfully');
+    } catch (featuresError) {
+      console.log(`Audio features not available for track ${trackId}: ${featuresError.message}`);
+    }
+
+    try {
+      // Try to get audio analysis if we have features (it's a heavier operation)
+      if (audioFeatures) {
+        console.log('Getting audio analysis...');
+        analysis = await spotifyService.getSimplifiedAudioAnalysis(access_token, trackId);
+        console.log('Audio analysis retrieved successfully');
+      }
+    } catch (analysisError) {
+      console.log(`Audio analysis not available for track ${trackId}: ${analysisError.message}`);
+    }
+
+    // Render the page with whatever data we have
+    console.log('Rendering track analysis page with data:', {
+      hasTrack: !!track,
+      hasAudioFeatures: !!audioFeatures,
+      hasAnalysis: !!analysis
+    });
+
+    res.render('track-analysis', {
+      title: 'Track Analysis',
+      track: track,
+      audioFeatures: audioFeatures,
+      analysis: analysis,
+      access_token,
+      analysisError: audioFeatures === null // Flag to indicate if analysis data is missing
+    });
+  } catch (error) {
+    // If even basic track info fails, then show an error page
+    console.error('Error retrieving track analysis:', error);
+    renderErrorPage(res, "Error Analyzing Track", error, access_token);
+  }
+});
+
+// Add health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Add a catch-all route for debugging (place at the end before module.exports)
+app.use((req, res, next) => {
+  console.log(`No route matched for: ${req.method} ${req.path}`);
+  next(); // This will likely result in a 404 response
 });
 
 // Handling uncaught exceptions and unhandled rejections

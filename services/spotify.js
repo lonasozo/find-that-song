@@ -1044,6 +1044,161 @@ class SpotifyService {
     console.log(`Found ${uniqueTracks.length} new unique tracks out of ${newTracks.length} tracks`);
     return uniqueTracks;
   }
+
+  /**
+   * Get audio features for a track
+   * @param {string} accessToken - Spotify access token
+   * @param {string} trackId - Track ID
+   * @returns {Promise<Object>} - Audio features
+   */
+  async getTrackAudioFeatures(accessToken, trackId) {
+    try {
+      console.log(`Getting audio features for track: ${trackId}`);
+
+      try {
+        const response = await axios.get(`https://api.spotify.com/v1/audio-features/${trackId}`, {
+          headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
+
+        return response.data;
+      } catch (error) {
+        if (error.response && error.response.status === 403) {
+          console.log('Audio features not available for this track (403 Forbidden)');
+          return null;
+        }
+        throw error;
+      }
+    } catch (error) {
+      console.error('Error getting track audio features:', error.message);
+      return null;
+    }
+  }
+
+  /**
+   * Get audio analysis for a track
+   * @param {string} accessToken - Spotify access token
+   * @param {string} trackId - Track ID
+   * @returns {Promise<Object>} - Audio analysis
+   */
+  async getTrackAudioAnalysis(accessToken, trackId) {
+    try {
+      console.log(`Getting audio analysis for track: ${trackId}`);
+
+      const response = await axios.get(`https://api.spotify.com/v1/audio-analysis/${trackId}`, {
+        headers: { 'Authorization': `Bearer ${accessToken}` }
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error('Error getting track audio analysis:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Get a simplified version of audio analysis for a track
+   * @param {string} accessToken - Spotify access token
+   * @param {string} trackId - Track ID
+   * @returns {Promise<Object>} - Simplified audio analysis
+   */
+  async getSimplifiedAudioAnalysis(accessToken, trackId) {
+    try {
+      console.log(`Getting simplified audio analysis for track: ${trackId}`);
+
+      try {
+        const response = await axios.get(`https://api.spotify.com/v1/audio-analysis/${trackId}`, {
+          headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
+
+        // Extract only the necessary information to reduce payload size
+        const data = response.data;
+        return {
+          duration: data.track.duration,
+          tempo: data.track.tempo,
+          time_signature: data.track.time_signature,
+          key: data.track.key,
+          mode: data.track.mode,
+          sections_count: data.sections.length,
+          segments_count: data.segments.length,
+          bars_count: data.bars.length,
+          beats_count: data.beats.length
+        };
+      } catch (error) {
+        if (error.response && error.response.status === 403) {
+          console.log('Audio analysis not available for this track (403 Forbidden)');
+          return null;
+        }
+        throw error;
+      }
+    } catch (error) {
+      console.error('Error getting simplified track audio analysis:', error.message);
+      return null;
+    }
+  }
+
+  /**
+   * Get track details
+   * @param {string} accessToken - Spotify access token
+   * @param {string} trackId - Track ID
+   * @returns {Promise<Object>} - Track details
+   */
+  async getTrack(accessToken, trackId) {
+    try {
+      console.log(`Getting track details for: ${trackId}`);
+
+      const response = await axios.get(`https://api.spotify.com/v1/tracks/${trackId}`, {
+        headers: { 'Authorization': `Bearer ${accessToken}` }
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error('Error getting track details:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Get comprehensive track analysis including track details, audio features, and simplified analysis
+   * @param {string} accessToken - Spotify access token
+   * @param {string} trackId - Track ID
+   * @returns {Promise<Object>} - Comprehensive track analysis
+   */
+  async getTrackAnalysis(accessToken, trackId) {
+    try {
+      // Get track details, audio features, and audio analysis in parallel
+      const [track, audioFeatures, audioAnalysis] = await Promise.all([
+        this.getTrack(accessToken, trackId),
+        this.getTrackAudioFeatures(accessToken, trackId),
+        this.getTrackAudioAnalysis(accessToken, trackId).catch(error => {
+          // Audio analysis can be heavy, so handle failure gracefully
+          console.warn('Audio analysis failed, continuing without it:', error.message);
+          return null;
+        })
+      ]);
+
+      // Prepare a simplified version of the audio analysis (which can be very large)
+      const simplifiedAnalysis = audioAnalysis ? {
+        duration: audioAnalysis.track.duration,
+        tempo: audioAnalysis.track.tempo,
+        time_signature: audioAnalysis.track.time_signature,
+        key: audioAnalysis.track.key,
+        mode: audioAnalysis.track.mode,
+        sections_count: audioAnalysis.sections.length,
+        segments_count: audioAnalysis.segments.length,
+        bars_count: audioAnalysis.bars.length,
+        beats_count: audioAnalysis.beats.length
+      } : null;
+
+      return {
+        track,
+        audioFeatures,
+        analysis: simplifiedAnalysis
+      };
+    } catch (error) {
+      console.error('Error in getTrackAnalysis:', error.message);
+      throw error;
+    }
+  }
 }
 
 module.exports = new SpotifyService();

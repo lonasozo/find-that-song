@@ -881,3 +881,29 @@ footer {
     font-size: 0.9rem;
   }
 }
+
+/* Track action icons styling */
+.track-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.action-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.spotify-icon:hover {
+  color: var(--accent-color);
+  transform: scale(1.2);
+}
+
+.info-icon:hover {
+  color: #3498db; /* Blue color for info */
+  transform: scale(1.2);
+}
