@@ -6,6 +6,7 @@
     <title><%= title %> - Find That Song</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/time-range.css">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -76,6 +77,26 @@
         <% } %>
         
         <div class="main-content">
+            <% if (["Top Tracks", "Top Artists", "Top Albums"].includes(title)) { %>
+                <div class="time-range-selector" id="time-range-selector" style="display: flex;">
+                    <button class="time-range-btn" data-range="short_term">Recent</button>
+                    <button class="time-range-btn active" data-range="medium_term">Last 6 Months</button>
+                    <button class="time-range-btn" data-range="long_term">All Time</button>
+                </div>
+                <div id="time-range-loader" class="time-range-loader" style="display: none;">
+                    <div class="loader"></div>
+                </div>
+            <% } else { %>
+                <div class="time-range-selector" id="time-range-selector" style="display: none;">
+                    <button class="time-range-btn" data-range="short_term">Recent</button>
+                    <button class="time-range-btn active" data-range="medium_term">Last 6 Months</button>
+                    <button class="time-range-btn" data-range="long_term">All Time</button>
+                </div>
+                <div id="time-range-loader" class="time-range-loader" style="display: none;">
+                    <div class="loader"></div>
+                </div>
+            <% } %>
+            
             <main id="content-container">
                 <%- body %>
             </main>
@@ -90,8 +111,25 @@
 
     <script src="/js/app.js"></script>
     <script src="/js/theme.js"></script>
+    <script src="/js/sidebar-navigation.js"></script>
     <!-- Common scripts -->
     <script src="/js/main.js"></script>
     <script src="/js/track-interactions.js"></script>
+    
+    <% if (["Top Tracks", "Top Artists", "Top Albums"].includes(title)) { %>
+        <script src="/js/time-range-selector.js"></script>
+        
+        <!-- Inline script to ensure time range selector visibility on direct page load -->
+        <script>
+            // Make sure time range selector is visible immediately
+            document.addEventListener('DOMContentLoaded', function() {
+                const timeRangeSelector = document.getElementById('time-range-selector');
+                if (timeRangeSelector) {
+                    timeRangeSelector.style.display = 'flex';
+                    timeRangeSelector.style.visibility = 'visible';
+                }
+            });
+        </script>
+    <% } %>
 </body>
 </html>
