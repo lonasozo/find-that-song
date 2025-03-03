@@ -68,10 +68,6 @@
   transition: color 0.2s ease;
 }
 
-.artist-link:hover, .album-link:hover, .track-link:hover {
-  color: #1DB954;
-  text-decoration: underline;
-}
 
 /* Track image and overlay */
 .track-image {

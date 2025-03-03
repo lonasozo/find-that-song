@@ -146,10 +146,6 @@ h1 {
   transition: color 0.3s;
 }
 
-.artist-link:hover, .album-link:hover {
-  text-decoration: underline;
-  color: var(--text-primary);
-}
 
 .track-meta {
   display: flex;
