@@ -42,8 +42,6 @@ function initTimeRangeSelector() {
       // Clear content container and show loader
       contentContainer.innerHTML = '<div class="global-loader"><div class="loader"></div></div>';
 
-      // Show time range loader
-      if (timeRangeLoader) timeRangeLoader.style.display = 'flex';
 
       // Get the current page and access token from URL
       const url = new URL(window.location.href);
