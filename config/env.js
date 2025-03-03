@@ -24,7 +24,7 @@ module.exports = {
   SPOTIFY: {
     CLIENT_ID: requireEnv('SPOTIFY_CLIENT_ID'),
     CLIENT_SECRET: requireEnv('SPOTIFY_CLIENT_SECRET'),
-    REDIRECT_URL: requireEnv('SPOTIFY_REDIRECT_URL'),
+    REDIRECT_URL: requireEnv('SPOTIFY_REDIRECT_URI'),
   },
 
   // Database
