@@ -1,10 +1,21 @@
 import { getSpotifyAuthUrl } from '../lib/spotify';
 import { getProductionSpotifyAuthUrl } from '../lib/spotify-production';
+import { useEffect } from 'react';
 
 export default function HomePage() {
   // Determine which auth URL to use based on environment
   const isProduction = process.env.NODE_ENV === 'production';
   const authUrl = isProduction ? getProductionSpotifyAuthUrl() : getSpotifyAuthUrl();
+
+  useEffect(() => {
+    // Le variabili NEXT_PUBLIC sono disponibili nel browser
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '/api';
+
+    // Esempio di uso
+    fetch(`${apiBaseUrl}/songs`)
+      .then(response => response.json())
+      .then(data => console.log(data));
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white px-4 sm:px-6">
@@ -29,6 +40,8 @@ export default function HomePage() {
             Dev mode: Using development auth flow
           </div>
         )}
+
+        <p>Environment: {process.env.NEXT_PUBLIC_APP_ENV}</p>
       </div>
     </div>
   );

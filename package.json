@@ -4,8 +4,11 @@
   "description": "A Spotify integration app to find and manage songs",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "start": "next start",
+    "dev": "next dev",
+    "build": "next build",
+    "lint": "next lint",
+    "dev:local": "dotenv -e .env.local -- next dev",
     "vercel-build": "echo 'Build step for Vercel deployment'"
   },
   "dependencies": {
@@ -17,7 +20,8 @@
     "@vercel/analytics": "^x.x.x"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "dotenv-cli": "^7.3.0"
   },
   "engines": {
     "node": ">=18.0.0"
