@@ -261,7 +261,8 @@ app.post('/create-playlist', checkAccessToken, async (req, res) => {
       // If we still don't have tracks, try search as a last resort
       if (!tracks || tracks.length === 0) {
         console.log('Trying direct search for tracks by genre');
-        tracks = await spotifyService.searchTracksByGenre(access_token, seedGenres[0], parseInt(track_count) || 20);
+        // Pass all genres to the search method, not just the first one
+        tracks = await spotifyService.searchTracksByGenre(access_token, seedGenres, parseInt(track_count) || 20);
         console.log(`Got ${tracks.length} tracks from search`);
       }
     } catch (seedError) {
