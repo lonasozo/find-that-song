@@ -37,6 +37,8 @@
 
 /* Base styles */
 * {
+    color: inherit;
+    text-decoration: none;
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -48,6 +50,14 @@ body {
     color: var(--text-primary);
     background-color: var(--bg-primary);
     transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+
+.artist-link:hover,
+.album-link:hover,
+.track-link:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
 }
 
 .container {

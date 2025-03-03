@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Link to the external stylesheet -->
     <link rel="stylesheet" href="/css/recently-played.css">
+    <% 
+    // Helper function to format duration from milliseconds to MM:SS
+    function formatDuration(ms) {
+      const minutes = Math.floor(ms / 60000);
+      const seconds = Math.floor((ms % 60000) / 1000);
+      return `${minutes}:${String(seconds).padStart(2, '0')}`;
+    }
+    %>
   </head>
   <body>
     <div class="container">
@@ -53,6 +61,7 @@
                         <%= item.track.album.name %>
                       </a>
                     </span>
+                    <span class="track-duration">Duration: <%= formatDuration(item.track.duration_ms) %></span>
                     <span class="track-played-at">Played: <%= new Date(item.played_at).toLocaleString() %></span>
                   </div>
                 </div>

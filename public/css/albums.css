@@ -183,10 +183,6 @@ h1 {
   text-decoration: none;
 }
 
-.artist-link:hover {
-  text-decoration: underline;
-  color: var(--text-primary);
-}
 
 .album-info {
   display: flex;

@@ -56,31 +56,4 @@ document.addEventListener('DOMContentLoaded', function () {
     const seconds = ((ms % 60000) / 1000).toFixed(0);
     return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
   }
-
-  // Convert timestamp to relative time (e.g., "2 hours ago")
-  function getRelativeTime(timestamp) {
-    const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
-    const now = new Date();
-    const playedDate = new Date(timestamp);
-    const diffInSeconds = Math.floor((playedDate - now) / 1000);
-
-    if (Math.abs(diffInSeconds) < 60) {
-      return rtf.format(diffInSeconds, 'second');
-    }
-
-    const diffInMinutes = Math.floor(diffInSeconds / 60);
-    if (Math.abs(diffInMinutes) < 60) {
-      return rtf.format(diffInMinutes, 'minute');
-    }
-
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    if (Math.abs(diffInHours) < 24) {
-      return rtf.format(diffInHours, 'hour');
-    }
-
-    const diffInDays = Math.floor(diffInHours / 24);
-    return rtf.format(diffInDays, 'day');
-  }
-
-
 });
