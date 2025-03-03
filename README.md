@@ -2,7 +2,7 @@
 
 [![GitHub](https://img.shields.io/badge/GitHub-lonasozo/find--that--song-181717?style=flat&logo=github)](https://github.com/lonasozo/find-that-song)
 
-Find That Song is a web application that helps you find songs you've recently listened to on Spotify, check some details about your listening history, and create new playlists.
+Find That Song is a web application that helps you find songs you've recently listened on Spotify, check some details about your listening history, and create new playlists.
 It is already [deployed on Vercel](https://find-that-song.vercel.app/).
 
 ## Installation
