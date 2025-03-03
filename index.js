@@ -236,12 +236,9 @@ app.post('/create-playlist', checkAccessToken, async (req, res) => {
     let seedGenres = [];
     if (genres) {
       seedGenres = Array.isArray(genres) ? genres : [genres];
-
-      // Filter out any empty values
       seedGenres = seedGenres.filter(g => g && g.trim() !== '');
       console.log(`Using genre seeds: ${seedGenres.join(', ')}`);
     } else {
-      // Default genres if none selected
       seedGenres = ['pop', 'rock', 'hip-hop'];
       console.log('No genres selected, using default genres');
     }
@@ -250,59 +247,74 @@ app.post('/create-playlist', checkAccessToken, async (req, res) => {
 
     try {
       // Get recommendations based on genres
-      console.log('Requesting recommendations...');
       tracks = await spotifyService.getRecommendations(access_token, {
         seedGenres,
         limit: parseInt(track_count) || 20
       });
 
-      console.log(`Got ${tracks.length} tracks from recommendations or search`);
-
-      // If we still don't have tracks, try search as a last resort
       if (!tracks || tracks.length === 0) {
-        console.log('Trying direct search for tracks by genre');
-        // Pass all genres to the search method, not just the first one
+        // If recommendations fail, try search
         tracks = await spotifyService.searchTracksByGenre(access_token, seedGenres, parseInt(track_count) || 20);
-        console.log(`Got ${tracks.length} tracks from search`);
       }
     } catch (seedError) {
-      console.error('Error getting recommendations:', seedError);
-      // Try to get fallback tracks directly
-      console.log('Getting fallback tracks...');
+      console.error('Error getting seeds or recommendations:', seedError);
+      // Try fallback tracks
       tracks = await spotifyService.getFallbackTracks(access_token, parseInt(track_count) || 20);
-      console.log(`Got ${tracks.length} fallback tracks`);
     }
 
     // Check if we have any tracks before proceeding
     if (!tracks || tracks.length === 0) {
-      console.log("No tracks returned from any recommendation or fallback method");
       throw new Error("Could not find any tracks for your playlist. Please try different genres or try again later.");
     }
 
-    // Create the playlist with explicit access token
-    const playlistData = await spotifyService.createPlaylist(access_token, userId, {
-      name: playlist_name || `Find That Song - ${new Date().toLocaleDateString()}`,
-      description: playlist_description || 'Created with Find That Song app',
-      isPublic: isPublic === 'true'
-    });
-
-    // Verify tracks have valid URIs before attempting to add them
-    const validTracks = tracks.filter(track => track && track.uri);
-    console.log(`Found ${validTracks.length} valid tracks with URIs out of ${tracks.length} total tracks`);
+    // Make sure all tracks have valid URIs - Change from const to let so we can reassign it later
+    let validTracks = tracks.filter(track => track && track.uri);
 
     if (validTracks.length === 0) {
       throw new Error("No valid track URIs found to add to the playlist.");
     }
 
-    // Add tracks to the playlist with explicit access token
-    const trackUris = validTracks.map(track => track.uri);
-    await spotifyService.addTracksToPlaylist(access_token, playlistData.id, trackUris);
+    // Check if a playlist with this name already exists
+    let playlistData;
+    let existingPlaylist = await spotifyService.findPlaylistByName(access_token, playlist_name);
+    let isNewPlaylist = false;
 
-    // Log playlist creation success with track details
-    console.log(`Playlist created successfully with ${validTracks.length} tracks`);
-    console.log('First few tracks:', validTracks.slice(0, 3).map(t =>
-      `"${t.name}" by ${t.artists.map(a => a.name).join(', ')}`
-    ).join('; '));
+    if (existingPlaylist) {
+      console.log(`Using existing playlist "${playlist_name}" (${existingPlaylist.id})`);
+      playlistData = existingPlaylist;
+
+      // Get current tracks in the playlist to avoid duplicates
+      const existingTracks = await spotifyService.getPlaylistTracks(access_token, existingPlaylist.id);
+
+      // Filter out tracks that already exist in the playlist
+      const uniqueTracks = spotifyService.filterDuplicateTracks(validTracks, existingTracks);
+
+      // If there are any new tracks to add
+      if (uniqueTracks.length > 0) {
+        // Add only unique tracks to the existing playlist
+        const trackUris = uniqueTracks.map(track => track.uri);
+        await spotifyService.addTracksToPlaylist(access_token, existingPlaylist.id, trackUris);
+        console.log(`Added ${uniqueTracks.length} new tracks to existing playlist`);
+
+        // Use the unique tracks for display on the success page
+        validTracks = uniqueTracks;
+      } else {
+        console.log('No new unique tracks to add to the playlist');
+      }
+    } else {
+      // Create a new playlist
+      isNewPlaylist = true;
+      playlistData = await spotifyService.createPlaylist(access_token, userId, {
+        name: playlist_name || `Find That Song - ${new Date().toLocaleDateString()}`,
+        description: playlist_description || 'Created with Find That Song app',
+        isPublic: isPublic === 'true'
+      });
+
+      // Add all tracks to the new playlist
+      const trackUris = validTracks.map(track => track.uri);
+      await spotifyService.addTracksToPlaylist(access_token, playlistData.id, trackUris);
+      console.log(`Created new playlist with ${validTracks.length} tracks`);
+    }
 
     // Render success page
     res.render('playlist-success', {
@@ -310,22 +322,20 @@ app.post('/create-playlist', checkAccessToken, async (req, res) => {
       tracks: validTracks,
       playlistData,
       playlist_name: playlistData.name,
-      access_token
+      access_token,
+      isNewPlaylist,
+      updatedExisting: !isNewPlaylist
     });
 
   } catch (error) {
     console.error('Error in playlist creation process:', error);
-
-    // Enhanced error reporting
     const errorDetails = {
       message: error.message,
       statusCode: error.response?.status,
       spotifyError: error.response?.data?.error || {},
       stack: error.stack
     };
-
     console.error('Detailed error information:', JSON.stringify(errorDetails, null, 2));
-
     renderErrorPage(res, "Error Creating Playlist", error, req.body.access_token);
   }
 });

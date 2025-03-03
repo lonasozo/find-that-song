@@ -29,8 +29,14 @@
             <div class="success-icon">
                 <i class="fas fa-check-circle"></i>
             </div>
-            <h1>Playlist Created!</h1>
-            <p>Your new playlist "<%= playlist_name || playlistData.name %>" has been successfully created.</p>
+            
+            <% if (locals.updatedExisting) { %>
+                <h1>Playlist Updated!</h1>
+                <p>Your playlist "<%= playlist_name || playlistData.name %>" has been updated with <%= tracks.length %> new tracks.</p>
+            <% } else { %>
+                <h1>Playlist Created!</h1>
+                <p>Your new playlist "<%= playlist_name || playlistData.name %>" has been successfully created.</p>
+            <% } %>
         </div>
 
         <div class="success-actions">
@@ -64,7 +70,12 @@
         </div>
 
         <div class="playlist-tracks-container">
-            <h2>Tracks in This Playlist</h2>
+            <% if (locals.updatedExisting) { %>
+                <h2><%= tracks.length %> New Tracks Added to This Playlist</h2>
+            <% } else { %>
+                <h2>Tracks in This Playlist</h2>
+            <% } %>
+            
             <% if (tracks && tracks.length > 0) { %>
                 <div class="track-list">
                     <% tracks.forEach((track, index) => { %>

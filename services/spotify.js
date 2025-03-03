@@ -933,6 +933,117 @@ class SpotifyService {
       throw error;
     }
   }
+
+  /**
+   * Get a user's playlists
+   * @param {string} accessToken - Spotify access token
+   * @param {number} limit - Maximum number of playlists to return
+   * @returns {Promise<Array>} - User's playlists
+   */
+  async getUserPlaylists(accessToken, limit = 50) {
+    try {
+      const response = await axios.get('https://api.spotify.com/v1/me/playlists', {
+        headers: { 'Authorization': `Bearer ${accessToken}` },
+        params: { limit }
+      });
+
+      console.log(`Retrieved ${response.data.items.length} playlists for user`);
+      return response.data.items;
+    } catch (error) {
+      console.error('Error getting user playlists:', error.message);
+      return [];
+    }
+  }
+
+  /**
+   * Check if a playlist with the specified name exists for the user
+   * @param {string} accessToken - Spotify access token
+   * @param {string} playlistName - Name to search for
+   * @returns {Promise<Object|null>} - The existing playlist or null
+   */
+  async findPlaylistByName(accessToken, playlistName) {
+    try {
+      if (!playlistName) return null;
+
+      console.log(`Looking for existing playlist named "${playlistName}"`);
+      const playlists = await this.getUserPlaylists(accessToken);
+
+      // Case-insensitive comparison to find a matching playlist
+      const existingPlaylist = playlists.find(
+        playlist => playlist.name.toLowerCase() === playlistName.toLowerCase()
+      );
+
+      if (existingPlaylist) {
+        console.log(`Found existing playlist with ID: ${existingPlaylist.id}`);
+        return existingPlaylist;
+      } else {
+        console.log(`No existing playlist found with name "${playlistName}"`);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error finding playlist by name:', error.message);
+      return null;
+    }
+  }
+
+  /**
+   * Get all tracks from a playlist
+   * @param {string} accessToken - Spotify access token
+   * @param {string} playlistId - Playlist ID
+   * @returns {Promise<Array>} - Array of tracks
+   */
+  async getPlaylistTracks(accessToken, playlistId) {
+    try {
+      let allTracks = [];
+      let nextUrl = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
+
+      // Paginate through all tracks
+      while (nextUrl) {
+        const response = await axios.get(nextUrl, {
+          headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
+
+        if (response.data.items) {
+          allTracks = allTracks.concat(response.data.items.map(item => item.track));
+        }
+
+        nextUrl = response.data.next;
+      }
+
+      console.log(`Retrieved ${allTracks.length} tracks from playlist ${playlistId}`);
+      return allTracks;
+    } catch (error) {
+      console.error('Error getting playlist tracks:', error.message);
+      return [];
+    }
+  }
+
+  /**
+   * Filter out tracks that already exist in the playlist
+   * @param {Array} newTracks - Array of new tracks to add
+   * @param {Array} existingTracks - Array of tracks already in the playlist
+   * @returns {Array} - Array of filtered tracks
+   */
+  filterDuplicateTracks(newTracks, existingTracks) {
+    if (!existingTracks || existingTracks.length === 0) {
+      return newTracks;
+    }
+
+    // Create a set of existing track URIs for faster lookup
+    const existingTrackUris = new Set(
+      existingTracks.map(track => track.uri).filter(Boolean)
+    );
+
+    console.log(`Filtering against ${existingTrackUris.size} existing tracks`);
+
+    // Filter out tracks that already exist in the playlist
+    const uniqueTracks = newTracks.filter(track => {
+      return track && track.uri && !existingTrackUris.has(track.uri);
+    });
+
+    console.log(`Found ${uniqueTracks.length} new unique tracks out of ${newTracks.length} tracks`);
+    return uniqueTracks;
+  }
 }
 
 module.exports = new SpotifyService();
