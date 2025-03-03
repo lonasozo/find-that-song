@@ -5,7 +5,18 @@ class SpotifyService {
   constructor() {
     this.client_id = process.env.SPOTIFY_CLIENT_ID;
     this.client_secret = process.env.SPOTIFY_CLIENT_SECRET;
-    this.redirect_uri = process.env.SPOTIFY_REDIRECT_URI;
+
+    // Add validation and fallback for redirect URI
+    this.redirect_uri = process.env.SPOTIFY_REDIRECT_URI || 'https://find-that-song.vercel.app/callback';
+
+    // Log the configuration for debugging
+    console.log('SpotifyService initialized with redirect URI:', this.redirect_uri);
+
+    // Check if redirect URI is empty and log a warning
+    if (!this.redirect_uri || this.redirect_uri.trim() === '') {
+      console.warn('WARNING: SPOTIFY_REDIRECT_URI is empty! Using fallback.');
+      this.redirect_uri = 'https://find-that-song.vercel.app/callback';
+    }
   }
 
   /**
