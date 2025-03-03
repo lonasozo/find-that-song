@@ -6,36 +6,14 @@
 document.addEventListener('DOMContentLoaded', function () {
   // Get references to form elements
   const playlistForm = document.getElementById('playlist-form');
-  const seedTypeRadios = document.querySelectorAll('input[name="seed_type"]');
-  const genreSelector = document.querySelector('.genre-selector');
-  const timeRange = document.querySelector('.time-range');
-  const loadingSpinner = document.getElementById('loading-spinner');
   const genreSelect = document.getElementById('genres');
+  const loadingSpinner = document.getElementById('loading-spinner');
 
   // Add a timestamp field to the form to ensure different results each time
   addHiddenTimestamp();
 
-  // Configure genre selector visibility based on seed type
-  if (seedTypeRadios && genreSelector && timeRange) {
-    seedTypeRadios.forEach(radio => {
-      radio.addEventListener('change', function () {
-        if (this.value === 'genres') {
-          genreSelector.style.display = 'block';
-          timeRange.style.display = 'none';
-        } else {
-          genreSelector.style.display = 'none';
-          timeRange.style.display = 'block';
-        }
-      });
-
-      // Set initial state based on selected radio
-      const checkedRadio = document.querySelector('input[name="seed_type"]:checked');
-      if (checkedRadio && checkedRadio.value === 'genres') {
-        genreSelector.style.display = 'block';
-        timeRange.style.display = 'none';
-      }
-    });
-  }
+  // Add hidden seed_type field with default value "genres"
+  addHiddenSeedTypeField();
 
   // Limit genre selections to 5
   if (genreSelect) {
@@ -114,6 +92,25 @@ document.addEventListener('DOMContentLoaded', function () {
         timestampField.name = 'timestamp';
         timestampField.value = Date.now();
         form.appendChild(timestampField);
+      }
+    }
+  }
+
+  /**
+   * Add a hidden seed_type field with value "genres"
+   */
+  function addHiddenSeedTypeField() {
+    const form = document.getElementById('playlist-form');
+    if (form) {
+      let seedTypeField = document.getElementById('hidden-seed-type');
+
+      if (!seedTypeField) {
+        seedTypeField = document.createElement('input');
+        seedTypeField.type = 'hidden';
+        seedTypeField.id = 'hidden-seed-type';
+        seedTypeField.name = 'seed_type';
+        seedTypeField.value = 'genres';
+        form.appendChild(seedTypeField);
       }
     }
   }

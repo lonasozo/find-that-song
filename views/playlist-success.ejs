@@ -3,7 +3,18 @@
   <head>
     <title>Playlist Created</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="../public/css/playlist-generator.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/playlist-generator.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script>
+      // Check for dark mode preference
+      if (localStorage.getItem('theme') === 'dark' || 
+          (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+          document.documentElement.setAttribute('data-theme', 'light');
+      }
+    </script>
   </head>
   <body>
     <div class="generator-container">
@@ -55,9 +66,9 @@
         <div class="playlist-tracks-container">
             <h2>Tracks in This Playlist</h2>
             <% if (tracks && tracks.length > 0) { %>
-                <div class="playlist-tracks">
+                <div class="track-list">
                     <% tracks.forEach((track, index) => { %>
-                        <div class="playlist-track-item">
+                        <div class="track-item">
                             <div class="track-number"><%= index + 1 %></div>
                             <div class="track-image">
                                 <% if (track.album && track.album.images && track.album.images.length) { %>
@@ -72,11 +83,6 @@
                                     <%= track.artists.map(artist => artist.name).join(', ') %>
                                 </div>
                             </div>
-                            <div class="track-actions">
-                                <a href="<%= track.external_urls.spotify %>" target="_blank" class="spotify-link">
-                                    <i class="fab fa-spotify"></i>
-                                </a>
-                            </div>
                         </div>
                     <% }); %>
                 </div>
@@ -89,4 +95,17 @@
       </div>
     </div>
   </body>
+  
+  <!-- Add script to automatically open playlist in new tab -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the playlist URL from the page
+      const playlistUrl = "<%= playlistData.external_urls.spotify %>";
+      
+      // Open the playlist in a new tab
+      if (playlistUrl) {
+        window.open(playlistUrl, '_blank');
+      }
+    });
+  </script>
 </html>

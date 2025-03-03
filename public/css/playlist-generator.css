@@ -541,3 +541,178 @@ small {
     flex-direction: column;
   }
 }
+
+/* Improved track list styling for playlist success page */
+.track-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.track-item {
+  display: grid;
+  grid-template-columns: 40px 60px minmax(0, 1fr) 50px;
+  align-items: center;
+  padding: 12px;
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.track-item:hover {
+  background-color: var(--bg-hover, rgba(29, 185, 84, 0.1));
+  transform: translateY(-2px);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.15);
+}
+
+.track-number {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-align: center;
+}
+
+.track-image {
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.track-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.track-image .no-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-primary);
+  font-size: 20px;
+  color: var(--text-secondary);
+}
+
+.track-info {
+  display: flex;
+  flex-direction: column;
+  padding: 0 15px;
+  min-width: 0; /* Ensures text truncation works properly */
+  overflow: hidden;
+}
+
+.track-name {
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.track-name:hover {
+  color: var(--accent-color);
+  text-decoration: underline;
+}
+
+.track-artist {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.spotify-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-color);
+  font-size: 1.3rem;
+  transition: transform 0.2s ease, color 0.2s ease;
+  line-height: 1;
+}
+
+.spotify-link:hover {
+  transform: scale(1.2);
+  color: var(--accent-hover);
+}
+
+.playlist-tracks-container {
+  background-color: var(--bg-primary);
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 30px;
+  box-shadow: var(--card-shadow);
+}
+
+.playlist-tracks-container h2 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+/* Responsive adjustments for track list */
+@media (max-width: 768px) {
+  .track-item {
+    grid-template-columns: 30px 50px minmax(0, 1fr) 40px;
+    padding: 10px;
+  }
+  
+  .track-image {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .track-info {
+    padding: 0 8px;
+  }
+  
+  .track-name, .track-artist {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .track-item {
+    grid-template-columns: 25px 40px minmax(0, 1fr) 30px;
+    padding: 8px;
+    gap: 2px;
+  }
+  
+  .track-image {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .track-name {
+    font-size: 0.85rem;
+  }
+  
+  .track-artist {
+    font-size: 0.75rem;
+  }
+  
+  .spotify-link {
+    font-size: 1rem;
+  }
+  
+  .playlist-tracks-container {
+    padding: 15px 10px;
+  }
+}

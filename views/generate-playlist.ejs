@@ -69,79 +69,45 @@
             </div>
             
             <div class="form-group">
-                <label>What should this playlist be based on?</label>
-                <div class="radio-options">
-                    <div class="radio-option">
-                        <input type="radio" id="seed_top_artists" name="seed_type" value="top_artists" checked>
-                        <label for="seed_top_artists">My Top Artists</label>
-                    </div>
-                    <div class="radio-option">
-                        <input type="radio" id="seed_top_tracks" name="seed_type" value="top_tracks">
-                        <label for="seed_top_tracks">My Top Tracks</label>
-                    </div>
-                    <div class="radio-option">
-                        <input type="radio" id="seed_genres" name="seed_type" value="genres">
-                        <label for="seed_genres">Specific Genres</label>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="form-group genre-selector" style="display: none;">
-                <label for="genres">Select Genres (up to 5)</label>
-                <select id="genres" name="genres" multiple class="form-control">
-                    <optgroup label="Popular Genres">
-                        <option value="pop">Pop</option>
-                        <option value="rock">Rock</option>
-                        <option value="hip-hop">Hip-Hop</option>
-                        <option value="r-n-b">R&B</option>
-                        <option value="electronic">Electronic</option>
-                        <option value="dance">Dance</option>
-                        <option value="indie">Indie</option>
-                    </optgroup>
-                    <optgroup label="Specific Genres">
-                        <option value="acoustic">Acoustic</option>
-                        <option value="alternative">Alternative</option>
-                        <option value="ambient">Ambient</option>
-                        <option value="blues">Blues</option>
-                        <option value="classical">Classical</option>
-                        <option value="country">Country</option>
-                        <option value="folk">Folk</option>
-                        <option value="funk">Funk</option>
-                        <option value="heavy-metal">Heavy Metal</option>
-                        <option value="house">House</option>
-                        <option value="jazz">Jazz</option>
-                        <option value="piano">Piano</option>
-                        <option value="punk">Punk</option>
-                        <option value="reggae">Reggae</option>
-                        <option value="soul">Soul</option>
-                    </optgroup>
-                    <optgroup label="Moods">
-                        <option value="chill">Chill</option>
-                        <option value="happy">Happy</option>
-                        <option value="party">Party</option>
-                        <option value="romance">Romance</option>
-                        <option value="sad">Sad</option>
-                    </optgroup>
-                </select>
-                <small class="genres-hint">Tip: Press Ctrl (Cmd on Mac) to select multiple genres (max 5)</small>
-                <small class="genres-hint">If no genres are selected, popular genres will be used.</small>
-            </div>
-            
-            <div class="form-group time-range">
-                <label>Time range to analyze</label>
-                <div class="radio-options">
-                    <div class="radio-option">
-                        <input type="radio" id="time_short" name="time_range" value="short_term">
-                        <label for="time_short">Last 4 Weeks</label>
-                    </div>
-                    <div class="radio-option">
-                        <input type="radio" id="time_medium" name="time_range" value="medium_term" checked>
-                        <label for="time_medium">Last 6 Months</label>
-                    </div>
-                    <div class="radio-option">
-                        <input type="radio" id="time_long" name="time_range" value="long_term">
-                        <label for="time_long">All Time</label>
-                    </div>
+                <label>What genres would you like in your playlist?</label>
+                <div class="genre-selector">
+                    <select id="genres" name="genres" multiple class="form-control">
+                        <optgroup label="Popular Genres">
+                            <option value="pop">Pop</option>
+                            <option value="rock">Rock</option>
+                            <option value="hip-hop">Hip-Hop</option>
+                            <option value="r-n-b">R&B</option>
+                            <option value="electronic">Electronic</option>
+                            <option value="dance">Dance</option>
+                            <option value="indie">Indie</option>
+                        </optgroup>
+                        <optgroup label="Specific Genres">
+                            <option value="acoustic">Acoustic</option>
+                            <option value="alternative">Alternative</option>
+                            <option value="ambient">Ambient</option>
+                            <option value="blues">Blues</option>
+                            <option value="classical">Classical</option>
+                            <option value="country">Country</option>
+                            <option value="folk">Folk</option>
+                            <option value="funk">Funk</option>
+                            <option value="heavy-metal">Heavy Metal</option>
+                            <option value="house">House</option>
+                            <option value="jazz">Jazz</option>
+                            <option value="piano">Piano</option>
+                            <option value="punk">Punk</option>
+                            <option value="reggae">Reggae</option>
+                            <option value="soul">Soul</option>
+                        </optgroup>
+                        <optgroup label="Moods">
+                            <option value="chill">Chill</option>
+                            <option value="happy">Happy</option>
+                            <option value="party">Party</option>
+                            <option value="romance">Romance</option>
+                            <option value="sad">Sad</option>
+                        </optgroup>
+                    </select>
+                    <small class="genres-hint">Tip: Press Ctrl (Cmd on Mac) to select multiple genres (max 5)</small>
+                    <small class="genres-hint">If no genres are selected, popular genres will be used.</small>
                 </div>
             </div>
             
@@ -185,9 +151,6 @@
     // Additional script to make form handling better
     document.addEventListener('DOMContentLoaded', function() {
         // Enhanced genre selector functionality
-        const seedTypeRadios = document.querySelectorAll('input[name="seed_type"]');
-        const genreSelector = document.querySelector('.genre-selector');
-        const timeRange = document.querySelector('.time-range');
         const genreSelect = document.getElementById('genres');
         
         // Function to limit genre selections to 5
@@ -200,33 +163,6 @@
                     selectedOptions[selectedOptions.length - 1].selected = false;
                 }
             });
-        }
-        
-        // Improved radio button handling
-        if (seedTypeRadios && genreSelector && timeRange) {
-            seedTypeRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    if (this.value === 'genres') {
-                        genreSelector.style.display = 'block';
-                        timeRange.style.display = 'none';
-                    } else {
-                        genreSelector.style.display = 'none';
-                        timeRange.style.display = 'block';
-                    }
-                });
-            });
-            
-            // Set initial state based on selected radio
-            const checkedRadio = document.querySelector('input[name="seed_type"]:checked');
-            if (checkedRadio) {
-                if (checkedRadio.value === 'genres') {
-                    genreSelector.style.display = 'block';
-                    timeRange.style.display = 'none';
-                } else {
-                    genreSelector.style.display = 'none';
-                    timeRange.style.display = 'block';
-                }
-            }
         }
     });
 </script>
