@@ -82,53 +82,5 @@ document.addEventListener('DOMContentLoaded', function () {
     return rtf.format(diffInDays, 'day');
   }
 
-  // Enhance the track items with additional information
-  function enhanceTrackItems() {
-    const trackItems = document.querySelectorAll('.track-item');
 
-    trackItems.forEach(item => {
-      const metaDiv = item.querySelector('.track-meta');
-      if (!metaDiv) return;
-
-      // Add track duration if available in the dataset
-      const trackDuration = item.getAttribute('data-duration');
-      if (trackDuration) {
-        const durationSpan = document.createElement('span');
-        durationSpan.className = 'track-duration';
-        durationSpan.textContent = formatDuration(trackDuration);
-        metaDiv.appendChild(durationSpan);
-      }
-
-      // Add explicit tag if track is explicit
-      const isExplicit = item.getAttribute('data-explicit') === 'true';
-      if (isExplicit) {
-        // Create explicit tag with consistent styling
-        const explicitTag = document.createElement('span');
-        explicitTag.className = 'meta-tag explicit-tag';
-        explicitTag.textContent = 'E';
-
-        // Insert after track duration if it exists, or at the end of metaDiv
-        if (metaDiv.querySelector('.track-duration')) {
-          metaDiv.querySelector('.track-duration').after(explicitTag);
-        } else {
-          metaDiv.appendChild(explicitTag);
-        }
-      }
-
-      // Add relative time to the played_at timestamp
-      const playedAt = item.getAttribute('data-played-at');
-      if (playedAt) {
-        const timeSpan = item.querySelector('.track-played-at');
-        if (timeSpan) {
-          const relativeTime = document.createElement('span');
-          relativeTime.className = 'relative-time';
-          relativeTime.textContent = ' (' + getRelativeTime(playedAt) + ')';
-          timeSpan.appendChild(relativeTime);
-        }
-      }
-    });
-  }
-
-  // Call the enhancement function
-  enhanceTrackItems();
 });
