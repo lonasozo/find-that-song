@@ -218,72 +218,134 @@ app.post('/create-playlist', checkAccessToken, async (req, res) => {
       genres,
       time_range,
       track_count,
+      timestamp, // Timestamp for ensuring variety
       public: isPublic
     } = req.body;
 
     console.log("Starting playlist creation process with:", {
       name: playlist_name,
       type: seed_type,
-      track_count
+      timeRange: time_range,
+      trackCount: track_count,
+      genres: genres ? (Array.isArray(genres) ? genres.join(', ') : genres) : 'none',
+      timestamp: timestamp || Date.now() // Use timestamp if provided, otherwise current time
     });
 
-    // Get user profile
+    // Get user profile with the access token explicitly passed
     const user = await spotifyService.getUserProfile(access_token);
     const userId = user.id;
 
     // Get seed data based on selection
     let seedTracks = [], seedArtists = [], seedGenres = [];
-
-    if (seed_type === 'top_tracks') {
-      // Get top tracks for seeds
-      const topTracks = await spotifyService.getTopTracks(access_token, time_range, 10);
-      seedTracks = topTracks.slice(0, 5).map(track => track.id);
-    }
-    else if (seed_type === 'top_artists') {
-      // Get top artists for seeds
-      const topArtists = await spotifyService.getTopArtists(access_token, time_range, 5);
-      seedArtists = topArtists.map(artist => artist.id);
-    }
-    else if (seed_type === 'genres') {
-      // Process genre selections
-      seedGenres = Array.isArray(genres) ? genres.slice(0, 5) : [genres];
-    }
-
-    // Get track recommendations
     let tracks = [];
+
     try {
+      if (seed_type === 'top_tracks') {
+        // Get top tracks for seeds
+        console.log(`Getting top tracks for time range: ${time_range}`);
+        const topTracks = await spotifyService.getTopTracks(access_token, time_range, 10);
+
+        if (topTracks && topTracks.length > 0) {
+          seedTracks = topTracks.slice(0, 5).map(track => track.id);
+          console.log(`Using top tracks seeds: ${seedTracks.join(', ')}`);
+        } else {
+          console.log('No top tracks found');
+        }
+      }
+      else if (seed_type === 'top_artists') {
+        // Get top artists for seeds
+        console.log(`Getting top artists for time range: ${time_range}`);
+        const topArtists = await spotifyService.getTopArtists(access_token, time_range, 5);
+
+        if (topArtists && topArtists.length > 0) {
+          seedArtists = topArtists.map(artist => artist.id);
+          console.log(`Using top artists seeds: ${seedArtists.join(', ')}`);
+        } else {
+          console.log('No top artists found');
+        }
+      }
+      else if (seed_type === 'genres') {
+        // Process genre selections - ensure it's an array
+        if (genres) {
+          seedGenres = Array.isArray(genres) ? genres : [genres];
+
+          // Filter out any empty values
+          seedGenres = seedGenres.filter(g => g && g.trim() !== '');
+          console.log(`Using genre seeds: ${seedGenres.join(', ')}`);
+        } else {
+          console.log('No genres selected, will use defaults');
+        }
+      } else {
+        // Default to popular genres if no seed_type specified
+        seedGenres = ['pop', 'rock', 'hip-hop'];
+        console.log('No seed type specified, using default genres');
+      }
+
+      // First try recommendations API
+      console.log('Requesting recommendations...');
       tracks = await spotifyService.getRecommendations(access_token, {
         seedTracks,
         seedArtists,
         seedGenres,
-        limit: track_count
+        limit: parseInt(track_count) || 20
       });
-    } catch (error) {
-      // Fallback to using top tracks directly if recommendations fail
-      if (seed_type === 'top_tracks') {
-        console.log("Using top tracks as fallback");
-        tracks = await spotifyService.getTopTracks(access_token, time_range, track_count);
-      } else {
-        throw error;
+
+      console.log(`Got ${tracks.length} tracks from recommendations or search`);
+
+      // If we still don't have tracks, try search as a last resort
+      if (!tracks || tracks.length === 0) {
+        // For genre-based playlists, try direct search
+        if (seed_type === 'genres' && seedGenres.length > 0) {
+          console.log('Trying direct search for tracks by genre');
+          tracks = await spotifyService.searchTracksByGenre(access_token, seedGenres[0], parseInt(track_count) || 20);
+          console.log(`Got ${tracks.length} tracks from search`);
+        }
       }
+    } catch (seedError) {
+      console.error('Error getting seeds or recommendations:', seedError);
+      // Try to get fallback tracks directly
+      console.log('Getting fallback tracks...');
+      tracks = await spotifyService.getFallbackTracks(access_token, parseInt(track_count) || 20);
+      console.log(`Got ${tracks.length} fallback tracks`);
     }
 
-    // Create the playlist
+    // Check if we have any tracks before proceeding
+    if (!tracks || tracks.length === 0) {
+      console.log("No tracks returned from any recommendation or fallback method");
+      throw new Error("Could not find any tracks for your playlist. Please try different criteria or try again later.");
+    }
+
+    // Create the playlist with explicit access token
     const playlistData = await spotifyService.createPlaylist(access_token, userId, {
-      name: playlist_name,
-      description: playlist_description,
+      name: playlist_name || `Find That Song - ${new Date().toLocaleDateString()}`,
+      description: playlist_description || 'Created with Find That Song app',
       isPublic: isPublic === 'true'
     });
 
-    // Add tracks to the playlist
-    const trackUris = tracks.map(track => track.uri);
+    // Verify tracks have valid URIs before attempting to add them
+    const validTracks = tracks.filter(track => track && track.uri);
+    console.log(`Found ${validTracks.length} valid tracks with URIs out of ${tracks.length} total tracks`);
+
+    if (validTracks.length === 0) {
+      throw new Error("No valid track URIs found to add to the playlist.");
+    }
+
+    // Add tracks to the playlist with explicit access token
+    const trackUris = validTracks.map(track => track.uri);
     await spotifyService.addTracksToPlaylist(access_token, playlistData.id, trackUris);
+
+    // Log playlist creation success with track details
+    console.log(`Playlist created successfully with ${validTracks.length} tracks`);
+    console.log('First few tracks:', validTracks.slice(0, 3).map(t =>
+      `"${t.name}" by ${t.artists.map(a => a.name).join(', ')}`
+    ).join('; '));
 
     // Render success page
     res.render('playlist-success', {
-      tracks,
+      title: 'Playlist Created',
+      tracks: validTracks,
       playlistData,
-      playlist_name,
+      playlist_name: playlistData.name,
       access_token
     });
 
