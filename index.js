@@ -344,6 +344,8 @@ app.post('/create-playlist', checkAccessToken, async (req, res) => {
 });
 
 app.get('/track-analysis/:trackId', checkAccessToken, async (req, res) => {
+
+  return false;
   console.log('TRACK ANALYSIS ROUTE HIT - Track ID:', req.params.trackId);
   const access_token = req.query.access_token;
   const { trackId } = req.params;
