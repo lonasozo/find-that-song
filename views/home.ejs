@@ -14,6 +14,19 @@
           <span class="button-text">Enter with Spotify</span>
           <span class="spinner"></span>
         </a>
+        
+        <div class="login-container">
+          <div class="access-info">
+            <p class="access-note">
+              This application requires manual approval in Spotify's Developer Dashboard. 
+              If you want to try it out, please click the button below to request access.
+            </p>
+            
+            <a href="https://form.typeform.com/to/dXMB3c6F" class="access-button" target="_blank">
+              Request Access
+            </a>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -97,6 +110,37 @@
       
       .login-button.loading .spinner {
         display: inline-block;
+      }
+      
+      .access-info {
+        margin-top: 30px;
+        padding: 20px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        text-align: center;
+        max-width: 500px;
+      }
+      
+      .access-note {
+        color: #eee;
+        font-size: 16px;
+        line-height: 1.5;
+        margin-bottom: 20px;
+      }
+      
+      .access-button {
+        display: inline-block;
+        padding: 12px 24px;
+        background-color: #1DB954;
+        color: white;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+      }
+      
+      .access-button:hover {
+        background-color: #1ed760;
       }
     </style>
     

@@ -26,3 +26,4 @@ pids
 *.pid.lock
 
 .vscode
+.env.development
