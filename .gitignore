@@ -25,8 +25,5 @@ pids
 *.seed
 *.pid.lock
 
-# Session files
-sessions/
-
 .vscode
 .env.development
