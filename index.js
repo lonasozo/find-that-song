@@ -7,6 +7,24 @@ const expressLayouts = require('express-ejs-layouts');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Determinazione dell'ambiente
+const isVercelProd = process.env.VERCEL_ENV === 'production';
+const isVercelDev = process.env.VERCEL_ENV === 'development' || process.env.VERCEL_ENV === 'preview';
+const nodeEnv = process.env.NODE_ENV || 'development';
+const actualEnv = isVercelProd ? 'production' : (isVercelDev ? 'vercel-dev' : nodeEnv);
+
+// Log delle variabili d'ambiente
+console.log('-------------------------------------');
+console.log(`🌍 Avvio applicazione in ambiente: ${actualEnv}`);
+console.log('📋 Variabili d\'ambiente:');
+console.log(`   - NODE_ENV: ${nodeEnv}`);
+console.log(`   - VERCEL_ENV: ${process.env.VERCEL_ENV || 'non impostato'}`);
+console.log('🎵 Credenziali Spotify:');
+console.log(`   - CLIENT_ID: ${process.env.CLIENT_ID ? '✓ impostato' : '❌ mancante'} (${process.env.CLIENT_ID ? process.env.CLIENT_ID.substring(0, 5) + '...' : 'undefined'})`);
+console.log(`   - CLIENT_SECRET: ${process.env.CLIENT_SECRET ? '✓ impostato' : '❌ mancante'}`);
+console.log(`   - REDIRECT_URI: ${process.env.REDIRECT_URI || 'non impostato'}`);
+console.log('-------------------------------------');
+
 // Configure express to use EJS as the view engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -21,6 +39,8 @@ app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
+
+
 
 // Parse request bodies
 app.use(express.json());
