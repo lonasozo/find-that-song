@@ -31,45 +31,48 @@ document.addEventListener('DOMContentLoaded', function () {
     { name: 'tempo', min: 60, max: 200, isPercentage: false }
   ];
 
-  // Set up feature toggles
-  audioFeatures.forEach(feature => {
-    const checkbox = document.getElementById(`enable_${feature.name}`);
-    const slider = document.getElementById(`target_${feature.name}`);
-    const valueDisplay = document.getElementById(`${feature.name}-value`);
+  // Function to initialize audio features
+  function initializeAudioFeatures() {
+    // Set up feature toggles
+    audioFeatures.forEach(feature => {
+      const checkbox = document.getElementById(`enable_${feature.name}`);
+      const slider = document.getElementById(`target_${feature.name}`);
+      const valueDisplay = document.getElementById(`${feature.name}-value`);
 
-    if (checkbox && slider) {
-      // Set initial value display format
-      if (valueDisplay) {
-        valueDisplay.textContent = feature.isPercentage ? `${slider.value}%` : slider.value;
-      }
-
-      // Add event listener to checkbox
-      checkbox.addEventListener('change', function () {
-        // Enable/disable slider based on checkbox
-        slider.disabled = !this.checked;
-
-        // If disabled, remove the name attribute so it won't be submitted
-        if (!this.checked) {
-          slider.removeAttribute('name');
-        } else {
-          slider.setAttribute('name', `target_${feature.name}`);
-          // Set a random value when enabled
-          const randomValue = getRandomValue(feature.min, feature.max);
-          slider.value = randomValue;
-          if (valueDisplay) {
-            valueDisplay.textContent = feature.isPercentage ? `${randomValue}%` : randomValue;
-          }
-        }
-      });
-
-      // Add event listener for slider input
-      slider.addEventListener('input', function () {
+      if (checkbox && slider) {
+        // Set initial value display format
         if (valueDisplay) {
-          valueDisplay.textContent = feature.isPercentage ? `${this.value}%` : this.value;
+          valueDisplay.textContent = feature.isPercentage ? `${slider.value}%` : slider.value;
         }
-      });
-    }
-  });
+
+        // Add event listener to checkbox
+        checkbox.addEventListener('change', function () {
+          // Enable/disable slider based on checkbox
+          slider.disabled = !this.checked;
+
+          // If disabled, remove the name attribute so it won't be submitted
+          if (!this.checked) {
+            slider.removeAttribute('name');
+          } else {
+            slider.setAttribute('name', `target_${feature.name}`);
+            // Set a random value when enabled
+            const randomValue = getRandomValue(feature.min, feature.max);
+            slider.value = randomValue;
+            if (valueDisplay) {
+              valueDisplay.textContent = feature.isPercentage ? `${randomValue}%` : randomValue;
+            }
+          }
+        });
+
+        // Add event listener for slider input
+        slider.addEventListener('input', function () {
+          if (valueDisplay) {
+            valueDisplay.textContent = feature.isPercentage ? `${this.value}%` : this.value;
+          }
+        });
+      }
+    });
+  }
 
   // Randomize only enabled features
   function setRandomSliderValues() {
@@ -101,4 +104,36 @@ document.addEventListener('DOMContentLoaded', function () {
       // from disabled sliders, which prevents them from being submitted
     });
   }
+
+  // Initialize features on page load
+  initializeAudioFeatures();
+
+  // Listen for clicks on the "Generate playlist" menu item
+  const generatePlaylistMenuItem = document.querySelector('a[href*="generate-playlist"]');
+  if (generatePlaylistMenuItem) {
+    generatePlaylistMenuItem.addEventListener('click', function () {
+      // Schedule initialization to occur after the page content is updated
+      setTimeout(initializeAudioFeatures, 100);
+    });
+  }
+
+  // Check for URL changes indicating we're on the generate-playlist page
+  function checkUrlAndInitialize() {
+    if (window.location.href.includes('generate-playlist')) {
+      initializeAudioFeatures();
+    }
+  }
+
+  // Use MutationObserver to detect URL changes if this is a single-page app
+  const observer = new MutationObserver(function (mutations) {
+    if (window.location.href.includes('generate-playlist')) {
+      initializeAudioFeatures();
+    }
+  });
+
+  // Start observing URL changes
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  // Also check when the window history changes
+  window.addEventListener('popstate', checkUrlAndInitialize);
 });
