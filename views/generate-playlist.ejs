@@ -130,11 +130,8 @@
                 </div>
             </div>
 
-            <div class="advanced-options-toggle">
-              <button type="button" id="toggle-advanced">Show Advanced Options</button>
-            </div>
 
-            <div class="advanced-options" id="advanced-options">
+            <div class="advanced-options visible" id="advanced-options">
               <h3>Audio Features</h3>
               <div class="feature-sliders">
                 <div class="slider-group">
@@ -195,28 +192,43 @@
             });
         }
 
-        // Set up advanced options toggle
-        const toggleBtn = document.getElementById('toggle-advanced');
-        const advancedOptions = document.getElementById('advanced-options');
+        // Funzione per generare un numero casuale tra min e max inclusi
+        function getRandomValue(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
         
-        toggleBtn.addEventListener('click', function() {
-          advancedOptions.classList.toggle('visible');
-          toggleBtn.textContent = advancedOptions.classList.contains('visible') ? 
-            'Hide Advanced Options' : 'Show Advanced Options';
-        });
+        // Imposta valori casuali per gli slider al caricamento della pagina
+        function setRandomSliderValues() {
+            const sliders = [
+                { slider: 'target_energy', value: getRandomValue(0, 100) },
+                { slider: 'target_popularity', value: getRandomValue(0, 100) },
+                { slider: 'target_acousticness', value: getRandomValue(0, 100) }
+            ];
+            
+            sliders.forEach(({slider, value}) => {
+                const sliderElement = document.getElementById(slider);
+                const valueDisplay = document.getElementById(slider.replace('target_', '') + '-value');
+                
+                sliderElement.value = value;
+                valueDisplay.textContent = `${value}%`;
+            });
+        }
+        
+        // Esegui l'impostazione dei valori casuali al caricamento
+        setRandomSliderValues();
         
         // Set up slider value displays
         function setupSlider(sliderId, valueId) {
           const slider = document.getElementById(sliderId);
           const valueDisplay = document.getElementById(valueId);
           
-          valueDisplay.textContent = `${slider.value}%`;
-          
+          // Aggiungiamo l'event listener per l'evento 'input'
           slider.addEventListener('input', function() {
             valueDisplay.textContent = `${this.value}%`;
           });
         }
         
+        // Chiamiamo la funzione setupSlider per ogni slider
         setupSlider('target_energy', 'energy-value');
         setupSlider('target_popularity', 'popularity-value');
         setupSlider('target_acousticness', 'acousticness-value');
@@ -226,91 +238,32 @@
 <style>
   /* ...existing styles... */
 
+  /* Rimuoviamo gli stili per il toggle che non è più necessario */
   .advanced-options-toggle {
-    margin: 20px 0;
-    text-align: center;
+    display: none;
   }
 
   #toggle-advanced {
-    background: none;
-    border: 1px solid #ccc;
-    padding: 8px 16px;
-    border-radius: 20px;
-    color: #ccc;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.3s ease;
+    display: none;
   }
 
-  #toggle-advanced:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: white;
-  }
-
+  /* Modifichiamo la classe per mostrare sempre le opzioni avanzate */
   .advanced-options {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.5s ease;
+    max-height: none; /* Rimuoviamo la limitazione di altezza */
+    overflow: visible; /* Rendiamo visibile il contenuto */
+    padding: 20px;
     margin-bottom: 20px;
     border-radius: 8px;
     background-color: rgba(255, 255, 255, 0.05);
   }
 
+  /* Questa classe non è più necessaria ma la lasciamo per compatibilità */
   .advanced-options.visible {
-    max-height: 600px;
+    max-height: none;
     padding: 20px;
   }
 
-  .feature-sliders {
-    margin-top: 10px;
-  }
-
-  .slider-group {
-    margin: 20px 0;
-    position: relative;
-  }
-
-  .slider-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #ddd;
-  }
-
-  .slider-group input[type="range"] {
-    width: 100%;
-    margin: 8px 0;
-    -webkit-appearance: none;
-    appearance: none;
-    height: 6px;
-    border-radius: 3px;
-    background: #444;
-    outline: none;
-  }
-
-  .slider-group input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    height: 18px;
-    width: 18px;
-    border-radius: 50%;
-    background: #1DB954;
-    cursor: pointer;
-  }
-
-  .slider-value {
-    position: absolute;
-    right: 0;
-    top: 0;
-    color: #1DB954;
-    font-weight: bold;
-  }
-
-  .feature-description {
-    font-size: 13px;
-    color: #999;
-    margin-top: 4px;
-    line-height: 1.4;
-  }
+  /* ...existing styles for sliders... */
 </style>
 
 </body></html>
