@@ -3,6 +3,13 @@
  * This file is not used in production (Vercel)
  */
 
+// Carica le variabili d'ambiente prima di importare il modulo app
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env.local') });
+
+// Forza l'ambiente di sviluppo quando avviato con server.js
+process.env.NODE_ENV = 'development';
+
 const app = require('./index');
 const port = process.env.PORT || 3000;
 

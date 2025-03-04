@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
-require('dotenv').config();
+// Modifichiamo il caricamento di dotenv per specificare esplicitamente il file .env.local
+require('dotenv').config({ path: path.join(__dirname, '.env.local') });
 const spotifyService = require('./services/spotify');
 const expressLayouts = require('express-ejs-layouts');
 
@@ -10,7 +11,8 @@ const port = process.env.PORT || 3000;
 // Determinazione dell'ambiente
 const isVercelProd = process.env.VERCEL_ENV === 'production';
 const isVercelDev = process.env.VERCEL_ENV === 'development' || process.env.VERCEL_ENV === 'preview';
-const nodeEnv = process.env.NODE_ENV || 'development';
+// Forziamo development quando eseguiamo in locale
+const nodeEnv = (process.env.NODE_ENV === 'production' && !isVercelProd) ? 'development' : (process.env.NODE_ENV || 'development');
 const actualEnv = isVercelProd ? 'production' : (isVercelDev ? 'vercel-dev' : nodeEnv);
 
 // Log delle variabili d'ambiente
