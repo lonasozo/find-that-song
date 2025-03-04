@@ -120,7 +120,7 @@ app.get('/recently-played', checkAccessToken, async (req, res) => {
   const isAjax = req.query.ajax === 'true';
 
   try {
-    const items = await spotifyService.getRecentlyPlayed(access_token, 10);
+    const items = await spotifyService.getRecentlyPlayed(access_token, 15);
     res.render('recently-played', {
       title: 'Recently Played',
       items,
@@ -134,7 +134,7 @@ app.get('/recently-played', checkAccessToken, async (req, res) => {
 
 app.get('/top-tracks', checkAccessToken, async (req, res) => {
   const access_token = req.query.access_token;
-  const time_range = req.query.time_range || 'medium_term';
+  const time_range = req.query.time_range || 'short_term'; // Changed from medium_term to short_term
   const isAjax = req.query.ajax === 'true';
 
   try {
@@ -171,7 +171,7 @@ app.get('/top-tracks', checkAccessToken, async (req, res) => {
 
 app.get('/top-artists', checkAccessToken, async (req, res) => {
   const access_token = req.query.access_token;
-  const time_range = req.query.time_range || 'medium_term';
+  const time_range = req.query.time_range || 'short_term'; // Changed from medium_term to short_term
   const isAjax = req.query.ajax === 'true';
 
   try {
@@ -190,7 +190,7 @@ app.get('/top-artists', checkAccessToken, async (req, res) => {
 
 app.get('/top-albums', checkAccessToken, async (req, res) => {
   const access_token = req.query.access_token;
-  const time_range = req.query.time_range || 'medium_term';
+  const time_range = req.query.time_range || 'short_term'; // Changed from medium_term to short_term
   const isAjax = req.query.ajax === 'true';
 
   try {

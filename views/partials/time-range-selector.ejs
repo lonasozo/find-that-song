@@ -1,0 +1,52 @@
+<div class="time-range-selector">
+  <div class="time-range-option <%= time_range === 'short_term' ? 'active' : '' %>">
+    <a href="?time_range=short_term&access_token=<%= access_token %>" 
+       class="<%= time_range === 'short_term' ? 'active' : '' %>">
+      Recent
+    </a>
+  </div>
+  <div class="time-range-option <%= time_range === 'medium_term' ? 'active' : '' %>">
+    <a href="?time_range=medium_term&access_token=<%= access_token %>" 
+       class="<%= time_range === 'medium_term' ? 'active' : '' %>">
+      Last 6 Months
+    </a>
+  </div>
+  <div class="time-range-option <%= time_range === 'long_term' ? 'active' : '' %>">
+    <a href="?time_range=long_term&access_token=<%= access_token %>" 
+       class="<%= time_range === 'long_term' ? 'active' : '' %>">
+      All Time
+    </a>
+  </div>
+</div>
+
+<style>
+  .time-range-selector {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+  }
+  
+  .time-range-option {
+    margin: 0 10px;
+  }
+  
+  .time-range-option a {
+    padding: 8px 15px;
+    text-decoration: none;
+    color: #aaa;
+    border-radius: 20px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+  }
+  
+  .time-range-option a.active {
+    color: white;
+    background-color: #1DB954;
+    font-weight: bold;
+  }
+  
+  .time-range-option a:hover:not(.active) {
+    color: white;
+    background-color: rgba(29, 185, 84, 0.2);
+  }
+</style>

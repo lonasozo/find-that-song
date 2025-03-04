@@ -132,7 +132,7 @@ class SpotifyService {
    * @param {number} limit - Numero di brani da restituire
    * @returns {Promise<Array>} - Brani più ascoltati
    */
-  async getTopTracks(accessToken, timeRange = 'medium_term', limit = 50) {
+  async getTopTracks(accessToken, timeRange = 'short_term', limit = 50) {
     try {
       const response = await axios.get(`https://api.spotify.com/v1/me/top/tracks`, {
         params: { time_range: timeRange, limit },
@@ -153,7 +153,7 @@ class SpotifyService {
    * @param {number} limit - Numero di artisti da restituire
    * @returns {Promise<Array>} - Artisti più ascoltati
    */
-  async getTopArtists(accessToken, timeRange = 'medium_term', limit = 50) {
+  async getTopArtists(accessToken, timeRange = 'short_term', limit = 50) {
     try {
       const response = await axios.get(`https://api.spotify.com/v1/me/top/artists`, {
         params: { time_range: timeRange, limit },
@@ -712,12 +712,12 @@ class SpotifyService {
       // Prova medium_term prima (ultimi 6 mesi)
       try {
         const response = await axios.get('https://api.spotify.com/v1/me/top/tracks', {
-          params: { time_range: 'medium_term', limit },
+          params: { time_range: 'long_term', limit },
           headers: { 'Authorization': `Bearer ${accessToken}` }
         });
 
         if (response.data?.items?.length > 0) {
-          console.log(`Ottenute ${response.data.items.length} tracce fallback dalle tracce top dell'utente (medium_term)`);
+          console.log(`Ottenute ${response.data.items.length} tracce fallback dalle tracce top dell'utente (long_term)`);
           return response.data.items;
         }
       } catch (mediumTermError) {
@@ -727,12 +727,12 @@ class SpotifyService {
       // Se medium_term fallisce, prova short_term (ultime 4 settimane)
       try {
         const response = await axios.get('https://api.spotify.com/v1/me/top/tracks', {
-          params: { time_range: 'short_term', limit },
+          params: { time_range: 'medium_term', limit },
           headers: { 'Authorization': `Bearer ${accessToken}` }
         });
 
         if (response.data?.items?.length > 0) {
-          console.log(`Ottenute ${response.data.items.length} tracce fallback dalle tracce top dell'utente (short_term)`);
+          console.log(`Ottenute ${response.data.items.length} tracce fallback dalle tracce top dell'utente (medium_term)`);
           return response.data.items;
         }
       } catch (shortTermError) {
@@ -803,7 +803,7 @@ class SpotifyService {
    * @returns {Promise<Object>} - Promessa che risolve con la risposta degli elementi top
    */
   async getTopItems(type, options = {}) {
-    const { limit = 20, time_range = 'medium_term' } = options;
+    const { limit = 20, time_range = 'short_term' } = options;
 
     try {
       await this.ensureAccessToken();

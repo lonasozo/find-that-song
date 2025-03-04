@@ -7,22 +7,22 @@ function initTimeRangeSelector() {
   const timeRangeLoader = document.getElementById('time-range-loader');
   const contentContainer = document.getElementById('content-container');
 
-  // Default to medium_term (Last 6 Months) on first load
+  // Default to short_term on first load
   const setDefaultTimeRange = () => {
     // Get current URL parameters
     const url = new URL(window.location.href);
     const timeRange = url.searchParams.get('time_range');
 
-    // If time_range is not in URL, select medium_term by default
+    // If time_range is not in URL, select short_term by default
     if (!timeRange) {
-      const mediumTermButton = document.querySelector('.time-range-btn[data-range="medium_term"]');
-      if (mediumTermButton && !mediumTermButton.classList.contains('active')) {
+      const shortTermButton = document.querySelector('.time-range-btn[data-range="short_term"]');
+      if (shortTermButton && !shortTermButton.classList.contains('active')) {
         // Update active class
         timeRangeButtons.forEach(btn => btn.classList.remove('active'));
-        mediumTermButton.classList.add('active');
+        shortTermButton.classList.add('active');
 
-        // Trigger click on the medium term button
-        mediumTermButton.click();
+        // Trigger click on the short term button
+        shortTermButton.click();
       }
     }
   };
