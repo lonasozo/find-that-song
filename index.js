@@ -247,29 +247,50 @@ app.post('/create-playlist', checkAccessToken, async (req, res) => {
       track_count,
       timestamp, // Timestamp for ensuring variety
       public: isPublic,
-      // Add new audio feature parameters
+      // Get seed parameters
+      seed_tracks,
+      seed_artists,
+      // Get all audio feature parameters
       target_energy,
       target_popularity,
-      target_acousticness
+      target_acousticness,
+      target_danceability,
+      target_instrumentalness,
+      target_liveness,
+      target_valence,
+      target_tempo
     } = req.body;
+
+    // Log which audio features are actually being used
+    const activeAudioFeatures = {};
+    if (target_energy !== undefined) activeAudioFeatures.energy = `${target_energy}%`;
+    if (target_popularity !== undefined) activeAudioFeatures.popularity = `${target_popularity}%`;
+    if (target_acousticness !== undefined) activeAudioFeatures.acousticness = `${target_acousticness}%`;
+    if (target_danceability !== undefined) activeAudioFeatures.danceability = `${target_danceability}%`;
+    if (target_instrumentalness !== undefined) activeAudioFeatures.instrumentalness = `${target_instrumentalness}%`;
+    if (target_liveness !== undefined) activeAudioFeatures.liveness = `${target_liveness}%`;
+    if (target_valence !== undefined) activeAudioFeatures.valence = `${target_valence}%`;
+    if (target_tempo !== undefined) activeAudioFeatures.tempo = `${target_tempo} BPM`;
 
     console.log("Starting playlist creation process with:", {
       name: playlist_name,
-      type: 'genres', // Always genre-based now
       trackCount: track_count,
       genres: genres ? (Array.isArray(genres) ? genres.join(', ') : genres) : 'none',
-      timestamp: timestamp || Date.now(), // Use timestamp if provided, otherwise current time
-      // Log audio features if specified
-      audioFeatures: {
-        energy: target_energy ? `${target_energy}%` : 'default',
-        popularity: target_popularity ? `${target_popularity}%` : 'default',
-        acousticness: target_acousticness ? `${target_acousticness}%` : 'default'
-      }
+      seedTracks: seed_tracks ? seed_tracks : 'none',
+      seedArtists: seed_artists ? seed_artists : 'none',
+      timestamp: timestamp || Date.now(),
+      audioFeatures: Object.keys(activeAudioFeatures).length > 0 ? activeAudioFeatures : 'default (none specified)'
     });
 
     // Get user profile with the access token explicitly passed
     const user = await spotifyService.getUserProfile(access_token);
     const userId = user.id;
+
+    // Process seed tracks - convert comma separated string to array
+    const seedTracks = seed_tracks ? seed_tracks.split(',').map(id => id.trim()).filter(id => id) : [];
+
+    // Process seed artists - convert comma separated string to array
+    const seedArtists = seed_artists ? seed_artists.split(',').map(id => id.trim()).filter(id => id) : [];
 
     // Process genre selections - ensure it's an array
     let seedGenres = [];
@@ -282,17 +303,24 @@ app.post('/create-playlist', checkAccessToken, async (req, res) => {
       console.log('No genres selected, using default genres');
     }
 
-    // Prepare audio features options
+    // Prepare audio features options - convert from percentage to decimal (0-1) where needed
     const audioFeatures = {};
-    if (target_energy) audioFeatures.target_energy = Number(target_energy) / 100;
-    if (target_popularity) audioFeatures.target_popularity = Number(target_popularity);
-    if (target_acousticness) audioFeatures.target_acousticness = Number(target_acousticness) / 100;
+    if (target_energy !== undefined) audioFeatures.target_energy = Number(target_energy) / 100;
+    if (target_popularity !== undefined) audioFeatures.target_popularity = Number(target_popularity);
+    if (target_acousticness !== undefined) audioFeatures.target_acousticness = Number(target_acousticness) / 100;
+    if (target_danceability !== undefined) audioFeatures.target_danceability = Number(target_danceability) / 100;
+    if (target_instrumentalness !== undefined) audioFeatures.target_instrumentalness = Number(target_instrumentalness) / 100;
+    if (target_liveness !== undefined) audioFeatures.target_liveness = Number(target_liveness) / 100;
+    if (target_valence !== undefined) audioFeatures.target_valence = Number(target_valence) / 100;
+    if (target_tempo !== undefined) audioFeatures.target_tempo = Number(target_tempo);
 
     let tracks = [];
 
     try {
-      // Get recommendations based on genres and audio features
+      // Get recommendations based on genres, seeds, and audio features
       tracks = await spotifyService.getRecommendations(access_token, {
+        seedArtists,
+        seedTracks,
         seedGenres,
         limit: parseInt(track_count) || 20,
         audioFeatures // Pass the audio features

@@ -268,9 +268,30 @@ class SpotifyService {
 
       console.log(`Ottenimento raccomandazioni con limite: ${limit}`);
 
-      // Log audio features se specificate
+      // Log dei seed parameters con dettagli più specifici
+      if (seedTracks && seedTracks.length > 0) {
+        console.log(`Usando ${seedTracks.length} track seeds: ${seedTracks.join(', ')}`);
+      }
+
+      if (seedArtists && seedArtists.length > 0) {
+        console.log(`Usando ${seedArtists.length} artist seeds: ${seedArtists.join(', ')}`);
+      }
+
+      // Verifica che non si ecceda il limite combinato di 5 seed
+      const totalSeedCount = (seedTracks ? seedTracks.length : 0) +
+        (seedArtists ? seedArtists.length : 0) +
+        (seedGenres ? seedGenres.length : 0);
+
+      if (totalSeedCount > 5) {
+        console.log(`Attenzione: Il totale dei seed (${totalSeedCount}) supera il limite di 5 supportato da Spotify API. Alcuni seed verranno ignorati.`);
+      }
+
+      // Log dettagliato per le caratteristiche audio
       if (Object.keys(audioFeatures).length > 0) {
-        console.log('Caratteristiche audio personalizzate:', audioFeatures);
+        console.log('Caratteristiche audio personalizzate:');
+        Object.entries(audioFeatures).forEach(([key, value]) => {
+          console.log(`  - ${key}: ${value}`);
+        });
       }
 
       // Se sono selezionati più generi, prova due approcci:
@@ -354,8 +375,19 @@ class SpotifyService {
         // Aggiungi i parametri delle caratteristiche audio personalizzate
         for (const [key, value] of Object.entries(audioFeatures)) {
           if (value !== undefined && value !== null) {
-            params.append(key, value);
-            console.log(`Utilizzo ${key}: ${value}`);
+            // Validazione per assicurarsi che i valori siano nel range corretto
+            let safeValue = value;
+
+            // Per parametri che devono essere tra 0 e 1
+            if (key.startsWith('target_') &&
+              !['target_popularity', 'target_tempo', 'target_duration_ms', 'target_key', 'target_time_signature'].includes(key) &&
+              (value < 0 || value > 1)) {
+              console.log(`Avviso: Il valore ${value} per ${key} non è nel range valido 0-1. Normalizzazione applicata.`);
+              safeValue = Math.min(Math.max(value, 0), 1);
+            }
+
+            params.append(key, safeValue);
+            console.log(`Utilizzo ${key}: ${safeValue}`);
           }
         }
 

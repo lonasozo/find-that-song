@@ -43,6 +43,21 @@
                           class="form-control">Discover new music with Find That Song</textarea>
             </div>
             
+            <!-- New sections for seed tracks and artists -->
+            <div class="form-group">
+                <label for="seed_tracks">Seed Tracks (optional)</label>
+                <input type="text" id="seed_tracks" name="seed_tracks" 
+                       placeholder="Enter Spotify track IDs, separated by commas" class="form-control">
+                <small class="form-hint">Example: 4iV5W9uYEdYUVa79Axb7Rh,1301WleyT98MSxVHPZCA6M</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="seed_artists">Seed Artists (optional)</label>
+                <input type="text" id="seed_artists" name="seed_artists" 
+                       placeholder="Enter Spotify artist IDs, separated by commas" class="form-control">
+                <small class="form-hint">Example: 0TnOYISbd1XYRBk9myaseg,2CIMQHirSU0MQqyYHq0eOx</small>
+            </div>
+            
             <div class="form-group">
                 <label>What genres would you like in your playlist?</label>
                 <div class="genre-selector">
@@ -114,36 +129,131 @@
                     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path d="M18 4l3 3-3 3v-2c-1.85 0-3.38 1.34-3.67 3.09A7.55 7.55 0 0 0 13.5 12a7.46 7.46 0 0 0 .84-.91c.29-1.75 1.82-3.09 3.66-3.09v-2l3 3-3 3v-2c-1.34 0-2.5.88-2.9 2.1A6 6 0 0 0 19 19a1 1 0 0 1 0 2 8 8 0 0 1-7-4H8.83l2 2H10v2H5v-5h2v.83L9.07 17H8a8 8 0 0 1-7-4 1 1 0 0 1 1.73-1A6 6 0 0 0 7 15h.17L5 12.83V13H3V8h5v2h-.83L5.1 11.1A6.14 6.14 0 0 0 8 10h4c0-.34.03-.67.08-1A6 6 0 0 0 7 5a1 1 0 0 1 0-2 8 8 0 0 1 8 4h2.83l-2-2H17V3h5v5h-2v-.83L18.93 9H19a8 8 0 0 1 6 4 1 1 0 0 1-1.73 1A6 6 0 0 0 19 11h-.17L21 13.17V13h2v5h-5v-2h.83l2.07-2.1A6.14 6.14 0 0 0 17 16h-4c0 .34-.03.67-.08 1a6 6 0 0 0 5.08 4 1 1 0 0 1 0 2 8 8 0 0 1-7-4h-4.17l-2 2H4v-2l3-3 3 3v-2h1.76a7.51 7.51 0 0 0-.86-1H8a1 1 0 0 1-.14 0A6 6 0 0 0 12 19a1 1 0 0 1 0 2 8 8 0 0 1-8-8 8 8 0 0 1 8-8 1 1 0 0 1 0 2 6 6 0 0 0-6 6 5.94 5.94 0 0 0 .35 2H8.17L7 13.83V13H5v-5h5v2H8.83L7.1 11.1A6.14 6.14 0 0 0 10 13h.1c.34-1.75 1.82-3.1 3.9-3.1v-4l3 3-3 3v-2c-1.34 0-2.5.88-2.9 2.1A6 6 0 0 0 16 19a1 1 0 0 1 0 2 8 8 0 0 1-7-4H5v-2l3-3 3 3v-2h4a7.54 7.54 0 0 0-.91-.84C14.09 10.38 14 9.19 14 8v-2l3 3-3 3v-2c-1.85 0-3.38 1.34-3.67 3.09.15.29.27.59.38.9.13.38.29.75.48 1.09A4.56 4.56 0 0 1 14 13v2l-3-3 3-3v2c1.85 0 3.38-1.34 3.67-3.1-.15-.28-.27-.58-.38-.9z"/>
                     </svg>
-                    Randomize Values
+                    Randomize Enabled Features
                   </button>
                 </div>
               </div>
               <div class="feature-sliders">
+                <!-- Modified feature slider with enable/disable toggle -->
                 <div class="slider-group">
-                  <label for="target_energy">Energy</label>
+                  <div class="slider-header">
+                    <label for="target_energy">Energy</label>
+                    <div class="feature-toggle">
+                      <input type="checkbox" id="enable_energy" class="feature-checkbox">
+                      <label for="enable_energy" class="toggle-label">Enable</label>
+                    </div>
+                  </div>
                   <div class="slider-container">
-                    <input type="range" id="target_energy" name="target_energy" min="0" max="100" value="50">
+                    <input type="range" id="target_energy" name="target_energy" min="0" max="100" value="50" disabled>
                     <span class="slider-value" id="energy-value">50%</span>
                   </div>
                   <p class="feature-description">Energy represents intensity and activity. High energy tracks feel fast and loud.</p>
                 </div>
                 
                 <div class="slider-group">
-                  <label for="target_popularity">Popularity</label>
+                  <div class="slider-header">
+                    <label for="target_popularity">Popularity</label>
+                    <div class="feature-toggle">
+                      <input type="checkbox" id="enable_popularity" class="feature-checkbox">
+                      <label for="enable_popularity" class="toggle-label">Enable</label>
+                    </div>
+                  </div>
                   <div class="slider-container">
-                    <input type="range" id="target_popularity" name="target_popularity" min="0" max="100" value="50">
+                    <input type="range" id="target_popularity" name="target_popularity" min="0" max="100" value="50" disabled>
                     <span class="slider-value" id="popularity-value">50%</span>
                   </div>
                   <p class="feature-description">Popularity indicates how well-known a track is. Higher values mean more popular songs.</p>
                 </div>
                 
                 <div class="slider-group">
-                  <label for="target_acousticness">Acousticness</label>
+                  <div class="slider-header">
+                    <label for="target_acousticness">Acousticness</label>
+                    <div class="feature-toggle">
+                      <input type="checkbox" id="enable_acousticness" class="feature-checkbox">
+                      <label for="enable_acousticness" class="toggle-label">Enable</label>
+                    </div>
+                  </div>
                   <div class="slider-container">
-                    <input type="range" id="target_acousticness" name="target_acousticness" min="0" max="100" value="50">
+                    <input type="range" id="target_acousticness" name="target_acousticness" min="0" max="100" value="50" disabled>
                     <span class="slider-value" id="acousticness-value">50%</span>
                   </div>
                   <p class="feature-description">Acousticness represents how acoustic a track is. Higher values mean more acoustic instruments.</p>
+                </div>
+                
+                <!-- New audio feature sliders with enable/disable toggle -->
+                <div class="slider-group">
+                  <div class="slider-header">
+                    <label for="target_danceability">Danceability</label>
+                    <div class="feature-toggle">
+                      <input type="checkbox" id="enable_danceability" class="feature-checkbox">
+                      <label for="enable_danceability" class="toggle-label">Enable</label>
+                    </div>
+                  </div>
+                  <div class="slider-container">
+                    <input type="range" id="target_danceability" name="target_danceability" min="0" max="100" value="50" disabled>
+                    <span class="slider-value" id="danceability-value">50%</span>
+                  </div>
+                  <p class="feature-description">How suitable a track is for dancing based on tempo, rhythm, beat strength, and regularity.</p>
+                </div>
+                
+                <div class="slider-group">
+                  <div class="slider-header">
+                    <label for="target_instrumentalness">Instrumentalness</label>
+                    <div class="feature-toggle">
+                      <input type="checkbox" id="enable_instrumentalness" class="feature-checkbox">
+                      <label for="enable_instrumentalness" class="toggle-label">Enable</label>
+                    </div>
+                  </div>
+                  <div class="slider-container">
+                    <input type="range" id="target_instrumentalness" name="target_instrumentalness" min="0" max="100" value="50" disabled>
+                    <span class="slider-value" id="instrumentalness-value">50%</span>
+                  </div>
+                  <p class="feature-description">Predicts whether a track contains no vocals. Higher values represent instrumental tracks.</p>
+                </div>
+                
+                <div class="slider-group">
+                  <div class="slider-header">
+                    <label for="target_liveness">Liveness</label>
+                    <div class="feature-toggle">
+                      <input type="checkbox" id="enable_liveness" class="feature-checkbox">
+                      <label for="enable_liveness" class="toggle-label">Enable</label>
+                    </div>
+                  </div>
+                  <div class="slider-container">
+                    <input type="range" id="target_liveness" name="target_liveness" min="0" max="100" value="50" disabled>
+                    <span class="slider-value" id="liveness-value">50%</span>
+                  </div>
+                  <p class="feature-description">Detects the presence of an audience in the recording. Higher values mean a live performance.</p>
+                </div>
+                
+                <div class="slider-group">
+                  <div class="slider-header">
+                    <label for="target_valence">Valence</label>
+                    <div class="feature-toggle">
+                      <input type="checkbox" id="enable_valence" class="feature-checkbox">
+                      <label for="enable_valence" class="toggle-label">Enable</label>
+                    </div>
+                  </div>
+                  <div class="slider-container">
+                    <input type="range" id="target_valence" name="target_valence" min="0" max="100" value="50" disabled>
+                    <span class="slider-value" id="valence-value">50%</span>
+                  </div>
+                  <p class="feature-description">Musical positivity. High valence tracks sound more positive (happy, cheerful).</p>
+                </div>
+                
+                <div class="slider-group">
+                  <div class="slider-header">
+                    <label for="target_tempo">Tempo (BPM)</label>
+                    <div class="feature-toggle">
+                      <input type="checkbox" id="enable_tempo" class="feature-checkbox">
+                      <label for="enable_tempo" class="toggle-label">Enable</label>
+                    </div>
+                  </div>
+                  <div class="slider-container">
+                    <input type="range" id="target_tempo" name="target_tempo" min="60" max="200" value="120" disabled>
+                    <span class="slider-value" id="tempo-value">120</span>
+                  </div>
+                  <p class="feature-description">The speed or pace of a track, measured in beats per minute (BPM).</p>
                 </div>
               </div>
             </div>
@@ -164,6 +274,6 @@
 </div>
 
 <script src="/js/playlist-generator.js"></script>
-<script src="/js/generate-playlist.js"></script>
+<script src="/js/generate-playlist-form.js"></script>
 
 </body></html>

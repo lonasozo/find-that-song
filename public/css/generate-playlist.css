@@ -202,3 +202,47 @@ select[multiple] option:checked {
   max-height: none;
   padding: 20px;
 }
+
+/* Style for form hints */
+.form-hint {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.8em;
+  color: var(--text-secondary, #777);
+  font-style: italic;
+}
+
+/* Adjust seed input fields spacing */
+#seed_tracks, #seed_artists {
+  margin-bottom: 4px;
+}
+
+/* Slider header styling */
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+/* Feature toggle styling */
+.feature-toggle {
+  display: flex;
+  align-items: center;
+}
+
+.feature-checkbox {
+  margin-right: 5px;
+}
+
+.toggle-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: normal;
+}
+
+/* Disabled slider styling */
+input[type="range"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
