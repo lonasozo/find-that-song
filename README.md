@@ -12,10 +12,9 @@ It is already [deployed on Vercel](https://find-that-song.vercel.app/).
 **Important Note**: This application uses the Spotify API in Development Mode, which requires manual user authorization.
 
 To access the application deployed on Vercel:
-1. Contact me at lorenzz@duck.com
-2. Provide your Spotify account email address
-3. I will manually add your account to the authorized users list
-4. Once authorized, you'll be able to log in and use all the features
+1. Compile this TypeForm survey: [Find That Song Access Request](https://form.typeform.com/to/dXMB3c6F)
+2. I will manually add your account to the authorized users list
+3. Once authorized, you'll be able to log in and use all the features
 
 This restriction is due to Spotify's API limitations for apps in Development Mode. Only authorized users can access the application until it receives extended quota approval from Spotify.
 
