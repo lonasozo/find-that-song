@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Find That Song</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta charset="UTF-8">
   </head>
   <body>
@@ -47,31 +47,33 @@
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         background-color: #121212;
         color: #ffffff;
-        overflow: hidden;
+        overflow-x: hidden; /* Allow vertical scrolling but prevent horizontal */
       }
       
       .container {
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
+        min-height: 100vh;
         width: 100%;
+        padding: 20px 0;
       }
       
       .content {
         text-align: center;
         max-width: 600px;
+        width: 90%; /* Use percentage width to be responsive */
         padding: 20px;
       }
       
       h1 {
-        font-size: 3rem;
+        font-size: clamp(2rem, 5vw, 3rem); /* Responsive font size */
         margin-bottom: 20px;
         color: #1DB954; /* Spotify green */
       }
       
       p {
-        font-size: 1.2rem;
+        font-size: clamp(1rem, 3vw, 1.2rem); /* Responsive font size */
         margin-bottom: 40px;
         color: #b3b3b3;
       }
@@ -86,10 +88,12 @@
         border-radius: 50px;
         text-decoration: none;
         font-weight: bold;
-        font-size: 1.1rem;
+        font-size: clamp(0.9rem, 2.5vw, 1.1rem); /* Responsive font size */
         transition: background-color 0.3s ease;
         position: relative;
         min-width: 200px;
+        max-width: 90%; /* Prevent button from overflowing on small screens */
+        margin: 0 auto;
       }
       
       .login-button:hover {
@@ -126,12 +130,12 @@
         background-color: rgba(255, 255, 255, 0.1);
         border-radius: 8px;
         text-align: center;
-        max-width: 500px;
+        max-width: 100%; /* Allow full width on small screens */
       }
       
       .access-note {
         color: #eee;
-        font-size: 16px;
+        font-size: clamp(0.9rem, 2.5vw, 1rem); /* Responsive font size */
         line-height: 1.5;
         margin-bottom: 20px;
       }
@@ -145,6 +149,7 @@
         text-decoration: none;
         font-weight: bold;
         transition: background-color 0.3s ease;
+        font-size: clamp(0.9rem, 2.5vw, 1rem); /* Responsive font size */
       }
       
       .access-button:hover {
@@ -158,6 +163,8 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        padding: 10px;
+        z-index: 10;
       }
       
       .github-link {
@@ -186,6 +193,33 @@
       .github-link:hover .github-icon {
         opacity: 1;
       }
+      
+      /* Media query for very small screens */
+      @media (max-width: 480px) {
+        .container {
+          padding: 10px 0;
+        }
+        
+        .content {
+          padding: 15px;
+        }
+        
+        .login-button {
+          padding: 12px 24px;
+          min-width: 180px;
+        }
+        
+        .access-info {
+          padding: 15px;
+        }
+        
+        /* Adjust footer position for smaller screens to avoid overlapping content */
+        .github-footer {
+          position: relative;
+          margin-top: 30px;
+          bottom: auto;
+        }
+      }
     </style>
     
     <script>
@@ -202,8 +236,29 @@
           const buttonText = this.querySelector('.button-text');
           buttonText.textContent = 'Connecting...';
         });
+        
+        // Check if content is taller than viewport and adjust GitHub footer
+        function adjustFooter() {
+          const contentHeight = document.body.scrollHeight;
+          const viewportHeight = window.innerHeight;
+          const footer = document.querySelector('.github-footer');
+          
+          if (contentHeight > viewportHeight) {
+            footer.style.position = 'relative';
+            footer.style.marginTop = '30px';
+          } else {
+            footer.style.position = 'fixed';
+            footer.style.marginTop = '0';
+          }
+        }
+        
+        // Run on load and on resize
+        adjustFooter();
+        window.addEventListener('resize', adjustFooter);
       });
     </script>
+    
+    <!-- Analytics script (keep unchanged) -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Track homepage view with additional details
@@ -238,6 +293,6 @@
             });
         }
     });
-</script>
+    </script>
   </body>
 </html>
