@@ -3,23 +3,39 @@ const querystring = require('querystring');
 
 // Assicuriamoci che dotenv sia caricato anche qui
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '..', '.env.local') });
 
-// Utilizziamo direttamente le variabili anziché dipendere da process.env
-const CLIENT_ID = process.env.CLIENT_ID;
-const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const REDIRECT_URI = process.env.REDIRECT_URI;
+// Carica dotenv solo in sviluppo, in produzione usa le variabili d'ambiente configurate
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ path: path.join(__dirname, '..', '.env.local') });
+  console.log('Ambiente di sviluppo: caricamento variabili da .env.local');
+} else {
+  console.log('Ambiente di produzione: utilizzo variabili d\'ambiente preconfigurate');
+}
+
+// Verifico se le variabili sono disponibili o usa valori di fallback
+const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID || process.env.NEXT_PUBLIC_CLIENT_ID || '';
+const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET || '';
+const REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI || 'https://find-that-song.vercel.app/callback';
 
 class SpotifyService {
   constructor() {
     this.client_id = CLIENT_ID;
     this.client_secret = CLIENT_SECRET;
-    this.redirect_uri = REDIRECT_URI || 'https://find-that-song.vercel.app/callback';
+    this.redirect_uri = REDIRECT_URI;
 
     // Log della configurazione per debug
     console.log('SpotifyService inizializzato con:');
     console.log(`- CLIENT_ID: ${this.client_id ? this.client_id.substring(0, 5) + '...' : 'MANCANTE'}`);
+    console.log(`- CLIENT_SECRET: ${this.client_secret ? 'PRESENTE' : 'MANCANTE'}`);
     console.log(`- REDIRECT_URI: ${this.redirect_uri}`);
+
+    if (!this.client_id || this.client_id.trim() === '') {
+      console.warn('ATTENZIONE: CLIENT_ID mancante! Verificare le variabili d\'ambiente su Vercel.');
+    }
+
+    if (!this.client_secret || this.client_secret.trim() === '') {
+      console.warn('ATTENZIONE: CLIENT_SECRET mancante! Verificare le variabili d\'ambiente su Vercel.');
+    }
 
     if (!this.redirect_uri || this.redirect_uri.trim() === '') {
       console.warn('ATTENZIONE: REDIRECT_URI è vuoto! Utilizzo fallback.');
@@ -37,8 +53,12 @@ class SpotifyService {
     console.log(`- CLIENT_ID: ${this.client_id ? this.client_id.substring(0, 5) + '...' : 'MANCANTE'}`);
     console.log(`- REDIRECT_URI: ${this.redirect_uri || 'MANCANTE'}`);
 
-    if (!this.client_id) {
-      throw new Error('CLIENT_ID non configurato nelle variabili d\'ambiente');
+    if (!this.client_id || this.client_id.trim() === '') {
+      throw new Error(
+        'CLIENT_ID non configurato nelle variabili d\'ambiente. ' +
+        'Assicurarsi di configurare CLIENT_ID e CLIENT_SECRET nel pannello di controllo di Vercel ' +
+        'o nel file .env.local per l\'ambiente di sviluppo.'
+      );
     }
 
     const params = new URLSearchParams({

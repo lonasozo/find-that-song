@@ -22,9 +22,9 @@ console.log('📋 Variabili d\'ambiente:');
 console.log(`   - NODE_ENV: ${nodeEnv}`);
 console.log(`   - VERCEL_ENV: ${process.env.VERCEL_ENV || 'non impostato'}`);
 console.log('🎵 Credenziali Spotify:');
-console.log(`   - CLIENT_ID: ${process.env.CLIENT_ID ? '✓ impostato' : '❌ mancante'} (${process.env.CLIENT_ID ? process.env.CLIENT_ID.substring(0, 5) + '...' : 'undefined'})`);
-console.log(`   - CLIENT_SECRET: ${process.env.CLIENT_SECRET ? '✓ impostato' : '❌ mancante'}`);
-console.log(`   - REDIRECT_URI: ${process.env.REDIRECT_URI || 'non impostato'}`);
+console.log(`   - CLIENT_ID: ${process.env.SPOTIFY_CLIENT_ID ? '✓ impostato' : '❌ mancante'} (${process.env.CLIENT_ID ? process.env.CLIENT_ID.substring(0, 5) + '...' : 'undefined'})`);
+console.log(`   - CLIENT_SECRET: ${process.env.SPOTIFY_CLIENT_SECRET ? '✓ impostato' : '❌ mancante'}`);
+console.log(`   - REDIRECT_URI: ${process.env.SPOTIFY_REDIRECT_URI || 'non impostato'}`);
 console.log('-------------------------------------');
 
 // Configure express to use EJS as the view engine
