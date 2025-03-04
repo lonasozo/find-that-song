@@ -391,14 +391,14 @@ class SpotifyService {
           }
         }
 
-        // Aggiungi parametri feature audio per varietà solo se non specificati dall'utente
-        if (!audioFeatures.target_acousticness && seedGenres.includes('country')) {
-          params.append('target_acousticness', '0.7');
-        } else if (!audioFeatures.target_popularity && seedGenres.includes('pop')) {
-          params.append('target_popularity', '70');
-        } else if (!audioFeatures.target_energy && seedGenres.includes('rock')) {
-          params.append('target_energy', '0.8');
-        }
+        // // Aggiungi parametri feature audio per varietà solo se non specificati dall'utente
+        // if (!audioFeatures.target_acousticness && seedGenres.includes('country')) {
+        //   params.append('target_acousticness', '0.7');
+        // } else if (!audioFeatures.target_popularity && seedGenres.includes('pop')) {
+        //   params.append('target_popularity', '70');
+        // } else if (!audioFeatures.target_energy && seedGenres.includes('rock')) {
+        //   params.append('target_energy', '0.8');
+        // }
 
         console.log('Effettuo richiesta raccomandazioni con params:', params.toString());
 
