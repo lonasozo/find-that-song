@@ -22,7 +22,7 @@ console.log('📋 Variabili d\'ambiente:');
 console.log(`   - NODE_ENV: ${nodeEnv}`);
 console.log(`   - VERCEL_ENV: ${process.env.VERCEL_ENV || 'non impostato'}`);
 console.log('🎵 Credenziali Spotify:');
-console.log(`   - CLIENT_ID: ${process.env.SPOTIFY_CLIENT_ID ? '✓ impostato' : '❌ mancante'} (${process.env.CLIENT_ID ? process.env.CLIENT_ID.substring(0, 5) + '...' : 'undefined'})`);
+console.log(`   - CLIENT_ID: ${process.env.SPOTIFY_CLIENT_ID ? '✓ impostato' : '❌ mancante'} (${process.env.SPOTIFY_CLIENT_ID ? process.env.SPOTIFY_CLIENT_ID.substring(0, 5) + '...' : 'undefined'})`);
 console.log(`   - CLIENT_SECRET: ${process.env.SPOTIFY_CLIENT_SECRET ? '✓ impostato' : '❌ mancante'}`);
 console.log(`   - REDIRECT_URI: ${process.env.SPOTIFY_REDIRECT_URI || 'non impostato'}`);
 console.log('-------------------------------------');
@@ -91,7 +91,11 @@ function checkAccessToken(req, res, next) {
 
 // Routes
 app.get('/', (req, res) => {
-  res.render('home', { title: 'Home', layout: false });
+  res.render('home', {
+    title: 'Home',
+    layout: false,
+    githubUrl: 'https://github.com/lonasozo/find-that-song' // Add GitHub URL
+  });
 });
 
 app.get('/login', (req, res) => {
@@ -116,7 +120,7 @@ app.get('/recently-played', checkAccessToken, async (req, res) => {
   const isAjax = req.query.ajax === 'true';
 
   try {
-    const items = await spotifyService.getRecentlyPlayed(access_token, 10);
+    const items = await spotifyService.getRecentlyPlayed(access_token, 15);
     res.render('recently-played', {
       title: 'Recently Played',
       items,
@@ -130,7 +134,7 @@ app.get('/recently-played', checkAccessToken, async (req, res) => {
 
 app.get('/top-tracks', checkAccessToken, async (req, res) => {
   const access_token = req.query.access_token;
-  const time_range = req.query.time_range || 'medium_term';
+  const time_range = req.query.time_range || 'short_term'; // Changed from medium_term to short_term
   const isAjax = req.query.ajax === 'true';
 
   try {
@@ -167,7 +171,7 @@ app.get('/top-tracks', checkAccessToken, async (req, res) => {
 
 app.get('/top-artists', checkAccessToken, async (req, res) => {
   const access_token = req.query.access_token;
-  const time_range = req.query.time_range || 'medium_term';
+  const time_range = req.query.time_range || 'short_term'; // Changed from medium_term to short_term
   const isAjax = req.query.ajax === 'true';
 
   try {
@@ -186,7 +190,7 @@ app.get('/top-artists', checkAccessToken, async (req, res) => {
 
 app.get('/top-albums', checkAccessToken, async (req, res) => {
   const access_token = req.query.access_token;
-  const time_range = req.query.time_range || 'medium_term';
+  const time_range = req.query.time_range || 'short_term'; // Changed from medium_term to short_term
   const isAjax = req.query.ajax === 'true';
 
   try {
@@ -242,7 +246,11 @@ app.post('/create-playlist', checkAccessToken, async (req, res) => {
       genres,
       track_count,
       timestamp, // Timestamp for ensuring variety
-      public: isPublic
+      public: isPublic,
+      // Add new audio feature parameters
+      target_energy,
+      target_popularity,
+      target_acousticness
     } = req.body;
 
     console.log("Starting playlist creation process with:", {
@@ -250,7 +258,13 @@ app.post('/create-playlist', checkAccessToken, async (req, res) => {
       type: 'genres', // Always genre-based now
       trackCount: track_count,
       genres: genres ? (Array.isArray(genres) ? genres.join(', ') : genres) : 'none',
-      timestamp: timestamp || Date.now() // Use timestamp if provided, otherwise current time
+      timestamp: timestamp || Date.now(), // Use timestamp if provided, otherwise current time
+      // Log audio features if specified
+      audioFeatures: {
+        energy: target_energy ? `${target_energy}%` : 'default',
+        popularity: target_popularity ? `${target_popularity}%` : 'default',
+        acousticness: target_acousticness ? `${target_acousticness}%` : 'default'
+      }
     });
 
     // Get user profile with the access token explicitly passed
@@ -268,13 +282,20 @@ app.post('/create-playlist', checkAccessToken, async (req, res) => {
       console.log('No genres selected, using default genres');
     }
 
+    // Prepare audio features options
+    const audioFeatures = {};
+    if (target_energy) audioFeatures.target_energy = Number(target_energy) / 100;
+    if (target_popularity) audioFeatures.target_popularity = Number(target_popularity);
+    if (target_acousticness) audioFeatures.target_acousticness = Number(target_acousticness) / 100;
+
     let tracks = [];
 
     try {
-      // Get recommendations based on genres
+      // Get recommendations based on genres and audio features
       tracks = await spotifyService.getRecommendations(access_token, {
         seedGenres,
-        limit: parseInt(track_count) || 20
+        limit: parseInt(track_count) || 20,
+        audioFeatures // Pass the audio features
       });
 
       if (!tracks || tracks.length === 0) {

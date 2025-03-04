@@ -129,6 +129,36 @@
                     </div>
                 </div>
             </div>
+
+            <div class="advanced-options-toggle">
+              <button type="button" id="toggle-advanced">Show Advanced Options</button>
+            </div>
+
+            <div class="advanced-options" id="advanced-options">
+              <h3>Audio Features</h3>
+              <div class="feature-sliders">
+                <div class="slider-group">
+                  <label for="target_energy">Energy</label>
+                  <input type="range" id="target_energy" name="target_energy" min="0" max="100" value="50">
+                  <span class="slider-value" id="energy-value">50%</span>
+                  <p class="feature-description">Energy represents intensity and activity. High energy tracks feel fast and loud.</p>
+                </div>
+                
+                <div class="slider-group">
+                  <label for="target_popularity">Popularity</label>
+                  <input type="range" id="target_popularity" name="target_popularity" min="0" max="100" value="50">
+                  <span class="slider-value" id="popularity-value">50%</span>
+                  <p class="feature-description">Popularity indicates how well-known a track is. Higher values mean more popular songs.</p>
+                </div>
+                
+                <div class="slider-group">
+                  <label for="target_acousticness">Acousticness</label>
+                  <input type="range" id="target_acousticness" name="target_acousticness" min="0" max="100" value="50">
+                  <span class="slider-value" id="acousticness-value">50%</span>
+                  <p class="feature-description">Acousticness represents how acoustic a track is. Higher values mean more acoustic instruments.</p>
+                </div>
+              </div>
+            </div>
             
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Create Playlist</button>
@@ -164,7 +194,123 @@
                 }
             });
         }
+
+        // Set up advanced options toggle
+        const toggleBtn = document.getElementById('toggle-advanced');
+        const advancedOptions = document.getElementById('advanced-options');
+        
+        toggleBtn.addEventListener('click', function() {
+          advancedOptions.classList.toggle('visible');
+          toggleBtn.textContent = advancedOptions.classList.contains('visible') ? 
+            'Hide Advanced Options' : 'Show Advanced Options';
+        });
+        
+        // Set up slider value displays
+        function setupSlider(sliderId, valueId) {
+          const slider = document.getElementById(sliderId);
+          const valueDisplay = document.getElementById(valueId);
+          
+          valueDisplay.textContent = `${slider.value}%`;
+          
+          slider.addEventListener('input', function() {
+            valueDisplay.textContent = `${this.value}%`;
+          });
+        }
+        
+        setupSlider('target_energy', 'energy-value');
+        setupSlider('target_popularity', 'popularity-value');
+        setupSlider('target_acousticness', 'acousticness-value');
     });
 </script>
+
+<style>
+  /* ...existing styles... */
+
+  .advanced-options-toggle {
+    margin: 20px 0;
+    text-align: center;
+  }
+
+  #toggle-advanced {
+    background: none;
+    border: 1px solid #ccc;
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: #ccc;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+
+  #toggle-advanced:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+  }
+
+  .advanced-options {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .advanced-options.visible {
+    max-height: 600px;
+    padding: 20px;
+  }
+
+  .feature-sliders {
+    margin-top: 10px;
+  }
+
+  .slider-group {
+    margin: 20px 0;
+    position: relative;
+  }
+
+  .slider-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #ddd;
+  }
+
+  .slider-group input[type="range"] {
+    width: 100%;
+    margin: 8px 0;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: #444;
+    outline: none;
+  }
+
+  .slider-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    background: #1DB954;
+    cursor: pointer;
+  }
+
+  .slider-value {
+    position: absolute;
+    right: 0;
+    top: 0;
+    color: #1DB954;
+    font-weight: bold;
+  }
+
+  .feature-description {
+    font-size: 13px;
+    color: #999;
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+</style>
 
 </body></html>
