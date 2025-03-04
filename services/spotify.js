@@ -262,10 +262,16 @@ class SpotifyService {
         seedTracks = [],
         seedArtists = [],
         seedGenres = [],
-        limit = 20
+        limit = 20,
+        audioFeatures = {} // Nuovo parametro per caratteristiche audio personalizzate
       } = options;
 
       console.log(`Ottenimento raccomandazioni con limite: ${limit}`);
+
+      // Log audio features se specificate
+      if (Object.keys(audioFeatures).length > 0) {
+        console.log('Caratteristiche audio personalizzate:', audioFeatures);
+      }
 
       // Se sono selezionati più generi, prova due approcci:
       // 1. Prima prova con tutti i generi come seed (fino a 5)
@@ -278,7 +284,8 @@ class SpotifyService {
           const combinedTracks = await this.getRecommendationsWithAllGenres(
             accessToken,
             seedGenres.slice(0, 5),
-            limit
+            limit,
+            audioFeatures // Passa le caratteristiche audio
           );
 
           if (combinedTracks && combinedTracks.length > 0) {
@@ -294,7 +301,8 @@ class SpotifyService {
           const mixedTracks = await this.getRecommendationsByGenreMix(
             accessToken,
             seedGenres,
-            limit
+            limit,
+            audioFeatures // Passa le caratteristiche audio
           );
 
           if (mixedTracks && mixedTracks.length > 0) {
@@ -343,12 +351,20 @@ class SpotifyService {
           }
         }
 
-        // Aggiungi parametri feature audio per varietà
-        if (seedGenres.includes('country')) {
+        // Aggiungi i parametri delle caratteristiche audio personalizzate
+        for (const [key, value] of Object.entries(audioFeatures)) {
+          if (value !== undefined && value !== null) {
+            params.append(key, value);
+            console.log(`Utilizzo ${key}: ${value}`);
+          }
+        }
+
+        // Aggiungi parametri feature audio per varietà solo se non specificati dall'utente
+        if (!audioFeatures.target_acousticness && seedGenres.includes('country')) {
           params.append('target_acousticness', '0.7');
-        } else if (seedGenres.includes('pop')) {
+        } else if (!audioFeatures.target_popularity && seedGenres.includes('pop')) {
           params.append('target_popularity', '70');
-        } else if (seedGenres.includes('rock')) {
+        } else if (!audioFeatures.target_energy && seedGenres.includes('rock')) {
           params.append('target_energy', '0.8');
         }
 
@@ -395,9 +411,10 @@ class SpotifyService {
    * @param {string} accessToken - Token di accesso Spotify
    * @param {Array<string>} genres - Array di generi da usare come seed
    * @param {number} limit - Numero di tracce da restituire
+   * @param {Object} audioFeatures - Caratteristiche audio opzionali
    * @returns {Promise<Array>} - Array di tracce raccomandate
    */
-  async getRecommendationsWithAllGenres(accessToken, genres, limit) {
+  async getRecommendationsWithAllGenres(accessToken, genres, limit, audioFeatures = {}) {
     try {
       // Pulisci e valida i generi
       const validGenres = genres
@@ -415,6 +432,13 @@ class SpotifyService {
       const params = new URLSearchParams();
       params.append('limit', limit);
       params.append('seed_genres', safeGenres.join(','));
+
+      // Aggiungi i parametri delle caratteristiche audio personalizzate
+      for (const [key, value] of Object.entries(audioFeatures)) {
+        if (value !== undefined && value !== null) {
+          params.append(key, value);
+        }
+      }
 
       // Aggiungi timestamp per evitare risultati in cache
       params.append('timestamp', Date.now());
@@ -444,9 +468,10 @@ class SpotifyService {
    * @param {string} accessToken - Token di accesso Spotify
    * @param {Array<string>} genres - Array di generi
    * @param {number} limit - Numero totale di tracce da restituire
+   * @param {Object} audioFeatures - Caratteristiche audio opzionali
    * @returns {Promise<Array>} - Array mixato di tracce
    */
-  async getRecommendationsByGenreMix(accessToken, genres, limit) {
+  async getRecommendationsByGenreMix(accessToken, genres, limit, audioFeatures = {}) {
     try {
       // Calcola tracce per genere
       const validGenres = genres.filter(Boolean);
@@ -461,6 +486,13 @@ class SpotifyService {
           const params = new URLSearchParams();
           params.append('seed_genres', genre);
           params.append('limit', tracksPerGenre);
+
+          // Aggiungi i parametri delle caratteristiche audio personalizzate
+          for (const [key, value] of Object.entries(audioFeatures)) {
+            if (value !== undefined && value !== null) {
+              params.append(key, value);
+            }
+          }
 
           // Aggiungi timestamp per evitare risultati in cache
           params.append('timestamp', Date.now() % 1000);

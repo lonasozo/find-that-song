@@ -246,7 +246,11 @@ app.post('/create-playlist', checkAccessToken, async (req, res) => {
       genres,
       track_count,
       timestamp, // Timestamp for ensuring variety
-      public: isPublic
+      public: isPublic,
+      // Add new audio feature parameters
+      target_energy,
+      target_popularity,
+      target_acousticness
     } = req.body;
 
     console.log("Starting playlist creation process with:", {
@@ -254,7 +258,13 @@ app.post('/create-playlist', checkAccessToken, async (req, res) => {
       type: 'genres', // Always genre-based now
       trackCount: track_count,
       genres: genres ? (Array.isArray(genres) ? genres.join(', ') : genres) : 'none',
-      timestamp: timestamp || Date.now() // Use timestamp if provided, otherwise current time
+      timestamp: timestamp || Date.now(), // Use timestamp if provided, otherwise current time
+      // Log audio features if specified
+      audioFeatures: {
+        energy: target_energy ? `${target_energy}%` : 'default',
+        popularity: target_popularity ? `${target_popularity}%` : 'default',
+        acousticness: target_acousticness ? `${target_acousticness}%` : 'default'
+      }
     });
 
     // Get user profile with the access token explicitly passed
@@ -272,13 +282,20 @@ app.post('/create-playlist', checkAccessToken, async (req, res) => {
       console.log('No genres selected, using default genres');
     }
 
+    // Prepare audio features options
+    const audioFeatures = {};
+    if (target_energy) audioFeatures.target_energy = Number(target_energy) / 100;
+    if (target_popularity) audioFeatures.target_popularity = Number(target_popularity);
+    if (target_acousticness) audioFeatures.target_acousticness = Number(target_acousticness) / 100;
+
     let tracks = [];
 
     try {
-      // Get recommendations based on genres
+      // Get recommendations based on genres and audio features
       tracks = await spotifyService.getRecommendations(access_token, {
         seedGenres,
-        limit: parseInt(track_count) || 20
+        limit: parseInt(track_count) || 20,
+        audioFeatures // Pass the audio features
       });
 
       if (!tracks || tracks.length === 0) {
