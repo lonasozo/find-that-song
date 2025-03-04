@@ -5,12 +5,27 @@
 Find That Song is a web application that helps you find songs you've recently listened on Spotify, check some details about your listening history, and create new playlists.
 It is already [deployed on Vercel](https://find-that-song.vercel.app/).
 
+
+
+## Accessing the Deployed Application
+
+**Important Note**: This application uses the Spotify API in Development Mode, which requires manual user authorization.
+
+To access the application deployed on Vercel:
+1. Contact me at lorenzz@duck.com
+2. Provide your Spotify account email address
+3. I will manually add your account to the authorized users list
+4. Once authorized, you'll be able to log in and use all the features
+
+This restriction is due to Spotify's API limitations for apps in Development Mode. Only authorized users can access the application until it receives extended quota approval from Spotify.
+
+
 ## Installation
 
 1. Clone the repository:
    ```bash
    git clone https://github.com/lonasozo/find-that-song.git
-   cd find-that-song
+   cd find-that-**song**
    ```
 
 2. Install dependencies:
