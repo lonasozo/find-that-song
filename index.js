@@ -91,7 +91,11 @@ function checkAccessToken(req, res, next) {
 
 // Routes
 app.get('/', (req, res) => {
-  res.render('home', { title: 'Home', layout: false });
+  res.render('home', {
+    title: 'Home',
+    layout: false,
+    githubUrl: 'https://github.com/lonasozo/find-that-song' // Add GitHub URL
+  });
 });
 
 app.get('/login', (req, res) => {
