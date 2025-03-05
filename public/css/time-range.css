@@ -62,20 +62,22 @@
 .time-range-selector {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin: 0 auto 20px;
+    margin-bottom: 20px;
     padding: 10px 0;
+    gap: 10px;
 }
 
 .time-range-btn {
-    background-color: var(--bg-secondary);
-    color: var(--text-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
     padding: 8px 16px;
-    font-size: 0.9rem;
+    border: none;
+    border-radius: 20px;
+    background-color: var(--button-bg, #eee);
+    color: var(--text-color, #333);
     cursor: pointer;
     transition: all 0.2s ease;
+    font-weight: 500;
+    min-width: 100px;
+    text-align: center;
 }
 
 .time-range-btn:hover {
@@ -83,13 +85,13 @@
 }
 
 .time-range-btn.active {
-    background-color: var(--accent-color);
+    background-color: var(--accent-color, #1DB954);
     color: white;
-    border-color: var(--accent-color);
+    font-weight: bold;
 }
 
 .time-range-loader {
-    display: none;
+    display: none !important;
     justify-content: center;
     margin: 20px 0;
 }
@@ -126,4 +128,45 @@
         padding: 6px 12px;
         font-size: 0.8rem;
     }
+}
+
+/* Improved loading spinner visibility */
+.loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  width: 100%;
+  text-align: center;
+  padding: 30px 0;
+  margin: 20px 0;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: var(--accent-color, #1DB954);
+  animation: spin 1s ease-in-out infinite;
+  margin: 0 auto 15px;
+}
+
+.loading p {
+  margin-top: 10px;
+  font-weight: 500;
+  color: var(--text-color, #333);
+}
+
+/* Make sure spinner is visible on dark theme */
+[data-theme="dark"] .spinner {
+  border-color: rgba(255, 255, 255, 0.1);
+  border-top-color: var(--accent-color, #1DB954);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

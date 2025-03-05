@@ -119,7 +119,7 @@
     <% if (["Top Tracks", "Top Artists", "Top Albums"].includes(title)) { %>
         <script src="/js/time-range-selector.js"></script>
         
-        <!-- Inline script to ensure time range selector visibility on direct page load -->
+        <!-- Script to ensure time range selector works on all navigation cases -->
         <script>
             // Make sure time range selector is visible immediately
             document.addEventListener('DOMContentLoaded', function() {
@@ -127,6 +127,18 @@
                 if (timeRangeSelector) {
                     timeRangeSelector.style.display = 'flex';
                     timeRangeSelector.style.visibility = 'visible';
+                }
+                
+                // Initialize on page load
+                if (window.initializeTimeRangeSelector) {
+                    window.initializeTimeRangeSelector();
+                } else {
+                    // If function isn't available yet, wait a bit
+                    setTimeout(function() {
+                        if (window.initializeTimeRangeSelector) {
+                            window.initializeTimeRangeSelector();
+                        }
+                    }, 500);
                 }
             });
         </script>

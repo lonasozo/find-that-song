@@ -1,97 +1,187 @@
 document.addEventListener('DOMContentLoaded', function () {
-  initTimeRangeSelector();
+  // Reset to Recent every time
+  function setTimeRangeToRecent() {
+    document.querySelectorAll('.time-range-btn').forEach(btn => {
+      btn.classList.remove('active');
+      if (btn.getAttribute('data-range') === 'short_term') {
+        btn.classList.add('active');
+      }
+    });
+  }
+
+  // Initial setup for time range selector
+  if (window.initializeTimeRangeSelector) {
+    window.initializeTimeRangeSelector();
+    setTimeRangeToRecent();
+  }
+
+  // Listen for page navigation events
+  if (window.appEvents) {
+    window.appEvents.on('pageLoaded', function (pageName) {
+      if (['top-artists', 'top-tracks', 'top-albums'].includes(pageName)) {
+        console.log('Time range page loaded');
+        window.initializeTimeRangeSelector();
+        setTimeRangeToRecent();
+      }
+    });
+  }
+
+  // Handle browser navigation events
+  window.addEventListener('popstate', function (e) {
+    const path = window.location.pathname;
+    if (path.includes('top-artists') || path.includes('top-tracks') || path.includes('top-albums')) {
+      setTimeout(function () {
+        window.initializeTimeRangeSelector();
+      }, 100);
+    }
+  });
 });
 
-function initTimeRangeSelector() {
-  const timeRangeButtons = document.querySelectorAll('.time-range-btn');
-  const timeRangeLoader = document.getElementById('time-range-loader');
-  const contentContainer = document.getElementById('content-container');
+// Remove or comment out the old initTimeRangeSelector function since we're using the global one now
+// function initTimeRangeSelector() { ... }
 
-  // Default to short_term on first load
-  const setDefaultTimeRange = () => {
-    // Get current URL parameters
-    const url = new URL(window.location.href);
-    const timeRange = url.searchParams.get('time_range');
+// Add a more robust content extractor helper
+window.extractContentFromAjaxResponse = function (html, pageType) {
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
 
-    // If time_range is not in URL, select short_term by default
-    if (!timeRange) {
-      const shortTermButton = document.querySelector('.time-range-btn[data-range="short_term"]');
-      if (shortTermButton && !shortTermButton.classList.contains('active')) {
-        // Update active class
-        timeRangeButtons.forEach(btn => btn.classList.remove('active'));
-        shortTermButton.classList.add('active');
+    // Get the original page structure
+    const originalContainer = document.getElementById('content-container');
+    const originalContent = originalContainer ? originalContainer.innerHTML : '';
 
-        // Trigger click on the short term button
-        shortTermButton.click();
-      }
-    }
-  };
+    // Try to preserve structure based on page type
+    switch (pageType) {
+      case 'artists':
+        // Find key elements and containers
+        const artistsContainer = doc.querySelector('.artists-container, .artist-grid, .artist-list');
+        const artistItems = doc.querySelectorAll('.artist-card, .artist-item');
 
-  timeRangeButtons.forEach(button => {
-    button.addEventListener('click', function () {
-      // Skip if already active
-      if (this.classList.contains('active')) return;
-
-      // Update active button
-      timeRangeButtons.forEach(btn => btn.classList.remove('active'));
-      this.classList.add('active');
-
-      // Get the time range
-      const timeRange = this.getAttribute('data-range');
-
-      // Clear content container and show loader
-      contentContainer.innerHTML = '<div class="global-loader"><div class="loader"></div></div>';
-
-
-      // Get the current page and access token from URL
-      const url = new URL(window.location.href);
-      const accessToken = url.searchParams.get('access_token');
-      const currentPage = url.pathname.substring(1); // Remove leading slash
-
-      // Construct the API endpoint
-      const apiUrl = `/${currentPage}?time_range=${timeRange}&access_token=${accessToken}`;
-
-      // Fetch the HTML content for the selected time range
-      fetch(apiUrl)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
+        // Recreate the content with original structure if possible
+        if (artistItems.length > 0) {
+          // Get existing container structure
+          const existingContainer = document.querySelector('.artists-container, .artist-grid, .artist-list');
+          if (existingContainer) {
+            // Create a copy of the container to preserve its structure
+            const containerClone = existingContainer.cloneNode(false); ible
+            containerClone.innerHTML = ''; // Clear the content0) {
+            ture
+            // Add all new artist items to the containert');
+            artistItems.forEach(item => {r) {
+              containerClone.appendChild(item.cloneNode(true)); ture
+            });se);
+            tent
+            return containerClone.outerHTML;
+          } else if (artistsContainer) {
+            iner
+            // If we don't have an existing container but found one in the response=> {
+            return artistsContainer.outerHTML;e));
           }
-          return response.text(); // Get HTML as text instead of JSON
-        })
-        .then(html => {
-          // Hide loader
-          if (timeRangeLoader) timeRangeLoader.style.display = 'none';
-
-          // Parse the HTML to extract just the main content
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(html, 'text/html');
-          const mainContent = doc.querySelector('#content-container').innerHTML;
-
-          // Update the content with the extracted HTML
-          contentContainer.innerHTML = mainContent;
-
-          // Update URL with new time_range parameter without reloading the page
-          const newUrl = new URL(window.location.href);
-          newUrl.searchParams.set('time_range', timeRange);
-          history.pushState({}, '', newUrl);
-
-          // Re-initialize any event listeners on the new content
-          if (typeof initPageScripts === 'function') {
-            initPageScripts();
-          }
-        })
-        .catch(error => {
-          console.error('Error fetching time range data:', error);
-          if (timeRangeLoader) timeRangeLoader.style.display = 'none';
-          contentContainer.innerHTML = '<div class="error-message">Failed to load content. Please try again.</div>';
         });
-    });
-  });
+    }
+    break; TML;
+r) {
+      case 'albums': onse
+      // Find key elements and containersTML;
+      const albumsContainer = doc.querySelector('.albums-container, .album-grid, .album-list');
+    }
+    const albumItems = doc.querySelectorAll('.album-card, .album-item');
+  }
+eak;
+  // Recreate the content with original structure if possible
+  if (albumItems.length > 0) {
+    // Get existing container structure
+    const existingContainer = document.querySelector('.albums-container, .album-grid, .album-list');
+    if (existingContainer) {
+      // Create a copy of the container to preserve its structure
+      const containerClone = existingContainer.cloneNode(false);
+      containerClone.innerHTML = ''; // Clear the content
 
-  // Call the function to set default time range after a short delay
-  setTimeout(setDefaultTimeRange, 100);
+      // Add all new album items to the container
+      albumItems.forEach(item => {
+        containerClone.appendChild(item.cloneNode(true));
+      });
+
+      return containerClone.outerHTML;
+    } else if (albumsContainer) {
+      // If we don't have an existing container but found one in the response
+      return albumsContainer.outerHTML;
+    }
+  }
+  break;
+
+      case 'tracks':
+  // Tracks already work fine, but we might need to extract the right container
+  const tracksContainer = doc.querySelector('.tracks-container, .track-list');
+  if (tracksContainer) {
+    return tracksContainer.outerHTML;
+  }
+  break;
 }
+
+// Default extraction if specific handling doesn't work
+const mainContent =
+  doc.querySelector('#main-content') ||
+  doc.querySelector('.content-section') ||
+  doc.querySelector('.items-container') ||
+  doc.querySelector('.tracks-container') ||
+  doc.querySelector('.artists-container') ||
+  doc.querySelector('.albums-container');
+
+if (mainContent) {
+  return mainContent.innerHTML;
+} else {
+  return html; // Return the whole response as a fallback
+}
+  } catch (e) {
+  console.error("Error extracting content:", e);
+  return html; // Fallback to original HTML
+}
+};
+
+// Add a CSS injection mechanism to ensure styles are consistent
+window.ensureTimeRangeStyles = function () {
+  // Check if we're on a time range page
+  const path = window.location.pathname;
+
+  if (path.includes('top-artists')) {
+    // Make sure artist containers have the right classes
+    document.querySelectorAll('.artists-container, .artist-grid, .artist-list').forEach(container => {
+      container.classList.add('artists-container');
+      container.classList.add('grid-layout');
+    });
+
+    // Make sure all artist items have consistent styling
+    document.querySelectorAll('.artist-card, .artist-item').forEach(item => {
+      item.classList.add('artist-card');
+    });
+  }
+  else if (path.includes('top-albums')) {
+    // Make sure album containers have the right classes
+    document.querySelectorAll('.albums-container, .album-grid, .album-list').forEach(container => {
+      container.classList.add('albums-container');
+      container.classList.add('grid-layout');
+    });
+
+    // Make sure all album items have consistent styling
+    document.querySelectorAll('.album-card, .album-item').forEach(item => {
+      item.classList.add('album-card');
+    });
+  }
+};
+
+// Initialize this when the page loads and after time range changes
+document.addEventListener('DOMContentLoaded', function () {
+  window.ensureTimeRangeStyles();
+
+  // Listen for time range changes
+  if (window.appEvents) {
+    window.appEvents.on('timeRangeChanged', function () {
+      // Apply consistent styling after time range changes
+      setTimeout(window.ensureTimeRangeStyles, 100);
+    });
+  }
+});
 
 // Utility for formatting duration
 function formatDuration(ms) {
