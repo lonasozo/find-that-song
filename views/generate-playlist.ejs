@@ -125,7 +125,7 @@
               <div class="audio-features-header">
                 <h3>Audio Features</h3>
                 <div class="audio-features-controls">
-                  <button type="button" id="randomize-features" class="randomize-btn">
+                  <button type="button" id="randomize-features" class="randomize-btn" onclick="randomizeAudioFeatures()">
                     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path d="M18 4l3 3-3 3v-2c-1.85 0-3.38 1.34-3.67 3.09A7.55 7.55 0 0 0 13.5 12a7.46 7.46 0 0 0 .84-.91c.29-1.75 1.82-3.09 3.66-3.09v-2l3 3-3 3v-2c-1.34 0-2.5.88-2.9 2.1A6 6 0 0 0 19 19a1 1 0 0 1 0 2 8 8 0 0 1-7-4H8.83l2 2H10v2H5v-5h2v.83L9.07 17H8a8 8 0 0 1-7-4 1 1 0 0 1 1.73-1A6 6 0 0 0 7 15h.17L5 12.83V13H3V8h5v2h-.83L5.1 11.1A6.14 6.14 0 0 0 8 10h4c0-.34.03-.67.08-1A6 6 0 0 0 7 5a1 1 0 0 1 0-2 8 8 0 0 1 8 4h2.83l-2-2H17V3h5v5h-2v-.83L18.93 9H19a8 8 0 0 1 6 4 1 1 0 0 1-1.73 1A6 6 0 0 0 19 11h-.17L21 13.17V13h2v5h-5v-2h.83l2.07-2.1A6.14 6.14 0 0 0 17 16h-4c0 .34-.03.67-.08 1a6 6 0 0 0 5.08 4 1 1 0 0 1 0 2 8 8 0 0 1-7-4h-4.17l-2 2H4v-2l3-3 3 3v-2h1.76a7.51 7.51 0 0 0-.86-1H8a1 1 0 0 1-.14 0A6 6 0 0 0 12 19a1 1 0 0 1 0 2 8 8 0 0 1-8-8 8 8 0 0 1 8-8 1 1 0 0 1 0 2 6 6 0 0 0-6 6 5.94 5.94 0 0 0 .35 2H8.17L7 13.83V13H5v-5h5v2H8.83L7.1 11.1A6.14 6.14 0 0 0 10 13h.1c.34-1.75 1.82-3.1 3.9-3.1v-4l3 3-3 3v-2c-1.34 0-2.5.88-2.9 2.1A6 6 0 0 0 16 19a1 1 0 0 1 0 2 8 8 0 0 1-7-4H5v-2l3-3 3 3v-2h4a7.54 7.54 0 0 0-.91-.84C14.09 10.38 14 9.19 14 8v-2l3 3-3 3v-2c-1.85 0-3.38 1.34-3.67 3.09.15.29.27.59.38.9.13.38.29.75.48 1.09A4.56 4.56 0 0 1 14 13v2l-3-3 3-3v2c1.85 0 3.38-1.34 3.67-3.1-.15-.28-.27-.58-.38-.9z"/>
                     </svg>
@@ -139,12 +139,12 @@
                   <div class="slider-header">
                     <label for="target_energy">Energy</label>
                     <div class="feature-toggle">
-                      <input type="checkbox" id="enable_energy" class="feature-checkbox">
+                      <input type="checkbox" id="enable_energy" class="feature-checkbox" onchange="toggleAudioFeature(this, 'energy')">
                       <label for="enable_energy" class="toggle-label">Enable</label>
                     </div>
                   </div>
                   <div class="slider-container">
-                    <input type="range" id="target_energy" name="target_energy" min="0" max="100" value="50" disabled>
+                    <input type="range" id="target_energy" name="target_energy" min="0" max="100" value="50" disabled oninput="updateAudioFeatureValue(this, 'energy', true)">
                     <span class="slider-value" id="energy-value">50%</span>
                   </div>
                   <p class="feature-description">Energy represents intensity and activity. High energy tracks feel fast and loud.</p>
@@ -154,12 +154,12 @@
                   <div class="slider-header">
                     <label for="target_popularity">Popularity</label>
                     <div class="feature-toggle">
-                      <input type="checkbox" id="enable_popularity" class="feature-checkbox">
+                      <input type="checkbox" id="enable_popularity" class="feature-checkbox" onchange="toggleAudioFeature(this, 'popularity')">
                       <label for="enable_popularity" class="toggle-label">Enable</label>
                     </div>
                   </div>
                   <div class="slider-container">
-                    <input type="range" id="target_popularity" name="target_popularity" min="0" max="100" value="50" disabled>
+                    <input type="range" id="target_popularity" name="target_popularity" min="0" max="100" value="50" disabled oninput="updateAudioFeatureValue(this, 'popularity', true)">
                     <span class="slider-value" id="popularity-value">50%</span>
                   </div>
                   <p class="feature-description">Popularity indicates how well-known a track is. Higher values mean more popular songs.</p>
@@ -169,12 +169,12 @@
                   <div class="slider-header">
                     <label for="target_acousticness">Acousticness</label>
                     <div class="feature-toggle">
-                      <input type="checkbox" id="enable_acousticness" class="feature-checkbox">
+                      <input type="checkbox" id="enable_acousticness" class="feature-checkbox" onchange="toggleAudioFeature(this, 'acousticness')">
                       <label for="enable_acousticness" class="toggle-label">Enable</label>
                     </div>
                   </div>
                   <div class="slider-container">
-                    <input type="range" id="target_acousticness" name="target_acousticness" min="0" max="100" value="50" disabled>
+                    <input type="range" id="target_acousticness" name="target_acousticness" min="0" max="100" value="50" disabled oninput="updateAudioFeatureValue(this, 'acousticness', true)">
                     <span class="slider-value" id="acousticness-value">50%</span>
                   </div>
                   <p class="feature-description">Acousticness represents how acoustic a track is. Higher values mean more acoustic instruments.</p>
@@ -185,12 +185,12 @@
                   <div class="slider-header">
                     <label for="target_danceability">Danceability</label>
                     <div class="feature-toggle">
-                      <input type="checkbox" id="enable_danceability" class="feature-checkbox">
+                      <input type="checkbox" id="enable_danceability" class="feature-checkbox" onchange="toggleAudioFeature(this, 'danceability')">
                       <label for="enable_danceability" class="toggle-label">Enable</label>
                     </div>
                   </div>
                   <div class="slider-container">
-                    <input type="range" id="target_danceability" name="target_danceability" min="0" max="100" value="50" disabled>
+                    <input type="range" id="target_danceability" name="target_danceability" min="0" max="100" value="50" disabled oninput="updateAudioFeatureValue(this, 'danceability', true)">
                     <span class="slider-value" id="danceability-value">50%</span>
                   </div>
                   <p class="feature-description">How suitable a track is for dancing based on tempo, rhythm, beat strength, and regularity.</p>
@@ -200,12 +200,12 @@
                   <div class="slider-header">
                     <label for="target_instrumentalness">Instrumentalness</label>
                     <div class="feature-toggle">
-                      <input type="checkbox" id="enable_instrumentalness" class="feature-checkbox">
+                      <input type="checkbox" id="enable_instrumentalness" class="feature-checkbox" onchange="toggleAudioFeature(this, 'instrumentalness')">
                       <label for="enable_instrumentalness" class="toggle-label">Enable</label>
                     </div>
                   </div>
                   <div class="slider-container">
-                    <input type="range" id="target_instrumentalness" name="target_instrumentalness" min="0" max="100" value="50" disabled>
+                    <input type="range" id="target_instrumentalness" name="target_instrumentalness" min="0" max="100" value="50" disabled oninput="updateAudioFeatureValue(this, 'instrumentalness', true)">
                     <span class="slider-value" id="instrumentalness-value">50%</span>
                   </div>
                   <p class="feature-description">Predicts whether a track contains no vocals. Higher values represent instrumental tracks.</p>
@@ -215,12 +215,12 @@
                   <div class="slider-header">
                     <label for="target_liveness">Liveness</label>
                     <div class="feature-toggle">
-                      <input type="checkbox" id="enable_liveness" class="feature-checkbox">
+                      <input type="checkbox" id="enable_liveness" class="feature-checkbox" onchange="toggleAudioFeature(this, 'liveness')">
                       <label for="enable_liveness" class="toggle-label">Enable</label>
                     </div>
                   </div>
                   <div class="slider-container">
-                    <input type="range" id="target_liveness" name="target_liveness" min="0" max="100" value="50" disabled>
+                    <input type="range" id="target_liveness" name="target_liveness" min="0" max="100" value="50" disabled oninput="updateAudioFeatureValue(this, 'liveness', true)">
                     <span class="slider-value" id="liveness-value">50%</span>
                   </div>
                   <p class="feature-description">Detects the presence of an audience in the recording. Higher values mean a live performance.</p>
@@ -230,12 +230,12 @@
                   <div class="slider-header">
                     <label for="target_valence">Valence</label>
                     <div class="feature-toggle">
-                      <input type="checkbox" id="enable_valence" class="feature-checkbox">
+                      <input type="checkbox" id="enable_valence" class="feature-checkbox" onchange="toggleAudioFeature(this, 'valence')">
                       <label for="enable_valence" class="toggle-label">Enable</label>
                     </div>
                   </div>
                   <div class="slider-container">
-                    <input type="range" id="target_valence" name="target_valence" min="0" max="100" value="50" disabled>
+                    <input type="range" id="target_valence" name="target_valence" min="0" max="100" value="50" disabled oninput="updateAudioFeatureValue(this, 'valence', true)">
                     <span class="slider-value" id="valence-value">50%</span>
                   </div>
                   <p class="feature-description">Musical positivity. High valence tracks sound more positive (happy, cheerful).</p>
@@ -245,12 +245,12 @@
                   <div class="slider-header">
                     <label for="target_tempo">Tempo (BPM)</label>
                     <div class="feature-toggle">
-                      <input type="checkbox" id="enable_tempo" class="feature-checkbox">
+                      <input type="checkbox" id="enable_tempo" class="feature-checkbox" onchange="toggleAudioFeature(this, 'tempo')">
                       <label for="enable_tempo" class="toggle-label">Enable</label>
                     </div>
                   </div>
                   <div class="slider-container">
-                    <input type="range" id="target_tempo" name="target_tempo" min="60" max="200" value="120" disabled>
+                    <input type="range" id="target_tempo" name="target_tempo" min="60" max="200" value="120" disabled oninput="updateAudioFeatureValue(this, 'tempo', false)">
                     <span class="slider-value" id="tempo-value">120</span>
                   </div>
                   <p class="feature-description">The speed or pace of a track, measured in beats per minute (BPM).</p>
@@ -275,5 +275,390 @@
 
 <script src="/js/playlist-generator.js"></script>
 <script src="/js/generate-playlist-form.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+      console.log('Generate playlist form script loaded');
 
+      // Enhanced genre selector functionality
+      const genreSelect = document.getElementById('genres');
+
+      // Function to limit genre selections to 5
+      if (genreSelect) {
+        genreSelect.addEventListener('change', function () {
+          const selectedOptions = Array.from(this.selectedOptions);
+          if (selectedOptions.length > 5) {
+            alert('You can select a maximum of 5 genres.');
+            // Deselect the last option
+            selectedOptions[selectedOptions.length - 1].selected = false;
+          }
+        });
+      }
+
+      // Random value generator function
+      function getRandomValue(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      // List of all available audio features
+      const audioFeatures = [
+        { name: 'energy', min: 0, max: 100, isPercentage: true },
+        { name: 'popularity', min: 0, max: 100, isPercentage: true },
+        { name: 'acousticness', min: 0, max: 100, isPercentage: true },
+        { name: 'danceability', min: 0, max: 100, isPercentage: true },
+        { name: 'instrumentalness', min: 0, max: 100, isPercentage: true },
+        { name: 'liveness', min: 0, max: 100, isPercentage: true },
+        { name: 'valence', min: 0, max: 100, isPercentage: true },
+        { name: 'tempo', min: 60, max: 200, isPercentage: false }
+      ];
+
+      // Track initialization attempts
+      let initAttempts = 0;
+      const MAX_INIT_ATTEMPTS = 5;
+
+      // Function to initialize audio features with retry logic
+      function initializeAudioFeatures() {
+        console.log('Initializing audio features... (Attempt ' + (initAttempts + 1) + ')');
+
+        // Check if any elements exist first
+        let elementsFound = false;
+        for (const feature of audioFeatures) {
+          if (document.getElementById(`enable_${feature.name}`)) {
+            elementsFound = true;
+            break;
+          }
+        }
+
+        // If no elements are found at all, schedule a retry
+        if (!elementsFound) {
+          console.log('No audio feature elements found, scheduling retry');
+          if (initAttempts < MAX_INIT_ATTEMPTS) {
+            initAttempts++;
+            // Use exponential backoff for retries
+            const delay = Math.min(1000 * Math.pow(1.5, initAttempts), 10000);
+            console.log(`Will retry in ${delay}ms`);
+            setTimeout(initializeAudioFeatures, delay);
+            return;
+          } else {
+            console.warn('Maximum initialization attempts reached. Elements may not exist.');
+          }
+        }
+
+        // Reset counter if at least some elements were found
+        if (elementsFound) {
+          initAttempts = 0;
+        }
+
+        // Individual features setup
+        let featuresInitialized = 0;
+
+        // Set up feature toggles
+        audioFeatures.forEach(feature => {
+          const checkbox = document.getElementById(`enable_${feature.name}`);
+          const slider = document.getElementById(`target_${feature.name}`);
+          const valueDisplay = document.getElementById(`${feature.name}-value`);
+
+          if (checkbox && slider) {
+            featuresInitialized++;
+
+            // Set initial value display format
+            if (valueDisplay) {
+              valueDisplay.textContent = feature.isPercentage ? `${slider.value}%` : slider.value;
+            }
+
+            // Remove existing event listeners by cloning and replacing
+            const newCheckbox = checkbox.cloneNode(true);
+            checkbox.parentNode.replaceChild(newCheckbox, checkbox);
+
+            const newSlider = slider.cloneNode(true);
+            slider.parentNode.replaceChild(newSlider, slider);
+
+            // Add fresh event listener to checkbox
+            newCheckbox.addEventListener('change', function () {
+              console.log(`Checkbox for ${feature.name} changed: ${this.checked}`);
+
+              // Enable/disable slider based on checkbox
+              newSlider.disabled = !this.checked;
+
+              // If disabled, remove the name attribute so it won't be submitted
+              if (!this.checked) {
+                newSlider.removeAttribute('name');
+              } else {
+                newSlider.setAttribute('name', `target_${feature.name}`);
+                // Set a random value when enabled
+                const randomValue = getRandomValue(feature.min, feature.max);
+                newSlider.value = randomValue;
+                if (valueDisplay) {
+                  valueDisplay.textContent = feature.isPercentage ? `${randomValue}%` : randomValue;
+                }
+              }
+            });
+
+            // Add fresh event listener for slider input
+            newSlider.addEventListener('input', function () {
+              if (valueDisplay) {
+                valueDisplay.textContent = feature.isPercentage ? `${this.value}%` : this.value;
+              }
+            });
+          } else {
+            console.log(`Could not find elements for feature: ${feature.name}`);
+          }
+        });
+
+        // If some features were initialized but not all, schedule a retry for the rest
+        if (featuresInitialized > 0 && featuresInitialized < audioFeatures.length && initAttempts < MAX_INIT_ATTEMPTS) {
+          console.log(`Partially initialized: ${featuresInitialized}/${audioFeatures.length} features. Scheduling a retry.`);
+          initAttempts++;
+          setTimeout(initializeAudioFeatures, 1000);
+          return;
+        }
+
+        // Re-connect randomize button
+        const randomizeBtn = document.getElementById('randomize-features');
+        if (randomizeBtn) {
+          // Remove existing listeners
+          const newRandomizeBtn = randomizeBtn.cloneNode(true);
+          randomizeBtn.parentNode.replaceChild(newRandomizeBtn, randomizeBtn);
+
+          // Add fresh listener
+          newRandomizeBtn.addEventListener('click', function () {
+            console.log('Randomize button clicked');
+            setRandomSliderValues();
+          });
+        }
+
+        console.log(`Audio features initialization complete. Successfully initialized: ${featuresInitialized}/${audioFeatures.length} features.`);
+      }
+
+      // Randomize only enabled features
+      function setRandomSliderValues() {
+        audioFeatures.forEach(feature => {
+          const checkbox = document.getElementById(`enable_${feature.name}`);
+          const slider = document.getElementById(`target_${feature.name}`);
+          const valueDisplay = document.getElementById(`${feature.name}-value`);
+
+          // Only randomize if the feature is enabled
+          if (checkbox && checkbox.checked && slider && valueDisplay) {
+            const randomValue = getRandomValue(feature.min, feature.max);
+            slider.value = randomValue;
+            valueDisplay.textContent = feature.isPercentage ? `${randomValue}%` : randomValue;
+          }
+        });
+      }
+
+      // INITIALIZATION STRATEGY
+
+      // Run initialization immediately if we're on the correct page
+      if (window.location.href.includes('generate-playlist')) {
+        console.log('On generate-playlist page, initializing immediately');
+
+        // First attempt
+        initializeAudioFeatures();
+
+        // Backup initialization to ensure all elements are properly initialized
+        setTimeout(function () {
+          // Reset attempts counter for the delayed initialization
+          initAttempts = 0;
+          initializeAudioFeatures();
+        }, 1000);
+      }
+
+      // Run initialization when clicking menu links
+      document.addEventListener('click', function (e) {
+        let target = e.target;
+
+        // Navigate up the DOM to find any anchor tags (for when clicking on child elements of links)
+        while (target && target !== document) {
+          if (target.tagName === 'A' && target.href && target.href.includes('generate-playlist')) {
+            console.log('Generate playlist link clicked');
+
+            // Reset attempts counter for the new page
+            initAttempts = 0;
+
+            // Schedule initializations after navigation
+            setTimeout(function () {
+              initializeAudioFeatures();
+            }, 500);
+
+            break;
+          }
+          target = target.parentNode;
+        }
+      });
+
+      // Listen for history changes (back/forward navigation)
+      window.addEventListener('popstate', function () {
+        console.log('Navigation state changed (popstate)');
+
+        if (window.location.href.includes('generate-playlist')) {
+          console.log('On generate-playlist page after navigation');
+
+          // Reset attempts counter for the new page
+          initAttempts = 0;
+
+          setTimeout(function () {
+            initializeAudioFeatures();
+          }, 500);
+        }
+      });
+
+      // Setup a MutationObserver to detect when content is loaded
+      const contentObserver = new MutationObserver(function (mutations) {
+        // Only proceed if we're on the correct page
+        if (!window.location.href.includes('generate-playlist')) return;
+
+        // Look for our audio features section being added to the DOM
+        let featuresAdded = false;
+        for (const mutation of mutations) {
+          if (mutation.type === 'childList' && mutation.addedNodes.length) {
+            for (const node of mutation.addedNodes) {
+              if (node.nodeType === Node.ELEMENT_NODE &&
+                (node.classList?.contains('audio-features-section') ||
+                  node.querySelector?.('.audio-features-section'))) {
+                featuresAdded = true;
+                break;
+              }
+            }
+          }
+          if (featuresAdded) break;
+        }
+
+        if (featuresAdded) {
+          console.log('Audio features section detected in DOM, initializing');
+          // Reset attempts counter for this initialization
+          initAttempts = 0;
+          // Wait a moment for all elements to be fully rendered
+          setTimeout(initializeAudioFeatures, 300);
+        }
+      });
+
+      // Start observing content container or the entire body if container not found
+      const contentContainer = document.getElementById('content-container') || document.body;
+      contentObserver.observe(contentContainer, { childList: true, subtree: true });
+
+      // Periodic check as a fallback
+      const periodicCheckInterval = setInterval(function () {
+        if (!window.location.href.includes('generate-playlist')) {
+          return;
+        }
+
+        // Check if we have uninitialized features
+        const anyFeatureCheckbox = document.getElementById('enable_energy');
+        if (anyFeatureCheckbox && !anyFeatureCheckbox.hasAttribute('data-initialized')) {
+          console.log('Periodic check found uninitialized features, initializing');
+          // Reset attempts counter for this initialization
+          initAttempts = 0;
+          initializeAudioFeatures();
+
+          // Mark features as initialized to avoid unnecessary reinitializations
+          audioFeatures.forEach(feature => {
+            const checkbox = document.getElementById(`enable_${feature.name}`);
+            if (checkbox) {
+              checkbox.setAttribute('data-initialized', 'true');
+            }
+          });
+        }
+      }, 3000);
+
+      // Clean up interval when navigating away
+      window.addEventListener('beforeunload', function () {
+        clearInterval(periodicCheckInterval);
+      });
+    });
+
+  // Global audio features handling
+  function toggleAudioFeature(checkbox, featureName) {
+    const slider = document.getElementById(`target_${featureName}`);
+    if (slider) {
+      slider.disabled = !checkbox.checked;
+      
+      if (!checkbox.checked) {
+        slider.removeAttribute('name');
+      } else {
+        slider.setAttribute('name', `target_${featureName}`);
+      }
+    }
+  }
+  
+  function updateAudioFeatureValue(slider, featureName, isPercentage) {
+    const valueElement = document.getElementById(`${featureName}-value`);
+    if (valueElement) {
+      valueElement.textContent = isPercentage ? `${slider.value}%` : slider.value;
+    }
+  }
+  
+  function randomizeAudioFeatures() {
+    const features = [
+      { name: 'energy', min: 0, max: 100, isPercentage: true },
+      { name: 'popularity', min: 0, max: 100, isPercentage: true },
+      { name: 'acousticness', min: 0, max: 100, isPercentage: true },
+      { name: 'danceability', min: 0, max: 100, isPercentage: true },
+      { name: 'instrumentalness', min: 0, max: 100, isPercentage: true },
+      { name: 'liveness', min: 0, max: 100, isPercentage: true },
+      { name: 'valence', min: 0, max: 100, isPercentage: true },
+      { name: 'tempo', min: 60, max: 200, isPercentage: false }
+    ];
+    
+    features.forEach(feature => {
+      const checkbox = document.getElementById(`enable_${feature.name}`);
+      const slider = document.getElementById(`target_${feature.name}`);
+      
+      if (checkbox && slider && checkbox.checked) {
+        // Generate random value
+        const min = parseInt(feature.min);
+        const max = parseInt(feature.max);
+        const randomValue = Math.floor(Math.random() * (max - min + 1)) + min;
+        
+        // Update slider and display
+        slider.value = randomValue;
+        updateAudioFeatureValue(slider, feature.name, feature.isPercentage);
+      }
+    });
+  }
+  
+  // Setup form submission to show loading spinner
+  document.getElementById('playlist-form').addEventListener('submit', function() {
+    document.getElementById('loading-spinner').style.display = 'block';
+  });
+  
+  // This will be called by the AJAX navigation system
+  if (window.appEvents) {
+    window.appEvents.on('pageLoaded', function(pageName) {
+      if (pageName === 'generate-playlist') {
+        console.log('AJAX navigation detected to generate-playlist page');
+        // Check if our functions exist globally - if not, define them
+        if (typeof toggleAudioFeature !== 'function') {
+          console.warn('Audio feature functions not found in global scope, adding fallbacks');
+          // These are fallbacks in case the app.js definitions aren't available
+          window.toggleAudioFeature = function(checkbox, featureName) {
+            const slider = document.getElementById(`target_${featureName}`);
+            if (slider) {
+              slider.disabled = !checkbox.checked;
+              if (!checkbox.checked) { slider.removeAttribute('name'); } 
+              else { slider.setAttribute('name', `target_${featureName}`); }
+            }
+          };
+          
+          window.updateAudioFeatureValue = function(slider, featureName, isPercentage) {
+            const valueElement = document.getElementById(`${featureName}-value`);
+            if (valueElement) { valueElement.textContent = isPercentage ? `${slider.value}%` : slider.value; }
+          };
+          
+          window.randomizeAudioFeatures = function() {
+            // Simplified version
+            document.querySelectorAll('.feature-checkbox:checked').forEach(checkbox => {
+              const name = checkbox.id.replace('enable_', '');
+              const slider = document.getElementById(`target_${name}`);
+              const isPercentage = name !== 'tempo';
+              const min = parseInt(slider.min);
+              const max = parseInt(slider.max);
+              const value = Math.floor(Math.random() * (max - min + 1)) + min;
+              slider.value = value;
+              updateAudioFeatureValue(slider, name, isPercentage);
+            });
+          };
+        }
+      }
+    });
+  }
+</script>
 </body></html>

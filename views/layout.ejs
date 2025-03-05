@@ -78,8 +78,8 @@
         <div class="main-content">
             <% if (["Top Tracks", "Top Artists", "Top Albums"].includes(title)) { %>
                 <div class="time-range-selector" id="time-range-selector" style="display: flex;">
-                    <button class="time-range-btn" data-range="short_term">Recent</button>
-                    <button class="time-range-btn active" data-range="medium_term">Last 6 Months</button>
+                    <button class="time-range-btn active" data-range="short_term">Recent</button>
+                    <button class="time-range-btn" data-range="medium_term">Last 6 Months</button>
                     <button class="time-range-btn" data-range="long_term">All Time</button>
                 </div>
                 <div id="time-range-loader" class="time-range-loader" style="display: none;">
@@ -87,8 +87,8 @@
                 </div>
             <% } else { %>
                 <div class="time-range-selector" id="time-range-selector" style="display: none;">
-                    <button class="time-range-btn" data-range="short_term">Recent</button>
-                    <button class="time-range-btn active" data-range="medium_term">Last 6 Months</button>
+                    <button class="time-range-btn active" data-range="short_term">Recent</button>
+                    <button class="time-range-btn" data-range="medium_term">Last 6 Months</button>
                     <button class="time-range-btn" data-range="long_term">All Time</button>
                 </div>
                 <div id="time-range-loader" class="time-range-loader" style="display: none;">
@@ -119,7 +119,7 @@
     <% if (["Top Tracks", "Top Artists", "Top Albums"].includes(title)) { %>
         <script src="/js/time-range-selector.js"></script>
         
-        <!-- Inline script to ensure time range selector visibility on direct page load -->
+        <!-- Script to ensure time range selector works on all navigation cases -->
         <script>
             // Make sure time range selector is visible immediately
             document.addEventListener('DOMContentLoaded', function() {
@@ -127,6 +127,18 @@
                 if (timeRangeSelector) {
                     timeRangeSelector.style.display = 'flex';
                     timeRangeSelector.style.visibility = 'visible';
+                }
+                
+                // Initialize on page load
+                if (window.initializeTimeRangeSelector) {
+                    window.initializeTimeRangeSelector();
+                } else {
+                    // If function isn't available yet, wait a bit
+                    setTimeout(function() {
+                        if (window.initializeTimeRangeSelector) {
+                            window.initializeTimeRangeSelector();
+                        }
+                    }, 500);
                 }
             });
         </script>
