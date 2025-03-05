@@ -11,7 +11,49 @@
       const seconds = Math.floor((ms % 60000) / 1000);
       return `${minutes}:${String(seconds).padStart(2, '0')}`;
     }
+    
+    // Helper function to extract Spotify ID from URL
+    function extractSpotifyId(url) {
+      if (!url) return '';
+      const parts = url.split('/');
+      return parts[parts.length - 1].split('?')[0];
+    }
     %>
+    <style>
+    .copy-seed {
+      cursor: pointer;
+      background: rgba(30, 215, 96, 0.2);
+      border-radius: 4px;
+      padding: 1px 4px;
+      font-size: 0.65rem;
+      display: inline-block !important; /* Cambiato da inline a inline-block */
+      transition: all 0.2s ease;
+      margin-left: 5px;
+      vertical-align: middle;
+      width: auto !important; /* Forza larghezza automatica */
+      box-sizing: content-box;
+      max-width: fit-content !important; /* Limita la larghezza al contenuto */
+    }
+
+    .copy-seed .seed-value {
+      white-space: nowrap;
+      display: inline-block !important;
+    }
+      .copy-seed.copied {
+        background: rgba(30, 215, 96, 0.5);
+      }
+      
+      .seed-value {
+        white-space: nowrap;
+      }
+      
+      @media (max-width: 768px) {
+        .copy-seed {
+          font-size: 0.55rem;
+          padding: 1px 3px;
+        }
+      }
+    </style>
   </head>
   <body>
     <div class="container">
@@ -22,7 +64,8 @@
         <!-- This section is returned for AJAX calls -->
         <div class="track-list">
           <% tracks.forEach((track, index) => { %>
-            <div class="track-item" data-spotify-url="<%= track.external_urls.spotify %>">
+            <% const trackId = extractSpotifyId(track.external_urls.spotify); %>
+            <div class="track-item" data-spotify-url="<%= track.external_urls.spotify %>" data-track-id="<%= trackId %>">
               <div class="track-number"><%= index + 1 %></div>
               <div class="track-image">
                 <a href="<%= track.external_urls.spotify %>" target="_blank" class="cover-link">
@@ -54,15 +97,18 @@
                   </span>
                   <span class="track-duration">Duration: <%= formatDuration(track.duration_ms) %></span>
                   <span class="track-popularity">Popularity: <%= track.popularity %>/100</span>
+                  <div class="copy-seed" data-seed="<%= trackId %>" title="Click to copy seed ID: <%= trackId %>">
+                    <span class="seed-value">Seed</span>
+                  </div>
                 </div>
               </div>
               <div class="track-actions">
                 <a href="<%= track.external_urls.spotify %>" target="_blank" class="spotify-link">
                   <i class="fab fa-spotify"></i>
                 </a>
-                <!-- <a href="/track-analysis/<%= track.id %>?access_token=<%= access_token %>" target="_blank" class="action-icon info-icon" title="Track Analysis">
-                  <i class="fas fa-info-circle"></i>
-                </a> -->
+                <a href="/recommendations?seed_tracks=<%= trackId %>" class="seed-link" title="Get recommendations based on this track">
+                  <i class="fas fa-seedling"></i>
+                </a>
               </div>
             </div>
           <% }); %>
@@ -72,7 +118,8 @@
         <div id="top-tracks-content" class="content-container">
           <div class="track-list">
             <% tracks.forEach((track, index) => { %>
-              <div class="track-item" data-spotify-url="<%= track.external_urls.spotify %>" data-duration="<%= track.duration_ms %>" data-explicit="<%= track.explicit %>">
+              <% const trackId = extractSpotifyId(track.external_urls.spotify); %>
+              <div class="track-item" data-spotify-url="<%= track.external_urls.spotify %>" data-duration="<%= track.duration_ms %>" data-explicit="<%= track.explicit %>" data-track-id="<%= trackId %>">
                 <div class="track-number"><%= index + 1 %></div>
                 <div class="track-image">
                   <a href="<%= track.external_urls.spotify %>" target="_blank" class="cover-link">
@@ -104,15 +151,15 @@
                     </span>
                     <span class="track-duration">Duration: <%= formatDuration(track.duration_ms) %></span>
                     <span class="track-popularity">Popularity: <%= track.popularity %>/100</span>
+                    <div class="copy-seed" data-seed="<%= trackId %>" title="Click to copy seed ID: <%= trackId %>">
+                      <span class="seed-value">Seed</span>
+                    </div>
                   </div>
                 </div>
                 <div class="track-actions">
                   <a href="<%= track.external_urls.spotify %>" target="_blank" class="spotify-link">
                     <i class="fab fa-spotify"></i>
                   </a>
-                  <!-- <a href="/track-analysis/<%= track.id %>?access_token=<%= access_token %>" target="_blank" class="action-icon info-icon" title="Track Analysis">
-                    <i class="fas fa-info-circle"></i>
-                  </a> -->
                 </div>
               </div>
             <% }); %>
@@ -125,5 +172,35 @@
 
     <!-- Replace the inline script with external JavaScript file -->
     <script src="/js/top-tracks.js"></script>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Add click event to all copy-seed elements
+        const seedElements = document.querySelectorAll('.copy-seed');
+        
+        seedElements.forEach(element => {
+          element.addEventListener('click', function() {
+            const seedId = this.getAttribute('data-seed');
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(seedId).then(() => {
+              // Visual feedback
+              this.classList.add('copied');
+              
+              const originalText = this.querySelector('.seed-value').textContent;
+              this.querySelector('.seed-value').textContent = 'Copied!';
+              
+              // Reset after 2 seconds
+              setTimeout(() => {
+                this.classList.remove('copied');
+                this.querySelector('.seed-value').textContent = originalText;
+              }, 2000);
+            }).catch(err => {
+              console.error('Failed to copy text: ', err);
+            });
+          });
+        });
+      });
+    </script>
   </body>
 </html>

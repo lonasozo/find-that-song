@@ -12,7 +12,61 @@
       const seconds = Math.floor((ms % 60000) / 1000);
       return `${minutes}:${String(seconds).padStart(2, '0')}`;
     }
+    
+    // Helper function to extract Spotify ID from URL
+    function extractSpotifyId(url) {
+      if (!url) return '';
+      const parts = url.split('/');
+      return parts[parts.length - 1].split('?')[0];
+    }
+
+    // Format played at date
+    function formatPlayedAt(timestamp) {
+      if (!timestamp) return 'Unknown time';
+      const date = new Date(timestamp);
+      return date.toLocaleString();
+    }
     %>
+    <style>
+    .copy-seed {
+      cursor: pointer;
+      background: rgba(30, 215, 96, 0.2);
+      border-radius: 4px;
+      padding: 1px 4px;
+      font-size: 0.65rem;
+      display: inline-block !important; /* Aggiunto !important */
+      transition: all 0.2s ease;
+      margin-left: 5px;
+      vertical-align: middle;
+      width: auto !important; /* Aggiunto !important */
+      box-sizing: content-box;
+      max-width: fit-content !important; /* Aggiunta questa proprietà per limitare la larghezza */
+    }
+
+    .copy-seed .seed-value {
+      white-space: nowrap;
+      display: inline-block !important; /* Aggiunta questa regola */
+    }
+      
+    .copy-seed:hover {
+      background: rgba(30, 215, 96, 0.3);
+    }
+      
+    .copy-seed.copied {
+      background: rgba(30, 215, 96, 0.5);
+    }
+      
+    .seed-value {
+      white-space: nowrap;
+    }
+      
+    @media (max-width: 768px) {
+      .copy-seed {
+        font-size: 0.55rem;
+        padding: 1px 3px;
+      }
+    }
+    </style>
   </head>
   <body>
     <div class="container">
@@ -25,7 +79,8 @@
         <% if (items && items.length > 0) { %>
           <div class="track-list">
             <% items.forEach((item, index) => { %>
-              <div class="track-item" data-spotify-url="<%= item.track.external_urls.spotify %>" data-duration="<%= item.track.duration_ms %>" data-explicit="<%= item.track.explicit %>" data-played-at="<%= item.played_at %>">
+              <% const trackId = extractSpotifyId(item.track.external_urls.spotify); %>
+              <div class="track-item" data-spotify-url="<%= item.track.external_urls.spotify %>" data-duration="<%= item.track.duration_ms %>" data-explicit="<%= item.track.explicit %>" data-played-at="<%= item.played_at %>" data-track-id="<%= trackId %>">
                 <div class="track-number"><%= index + 1 %></div>
                 <div class="track-image">
                   <a href="<%= item.track.external_urls.spotify %>" target="_blank" class="cover-link">
@@ -63,9 +118,12 @@
                     </span>
                     <span class="track-duration">Duration: <%= formatDuration(item.track.duration_ms) %></span>
                     <span class="track-played-at">Played: <%= new Date(item.played_at).toLocaleString() %></span>
+                    <!-- Sostituito track-seed-info con copy-seed -->
+                    <div class="copy-seed" data-seed="<%= trackId %>" title="Click to copy seed ID: <%= trackId %>">
+                      <span class="seed-value">Seed</span>
+                    </div>
                   </div>
                 </div>
-                <!-- Replace the old track-actions with the Spotify icon button -->
                 <div class="track-actions">
                   <a href="<%= item.track.external_urls.spotify %>" target="_blank" class="spotify-link">
                     <i class="fab fa-spotify"></i>
@@ -84,5 +142,34 @@
 
     <!-- Link to external JavaScript file -->
     <script src="/js/recently-played.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Add click event to all copy-seed elements
+        const seedElements = document.querySelectorAll('.copy-seed');
+        
+        seedElements.forEach(element => {
+          element.addEventListener('click', function() {
+            const seedId = this.getAttribute('data-seed');
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(seedId).then(() => {
+              // Visual feedback
+              this.classList.add('copied');
+              
+              const originalText = this.querySelector('.seed-value').textContent;
+              this.querySelector('.seed-value').textContent = 'Copied!';
+              
+              // Reset after 2 seconds
+              setTimeout(() => {
+                this.classList.remove('copied');
+                this.querySelector('.seed-value').textContent = originalText;
+              }, 2000);
+            }).catch(err => {
+              console.error('Failed to copy text: ', err);
+            });
+          });
+        });
+      });
+    </script>
   </body>
 </html>

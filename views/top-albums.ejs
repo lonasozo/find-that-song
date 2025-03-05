@@ -4,6 +4,50 @@
     <title>Your Top Albums</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="../public/css/albums.css">
+    <% 
+    // Helper function to extract Spotify ID from URL
+    function extractSpotifyId(url) {
+      if (!url) return '';
+      const parts = url.split('/');
+      return parts[parts.length - 1].split('?')[0];
+    }
+    %>
+    <style>
+      .copy-seed {
+        cursor: pointer;
+        background: rgba(30, 215, 96, 0.2);
+        border-radius: 4px;
+        padding: 1px 4px;
+        font-size: 0.65rem;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.2s ease;
+        margin-top: 3px;
+        margin-bottom: 3px;
+      }
+      
+      .album-name-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      
+      .copy-seed:hover {
+        background: rgba(30, 215, 96, 0.3);
+      }
+      
+      .copy-seed.copied {
+        background: rgba(30, 215, 96, 0.5);
+      }
+      
+      @media (max-width: 768px) {
+        .copy-seed {
+          font-size: 0.55rem;
+          padding: 1px 3px;
+        }
+      }
+    </style>
   </head>
   <body>
     <div class="albums-container">
@@ -22,13 +66,21 @@
             if (artistsText.length > 25) {
               displayArtistsText = artistsText.substring(0, 22) + '...';
             }
+            
+            // Extract album ID for seed
+            const albumId = extractSpotifyId(album.external_urls.spotify);
           %>
-          <div class="album-card">
+          <div class="album-card" data-album-id="<%= albumId %>">
             <div class="album-rank"><%= index + 1 %></div>
-            <a href="<%= album.external_urls.spotify %>" target="_blank">
-              <img src="<%= album.images[1]?.url || album.images[0]?.url %>" alt="<%= album.name %>" class="album-img" />
-              <div class="album-name"><%= album.name %></div>
-            </a>
+            <img src="<%= album.images[1]?.url || album.images[0]?.url %>" alt="<%= album.name %>" class="album-img" />
+            <div class="album-name-container">
+              <a href="<%= album.external_urls.spotify %>" target="_blank">
+                <div class="album-name"><%= album.name %></div>
+              </a>
+              <div class="copy-seed" data-seed="<%= albumId %>" title="Click to copy seed ID: <%= albumId %>">
+                <span class="seed-value">Seed</span>
+              </div>
+            </div>
             <div class="artist-name" title="<%= artistsText %>">
               <%= displayArtistsText %>
             </div>
@@ -40,5 +92,36 @@
         <% }); %>
       </div>
     </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Add click event to all copy-seed elements
+        const seedElements = document.querySelectorAll('.copy-seed');
+        
+        seedElements.forEach(element => {
+          element.addEventListener('click', function(e) {
+            e.preventDefault(); // Prevent link navigation
+            const seedId = this.getAttribute('data-seed');
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(seedId).then(() => {
+              // Visual feedback
+              this.classList.add('copied');
+              
+              const originalText = this.querySelector('.seed-value').textContent;
+              this.querySelector('.seed-value').textContent = 'Copied!';
+              
+              // Reset after 2 seconds
+              setTimeout(() => {
+                this.classList.remove('copied');
+                this.querySelector('.seed-value').textContent = originalText;
+              }, 2000);
+            }).catch(err => {
+              console.error('Failed to copy text: ', err);
+            });
+          });
+        });
+      });
+    </script>
   </body>
 </html>
